@@ -8,7 +8,7 @@ library(magrittr)
 library(metacom)
 
 
-data <- read_csv("prev_test.csv")
+data <- read_csv("weighted_prev_competence.csv")
 
 #make community matrix
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
