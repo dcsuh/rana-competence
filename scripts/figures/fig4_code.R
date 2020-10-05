@@ -9,7 +9,7 @@ library(ggforce)
 
 
 
-data <- read_csv("prev_test.csv")
+data <- read_csv("weighted_prev_competence.csv")
 
 
 
