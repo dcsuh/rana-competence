@@ -9,7 +9,7 @@ library(magrittr)
 library(patchwork)
 
 
-data <- read_csv("prev_test.csv")
+data <- read_csv("weighted_prev_competence.csv")
 
 prev_cc <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence, Month)
 prev_cc %<>% distinct() %>% distinct() %>% remove_missing()
