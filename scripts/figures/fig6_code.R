@@ -1,7 +1,6 @@
-#Community competence and Diversity
+#Script Originator: Daniel Suh
 
-#Species richness
-#Pielou's J for species evenness
+#This script creates figure 6
 
 
 library(tidyverse)
