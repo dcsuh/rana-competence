@@ -9,9 +9,9 @@ library(vegan)
 library(reshape2)
 library(patchwork)
 library(ggnewscale)
+library(here)
 
-
-data <- read_csv("weighted_prev_competence.csv")
+data <- read_csv(here("data/weighted_prev_competence.csv"))
 
 #Get species richness from matrix
 
@@ -48,7 +48,7 @@ tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
 tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
 tmp %<>% dplyr::select(-Month.1)
 
-richness_cc <- full_join(tmp, richness_mat, by = "siteID")
+richness_cc <- full_join(tmp, richness_mat, by = "siteID") %>% remove_missing()
 
 
 
@@ -163,7 +163,7 @@ abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by tot
 log_abundances$siteID <- reorder(log_abundances$siteID, -log_abundances$total) #order by total community size
 #abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
 #abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
-comp_plot_a <- abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, AB26, AB42, AB21, AB9, ABLow) %>% melt() %>%
+comp_plot_a <- abundances %>% remove_missing() %>% filter(J<0.6)  %>% dplyr::select(siteID, AB26, AB42, AB21, AB9, ABLow) %>% melt() %>%
   ggplot(., aes(y = log10(value), x = siteID, fill = variable)) +
   geom_bar(position ="stack", stat = "identity") +
   scale_fill_manual(values = c("#238443", "#78c679", "#c2e699", "#ffffb2", "black")) +
@@ -173,7 +173,7 @@ comp_plot_a <- abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, AB26, AB4
   ylab("Abundance") +
   labs(fill = "log10(variable)")
 
-comp_plot_b <- abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
+comp_plot_b <- abundances %>% remove_missing() %>% filter(J<0.6)  %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
   ggplot(., aes(y = log10(value), x = siteID, fill = variable)) +
   geom_bar(position ="stack", stat = "identity") +
   scale_fill_manual(values = c("#238443","black")) +
@@ -183,7 +183,7 @@ comp_plot_b <- abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, ABHigh, A
   ylab("Abundance") +
   labs(fill = "log10(variable)")
 
-comp_plot_c <- log_abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, logAB26, logAB42, logAB21, logAB9, logABLow) %>% melt() %>%
+comp_plot_c <- log_abundances %>% remove_missing() %>% filter(J<0.6)  %>% dplyr::select(siteID, logAB26, logAB42, logAB21, logAB9, logABLow) %>% melt() %>%
   ggplot(., aes(y = (value), x = siteID, fill = variable)) +
   geom_bar(position ="stack", stat = "identity") +
   scale_fill_manual(values = c("#238443", "#78c679", "#c2e699", "#ffffb2", "black")) +
@@ -192,7 +192,7 @@ comp_plot_c <- log_abundances %>% filter(J<0.6)  %>% dplyr::select(siteID, logAB
   theme(axis.text.x = element_text(angle=90)) +
   ylab("Abundance")
 
-cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
+cc_plot <- abundances %>% remove_missing() %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   labs(title = "Values of cc for sites ordered by community size (descending)") +
