@@ -81,36 +81,6 @@ for(n in 2:91){
 #remove the first entry for each wetland to remove the carryover from the last wetland
 lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
-p1 <- evenness %>% remove_missing() %>% ggplot(aes(x=richness, y=cc)) + 
-  geom_smooth(method ="lm") +
-  geom_point() +
-  labs(x = "Richness", y = "CC", title = ) +
-  theme_classic()
-
-cor.test(richness_cc$cc, richness_cc$richness, method="spearman")
-
-p2 <- lag_evenness %>% remove_missing() %>% ggplot(aes(x=lag_richness, y=Prevalence)) + 
-  geom_smooth(method ="lm") +
-  geom_point() +
-  labs(x = "Richness", y = "Prevalence", title = ) +
-  theme_classic()
-
-cor.test(x = lag_evenness$lag_richness, y = lag_evenness$Prevalence, method = "spearman")
-
-p3 <- lag_evenness %>% ggplot(aes(x = lag_J, y = lag_cc, color = Prevalence, size = lag_size)) +
-  geom_point() +
-  labs(x="Evenness", y = "CC", size = "Size") +
-  geom_smooth(method = "lm", show.legend = F) +
-  scale_color_gradient(low="blue", high="red") + 
-  theme_minimal()
-
-cor.test(x=lag_evenness$lag_J, y = lag_evenness$lag_cc, method = "spearman")
-  
-final <- (p1|p3)/p2
-p1
-p2
-p3
-final
 
 #barplots comparing community composition
 
@@ -129,32 +99,6 @@ abundances <- mutate(abundances, ABHigh = (AB9 + AB21 + AB26 + AB42))
 abundances <- mutate(abundances, ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41))
 abundances <- mutate(abundances, total = ABHigh + ABLow)
 log_abundances <- full_join(abundances,log_abundances, by = "siteID")
-
-
-abundances %>% filter(J < 0.5) %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
-  ggplot(., aes(y = value, x = siteID, fill = variable)) +
-  geom_bar(position = position_dodge(), stat = "identity") +
-  labs(title = "Abundance of high and low competence for Pielou's J < 0.5") +
-  theme(axis.text.x = element_text(angle=90))
-
-abundances %>% filter(J < 0.5) %>% filter(cc > 45000) %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
-  ggplot(., aes(y = value, x = siteID, fill = variable)) +
-  geom_bar(position = position_dodge(), stat = "identity") + 
-  labs(title = "Abundance of high and low competence for Pielou's J < 0.5 and cc > 45000") +
-  theme(axis.text.x = element_text(angle=90))
-
-abundances %>% filter(J < 0.5) %>% filter(cc < 45000) %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
-  ggplot(., aes(y = value, x = siteID, fill = variable)) +
-  geom_bar(position = position_dodge(), stat = "identity") + 
-  labs(title = "Abundance of high and low competence for Pielou's J < 0.5 and cc < 45000") +
-  theme(axis.text.x = element_text(angle=90))
-
-abundances %>% filter (J<0.5) %>% mutate(.,ratio = ABHigh/ABLow)%>%
-  ggplot(., aes(y = ratio, x = cc)) +
-  geom_point() +
-  geom_hline(yintercept = 1) +
-  labs(title = "Abundance of high and low competence for Pielou's J < 0.5", y = "ratio(high:low)") +
-  theme(axis.text.x = element_text(angle=90))
 
 
 
@@ -228,69 +172,11 @@ p1bot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity")+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
   theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Relative abundance")
+
 p1top/evenness_plot/p1bot/cc_plot
 
 
-abundances  %>% dplyr::select(siteID, ABLow, AB9, AB21, AB26, AB42) %>% melt() %>%
-  ggplot(., aes(y = value, x = siteID, fill = variable)) +
-  geom_bar(position ="stack", stat = "identity") +
-  theme(axis.text.x = element_text(angle=90)) +
-  scale_fill_manual(values = c("black", "#ffffb2","#fecc5c", "#fd8d3c", "#e31a1c")) +
-  labs(title = "Abundance of high and low competent species for all sites")
 
-abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
-  ggplot(., aes(y=cc, x=siteID)) +
-  geom_bar(position = position_dodge(), stat = "identity") +
-  theme(axis.text.x = element_text(angle=90)) +
-  labs(title = "Values of cc for all sites ordered by community size (descending)")
   
 
 
- #fit two lines to cc_evenness_prev plot
-lag_evenness$high <- c(0)
-lag_evenness$low <- c(0)
-for (i in 1:nrow(lag_evenness)){
-  if (lag_evenness$lag_J[i] > 0.6){
-    lag_evenness$high[i] <- 1
-    lag_evenness$low[i] <- 1
-  }
-  else if (lag_evenness$lag_cc[i] < 45000){
-    lag_evenness$low[i] <- 1
-  }
-  else if (lag_evenness$lag_cc[i] > 45000){
-    lag_evenness$high[i] <- 1
-  }
-  else {
-    lag_evenness$high[i] <- 0
-    lag_evenness$low[i] <- 0
-  }
-}
-low_cc <- lag_evenness %>% filter(low==1)
-cor.test(x=low_cc$lag_J, y=low_cc$lag_cc,method = "spearman")
-high_cc <- lag_evenness %>% filter(high==1)
-cor.test(x=high_cc$lag_J, y=high_cc$lag_cc,method = "spearman")
-
-p4 <- ggplot() + 
-  geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
-  scale_color_gradient(low="blue", high="red") + 
-  new_scale_color() +
-  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "lm", show.legend = F) +
-  new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "lm", show.legend = F) +
-  theme_minimal()
-p4  
-
-
-mySpan=1.5
-myColor="gray80"
-p4 <- ggplot() +
-  geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
-  scale_color_gradient(low="blue", high="red") +
-  new_scale_color() +
-  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
-  new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
-  theme_minimal()+ylim(0,3e+05)+
-  annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
-  annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
-p4
