@@ -97,3 +97,6 @@ scores12 %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,
                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
   geom_text_repel(data = env.scrs, aes(x = myScaleUp2*Comp.1, y = myScaleUp2*Comp.2, label = Species),
                   size = 2.5,color="purple")
+
+#need to look at getting the dots in there and finding a way to make it legible while keeping the original vector lengths
+#I need to be able to better explain what the direction and magnitude of each vector represents

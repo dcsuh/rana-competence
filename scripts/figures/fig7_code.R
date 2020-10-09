@@ -161,3 +161,6 @@ p4 <- ggplot() +
   annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
   annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
 p4
+
+#still need to polish this up and consider if this is going to be a single plot or a panel of multiple figures
+final <- p4
