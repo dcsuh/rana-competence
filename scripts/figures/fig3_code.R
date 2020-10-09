@@ -7,10 +7,9 @@ library(tidyverse)
 library(magrittr)
 library(ecodist)
 library(vegan)
+library(here)
 
-
-
-data <- read_csv("weighted_prev_competence.csv")
+data <- read_csv(here("data/weighted_prev_competence.csv"))
 
 
 #make community matrix
