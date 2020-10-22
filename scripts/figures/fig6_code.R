@@ -176,7 +176,7 @@ p1bot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
 #still need to clean this up but final figure should have a similar format to this
 final <- p1top/evenness_plot/p1bot/cc_plot
 
-
+final
 
   
 
