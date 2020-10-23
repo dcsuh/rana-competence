@@ -13,7 +13,7 @@ library(rotl)
 
 data <- read_csv(here("data/weighted_prev_competence.csv"))
 
-tree <- treeio::read.nexus("data/asup_just_tree.txt")
+tree <- read.nexus("data/asup_just_tree.txt")
 
 names <- read_csv("data/species_names_ids.csv")
 resolved <- tnrs_match_names(names$species_name)
@@ -52,5 +52,5 @@ for (i in 1:nrow(subset)){
   phy_comm <- rename(phy_comm, !!subset$species_name[i] := col_name)
 }
 
-pd(tree, phy_comm, include.root = T)
+pd <- pd(phy_comm, tree, include.root = F)
 
