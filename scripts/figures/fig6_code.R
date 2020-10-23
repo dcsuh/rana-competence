@@ -142,7 +142,7 @@ cc_plot <- abundances %>% remove_missing() %>% dplyr::select(siteID, cc) %>% dis
   theme(axis.text.x = element_text(angle=90))
 
 
-evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
+evenness_plot <- abundances %>% remove_missing() %>% dplyr::select(siteID, J) %>% distinct() %>%
   ggplot(., aes(y=J, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   labs(title = "Values of evenness for sites ordered by community size (descending)") +
@@ -162,11 +162,11 @@ z %<>% rename(Low=ABLow)
 z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund")
 #z %<>% filter(J<0.6)
 z$siteID <- reorder(z$siteID, -z$total) #order by total community size
-p1top <- z %>% ggplot(.,aes(x=siteID,y=abund))+
+p1top <- z %>% remove_missing() %>% ggplot(.,aes(x=siteID,y=abund))+
   geom_bar(stat="identity")+
   ylab("Abundance")+theme_minimal()+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
-p1bot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
+p1bot<- z %>% remove_missing() %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity")+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
   theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Relative abundance")
@@ -184,7 +184,7 @@ abundances %<>% left_join(.,pd)
 
 abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
 
-pd_plot <- abundances %>% dplyr::select(siteID, PD) %>% distinct() %>%
+pd_plot <- abundances %>% remove_missing() %>% dplyr::select(siteID, PD) %>% distinct() %>%
   ggplot(., aes(y=PD, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   labs(title = "Values of phylogenetic diversity for sites ordered by community size (descending)") +
@@ -193,6 +193,9 @@ pd_plot <- abundances %>% dplyr::select(siteID, PD) %>% distinct() %>%
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
 pd_plot
 
-final <- p1top/evenness_plot/p1bot/pd_plot/cc_plot
+final <- evenness_plot/pd_plot/cc_plot
 
 final
+
+ggplot(abundances, aes(x=PD, y=J)) + geom_point() + geom_smooth()
+ggplot(abundances, aes(x=J, y=PD)) + geom_point() + geom_smooth()
