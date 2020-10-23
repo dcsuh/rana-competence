@@ -10,6 +10,7 @@ library(ggtree)
 library(tidytree)
 library(picante)
 library(rotl)
+library(here)
 
 data <- read_csv(here("data/weighted_prev_competence.csv"))
 
@@ -54,3 +55,4 @@ for (i in 1:nrow(subset)){
 
 pd <- pd(phy_comm, tree, include.root = F)
 
+pd %<>% rownames_to_column(., var="siteID")

@@ -101,8 +101,6 @@ abundances <- mutate(abundances, total = ABHigh + ABLow)
 log_abundances <- full_join(abundances,log_abundances, by = "siteID")
 
 
-
-
 abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
 log_abundances$siteID <- reorder(log_abundances$siteID, -log_abundances$total) #order by total community size
 #abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
@@ -178,6 +176,23 @@ final <- p1top/evenness_plot/p1bot/cc_plot
 
 final
 
-  
+########################################################################
+
+#pd is dataframe made in phylo_diversity.R
+abundances %<>% left_join(.,pd)
 
 
+abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
+
+pd_plot <- abundances %>% dplyr::select(siteID, PD) %>% distinct() %>%
+  ggplot(., aes(y=PD, x=siteID)) +
+  geom_bar(position = position_dodge(), stat = "identity") +
+  labs(title = "Values of phylogenetic diversity for sites ordered by community size (descending)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle=90))+
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
+pd_plot
+
+final <- p1top/evenness_plot/p1bot/pd_plot/cc_plot
+
+final
