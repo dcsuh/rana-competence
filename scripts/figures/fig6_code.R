@@ -95,34 +95,15 @@ abundances <- mutate(abundances, total = ABHigh + ABLow)
 abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
 #abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
 #abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
-comp_plot_a <- abundances %>% remove_missing() %>% filter(J<0.6)  %>% dplyr::select(siteID, AB26, AB42, AB21, AB9, ABLow) %>% melt() %>%
-  ggplot(., aes(y = log10(value), x = siteID, fill = variable)) +
-  geom_bar(position ="stack", stat = "identity") +
-  scale_fill_manual(values = c("#238443", "#78c679", "#c2e699", "#ffffb2", "black")) +
-  labs(title = "Abundance of high and low competent species under Pielou's J of 0.6") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle=90)) +
-  ylab("Abundance") +
-  labs(fill = "log10(variable)")
 
-comp_plot_b <- abundances %>% remove_missing() %>% filter(J<0.6)  %>% dplyr::select(siteID, ABHigh, ABLow) %>% melt() %>%
-  ggplot(., aes(y = log10(value), x = siteID, fill = variable)) +
-  geom_bar(position ="stack", stat = "identity") +
-  scale_fill_manual(values = c("#238443","black")) +
-  labs(title = "Abundance of high and low competent species under Pielou's J of 0.6") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle=90)) +
-  ylab("Abundance") +
-  labs(fill = "log10(variable)")
-
-cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
+cc_plot <- abundances  %>% filter(is.na(cc)==F) %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") + 
   theme_minimal() +
   theme(axis.text.x = element_text(angle=90)) + ylab("Community Competence")
 #labs(title = "Values of cc for sites ordered by community size (descending)") +
 
-evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
+evenness_plot <- abundances  %>% filter(is.na(cc)==F) %>% dplyr::select(siteID, J) %>% distinct() %>%
   ggplot(., aes(y=J, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   theme_minimal() +
@@ -137,11 +118,11 @@ z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is
 #z %<>% filter(J<0.6)
 z$siteID <- reorder(z$siteID, -z$total) #order by total community size
 
-AB_plot <- z  %>% ggplot(.,aes(x=siteID,y=abund))+
+AB_plot <- z   %>% filter(is.na(cc)==F) %>% ggplot(.,aes(x=siteID,y=abund))+
   geom_bar(stat="identity")+
   ylab("Abundance")+theme_minimal()+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
-RA_plot<- z  %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
+RA_plot<- z   %>% filter(is.na(cc)==F) %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity")+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
   theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Relative abundance")
@@ -159,7 +140,7 @@ abundances %<>% left_join(.,pd)
 
 abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
 
-pd_plot <- abundances %>% remove_missing() %>% dplyr::select(siteID, PD) %>% distinct() %>%
+pd_plot <- abundances %>% filter(is.na(cc)==F) %>% dplyr::select(siteID, PD) %>% distinct() %>%
   ggplot(., aes(y=PD, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   labs(title = "Values of phylogenetic diversity for sites ordered by community size (descending)") +
