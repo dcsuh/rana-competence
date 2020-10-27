@@ -56,4 +56,5 @@ for (i in 1:nrow(subset)){
 pd <- pd(phy_comm, tree, include.root = F)
 
 pd %<>% rownames_to_column(., var="siteID") 
-pd %<>% mutate(PD = replace_na(pd$PD, 0))
+pd %<>% mutate(PD = replace_na(pd$PD, 0)) #is this okay to do?
+
