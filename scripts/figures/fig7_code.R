@@ -138,6 +138,7 @@ p4 <- ggplot() +
   new_scale_color() +
   geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
   theme_minimal()+ylim(0,3e+05)+
+  labs(x="Evenness", y = "CC", size = "Size") +
   annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
   annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
 p4
