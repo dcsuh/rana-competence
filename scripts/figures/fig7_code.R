@@ -48,7 +48,7 @@ tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
 tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
 tmp %<>% dplyr::select(-Month.1)
 
-richness_cc <- full_join(tmp, richness_mat, by = "siteID") %>% remove_missing()
+richness_cc <- full_join(tmp, richness_mat, by = "siteID")
 
 
 
@@ -125,28 +125,8 @@ cor.test(x = lag_evenness$lag_richness, y = lag_evenness$Prevalence, method = "s
 p3 <- lag_evenness %>% ggplot(aes(x = lag_J, y = lag_cc, color = Prevalence, size = lag_size)) +
   geom_point() +
   labs(x="Evenness", y = "CC", size = "Size") +
-  geom_smooth(method = "lm", show.legend = F) +
   scale_color_gradient(low="blue", high="red") + 
   theme_minimal()
-
-cor.test(x=lag_evenness$lag_J, y = lag_evenness$lag_cc, method = "spearman")
-
-final <- (p1|p3)/p2
-p1
-p2
-p3
-final
-
-p4 <- ggplot() + 
-  geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
-  scale_color_gradient(low="blue", high="red") + 
-  new_scale_color() +
-  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "lm", show.legend = F) +
-  new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "lm", show.legend = F) +
-  theme_minimal()
-p4  
-
 
 mySpan=1.5
 myColor="gray80"
@@ -162,5 +142,4 @@ p4 <- ggplot() +
   annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
 p4
 
-#still need to polish this up and consider if this is going to be a single plot or a panel of multiple figures
 final <- p4

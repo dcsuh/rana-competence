@@ -46,8 +46,7 @@ tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
 tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
 tmp %<>% dplyr::select(-Month.1)
 
-richness_cc <- full_join(tmp, richness_mat, by = "siteID") #make df with siteIDs, richness, and cc
-richness_cc %<>% remove_missing() #5 sites with missing cc
+richness_cc <- full_join(richness_mat, tmp, by = "siteID") #make df with siteIDs, richness, and cc
 
 
 
@@ -120,7 +119,7 @@ cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") + 
   theme_minimal() +
-  theme(axis.text.x = element_text(angle=90)) + ylab("Pielou's J")
+  theme(axis.text.x = element_text(angle=90)) + ylab("Community Competence")
 #labs(title = "Values of cc for sites ordered by community size (descending)") +
 
 evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
@@ -128,7 +127,7 @@ evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
   geom_bar(position = position_dodge(), stat = "identity") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle=90))+
-  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Community Competence")
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Pielou's J")
 #labs(title = "Values of evenness for sites ordered by community size (descending)") +
 
 z <- abundances
