@@ -6,9 +6,10 @@
 library(tidyverse)
 library(magrittr)
 library(metacom)
+library(here)
 
 
-data <- read_csv("weighted_prev_competence.csv")
+data <- read_csv("data/weighted_prev_competence.csv")
 
 #make community matrix
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
