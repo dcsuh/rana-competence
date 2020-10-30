@@ -55,6 +55,9 @@ scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteI
 
 
 output=princomp(env_mat, cor=T) # PCA
+env_scores <- as.data.frame(output$scores)
+env_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
 biplot(output) # Generates a bi-plot with vectors
 
 vec1=envfit(output$score[,1:2], community_mat, permutations=0) 
@@ -79,6 +82,7 @@ spp.scrs <- cbind(spp.scrs, Species = rownames(spp.scrs))
 vec2=envfit(output$score[,1:2], env_mat, permutations=0)
 env.scrs <- as.data.frame(scores(vec2, display = "vectors"))
 env.scrs <- cbind(env.scrs, Species = rownames(env.scrs))
+
 library(ggrepel)
 myScaleUp1 <- 5
 myScaleUp2 <- 2.5
@@ -100,3 +104,19 @@ scores12 %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,
 
 #need to look at getting the dots in there and finding a way to make it legible while keeping the original vector lengths
 #I need to be able to better explain what the direction and magnitude of each vector represents
+
+scores12 %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2),pch=21)+
+  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
+  scale_fill_manual(values=c("darkgreen","lightgreen"))+
+  scale_color_manual(values=c("darkgreen","black"))+
+  coord_fixed()+
+  geom_segment(data=spp.scrs,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_text_repel(data = spp.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
+                  size = 2.5,color="darkorange2")+
+  geom_segment(data=env.scrs,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_text_repel(data = env.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
+                  size = 2.5,color="purple")
