@@ -100,7 +100,7 @@ cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") + 
   theme_minimal() +
-  theme(axis.text.x = element_text(angle=90)) + ylab("Community Competence")
+  theme(axis.text.x = element_text(angle=90)) + ylab("CC")
 #labs(title = "Values of cc for sites ordered by community size (descending)") +
 
 evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
@@ -125,7 +125,7 @@ AB_plot <- z %>% ggplot(.,aes(x=siteID,y=abund))+
 RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity")+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
-  theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Relative abundance")
+  theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
 
 #still need to clean this up but final figure should have a similar format to this
 final <- AB_plot/evenness_plot/RA_plot/cc_plot
