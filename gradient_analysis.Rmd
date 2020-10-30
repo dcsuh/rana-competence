@@ -1,0 +1,125 @@
+---
+title: "gradient_analysis"
+author: "Daniel Suh"
+date: "10/30/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+load packages
+```{r}
+library(tidyverse)
+library(magrittr)
+library(ecodist)
+library(vegan)
+library(here)
+```
+
+read data and make species and environmental matrices
+```{r}
+data <- read_csv(here("data/weighted_prev_competence.csv"))
+
+
+#make community matrix
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42)
+community_mat$Month.1 <- gsub("Month", "", community_mat$Month.1) 
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% 
+  distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+
+community_mat %<>% column_to_rownames(., var = "siteID")
+
+
+#select for environmental variables
+env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
+env$Month.1 <- gsub("Month", "", env$Month.1)
+#make siteID rowname
+env$siteID <- paste(env$WetAltID, env$Month.1, sep = "_")
+env %<>% dplyr::select(-WetAltID, -Month.1)
+#remove duplicated rows (siteID is duplicated but env. variables are not... not sure why this is)
+env <- env[-c(53, 90),]
+env_mat <- env %>% column_to_rownames(., var = "siteID")
+
+#replace NA's with zeros. Probably not the best option but will allow analysis to run for now
+community_mat[is.na(community_mat)] <- 0
+env_mat[is.na(env_mat)] <- 0
+
+nrow(community_mat) == nrow(env_mat)
+
+site_labels <- rownames(community_mat)
+```
+
+Gradient Analysis - a number of distance-based or rotation-based techniques for ordinating data to reduce the dimensions of data in order to compare two related datasets. A large number of independent variables require many degrees of freedoms and large number of observations. Gradient analysis allows for studying relationship between variables when the number of observations is limited to perform standard statistical procedures. Ordination allows for the reduction of data to ordination scores so that other variables can be correlated to ordination scores.
+
+
+NMDS: non-metric multidimensional scaling - a distance-based ordination method
+```{r}
+#bray-curtis dissimilarity scores
+spec_dist <- bcdist(community_mat)
+spec_nmds <- nmds(spec_dist, mindim = 2, maxdim = 2)
+spec_scores <- nmds.min(spec_nmds)
+
+#mahalanobis dissimilarity scoring for sites by environmental variables
+env_dist <- ecodist::distance(env_mat, method = "mahalanobis")
+env_nmds <- nmds(env_dist, mindim = 2, maxdim = 2)
+env_scores <- nmds.min(env_nmds)
+```
+
+Direct Gradient Analysis with NMDS
+```{r}
+####Direct GA w/ NMDS####
+#Ordinate independent variable (environment)
+#correlate species as vectors to ordination scores
+plot(env_scores, col="white") 
+vectors=vf(env_scores, env_mat, nperm=100) 
+plot(vectors, col="red")
+
+vectors=vf(env_scores, community_mat, nperm=100) 
+plot(vectors, ascale=1, col="blue")
+#### useful for understanding species composition only in light of the measured independent variables
+#### other patterns that might be due to other independent variables are effectively ignored
+```
+
+Indirect Gradient Analysis with NMDS
+```{r}
+####Indirect GA w/ NMDS####
+#Ordinate dependent variable (species)
+#correlate ordination scores with independent variable (environment)
+plot(spec_scores, col="white") 
+vectors=vf(spec_scores, community_mat, nperm=100) 
+plot(vectors, col="red")
+
+vectors=vf(spec_scores, env_mat, nperm=100) 
+plot(vectors, ascale=1, col="blue")
+#### useful for understanding the similarity in species composition between sites regardless of independent variable
+#### independent variable is then correlated to species but patterns may have been driven by other independent variables not measured
+```
+
+PCA: Principal Component Analysis - a rotation-based ordination method
+```{r}
+
+pca_env_output <- princomp(env_mat, cor=T) # PCA
+biplot(pca_env_output) # Generates a bi-plot with vectors
+vec1 <- envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
+plot(vec1, col="blue")
+
+pca_env_scores <- pca_env_output$score[,1:2] # get the PC1 and PC2 scores 
+pca_env_spec_scores <- cbind(pca_env_scores,community_mat) # merge with species 
+correlations <- cor(pca_env_spec_scores) # calculate correlations
+correlations12 <- correlations[3:23,1:2] # the loadings we want
+
+#pca on community matrix and gather scores for first two principal components
+pca <- princomp(community_mat, scores = TRUE)
+p_spec_scores <- as.data.frame(pca$scores)
+p_spec_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
+
+env_scores <- as.data.frame(pca_env_output$scores)
+env_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
+
+```
+
+What is the difference between the scores for species from envfit and the values from the correlation between environmental ordination scores and the community matrix?

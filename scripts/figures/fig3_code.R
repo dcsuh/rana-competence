@@ -13,8 +13,10 @@ data <- read_csv(here("data/weighted_prev_competence.csv"))
 
 
 #make community matrix
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42)
+community_mat$Month.1 <- gsub("Month", "", community_mat$Month.1) 
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% 
+  distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 
@@ -33,50 +35,40 @@ env_mat <- env %>% column_to_rownames(., var = "siteID")
 community_mat[is.na(community_mat)] <- 0
 env_mat[is.na(env_mat)] <- 0
 
-nrow(community_mat) == nrow(env_mat)
-
 site_labels <- rownames(community_mat)
 
-#bray-curtis dissimilarity scores
-spec_dist <- bcdist(community_mat)
-spec_nmds <- nmds(spec_dist, mindim = 2, maxdim = 2)
-spec_scores <- nmds.min(spec_nmds)
 
-#mahalanobis dissimilarity scoring for sites by environmental variables
-env_dist <- ecodist::distance(env_mat, method = "mahalanobis")
-env_nmds <- nmds(env_dist, mindim = 2, maxdim = 2)
-env_scores <- nmds.min(env_nmds)
+pca_env_output=princomp(env_mat, cor=T) # PCA
+biplot(pca_env_output) # Generates a bi-plot with vectors
 
-#pca on community matrix and gather scores for first two principal components
-pca <- princomp(community_mat, scores = TRUE)
-scores <- as.data.frame(pca$scores)
-scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+spec_vec=envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
+plot(spec_vec, col="blue")
+
+env_scores <- pca_env_output$score[,1:2] # get the PC1 and PC2 scores 
+env_comm_scores <- cbind(env_scores,community_mat) # merge with species 
+correlations <- cor(env_comp_scores)
+spec_corr <- correlations[3:23,1:2] # the loadings we want
 
 
 
-output=princomp(env_mat, cor=T) # PCA
-env_scores <- as.data.frame(output$scores)
-env_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
-
-biplot(output) # Generates a bi-plot with vectors
-
-vec1=envfit(output$score[,1:2], community_mat, permutations=0) 
-plot(vec1, col="blue")
-scores12=output$score[,1:2] # get the PC1 and PC2 scores 
-scores12_spec=cbind(scores12,community_mat) # merge with species 
-correlations=cor(scores12_spec) # calculate correlations 
-correlations12=correlations[3:15,1:2] # the loadings we want
+site_scores <- data %>% dplyr::select(WetAltID, Month.1, cc) 
+site_scores$Month.1 <- gsub("Month", "", site_scores$Month.1)
+site_scores %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% 
+  distinct() %>% 
+  arrange(.,WetAltID) %>% 
+  dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, cc)
 
 
-
-
-site_scores <- data %>% dplyr::select(siteID, cc) %>% distinct() %>% rename_with(., ~ gsub("Month","",.x,fixed = "TRUE"))
-
-scores12 %<>% as.data.frame(.)
-scores12 %<>% mutate(siteID=rownames(.))
+env_scores %<>% as.data.frame(.)
+env_scores %<>% mutate(siteID=rownames(.))
 tmp <- site_scores %>% select(siteID,cc)
-scores12 %<>% left_join(.,tmp)
-scores12 %<>% mutate(CC=as.factor(ifelse(cc>45000,"Hi","Lo")))
+env_scores %<>% left_join(.,tmp)
+env_scores %<>% mutate(CC=as.factor(ifelse(cc>45000,"Hi","Lo")))
+
+spec_scores <- as.data.frame(scores(spec_vec, display = "vectors"))
+
+#what is the difference between spec_scores and spec_corr
+
 spp.scrs <- as.data.frame(scores(vec1, display = "vectors"))
 spp.scrs <- cbind(spp.scrs, Species = rownames(spp.scrs))
 vec2=envfit(output$score[,1:2], env_mat, permutations=0)
