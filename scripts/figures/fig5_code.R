@@ -7,9 +7,10 @@
 library(tidyverse)
 library(magrittr)
 library(patchwork)
+library(here)
 
 
-data <- read_csv("weighted_prev_competence.csv")
+data <- read_csv("data/weighted_prev_competence.csv")
 
 prev_cc <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence, Month)
 prev_cc %<>% distinct() %>% distinct() %>% remove_missing()
@@ -61,7 +62,8 @@ comm_size_clean <- comm_size_order %>% group_by(WetAltID) %>% filter(duplicated(
 size_corr <- comm_size_clean %>% filter(Prevalence>0) %>% ggplot(.,aes(x=log(lag), y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "ln(Community Size)", y = "Prevalence")
+  labs(title = "", x = "ln(Community Size)", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank())
 
 cor.test(comm_size_clean$lag,comm_size_clean$Prevalence,method="spearman")
 
@@ -86,13 +88,13 @@ comm_half_clean <- comm_half_order %>% group_by(WetAltID) %>% filter(duplicated(
 temp_corr <- comm_half_clean %>% filter(Prevalence>0) %>% ggplot(.,aes(x=lag, y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "Mean Water Temp", y = "Prevalence")
+  labs(title = "", x = "Mean Water Temp", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank())
+
 
 cor.test(comm_half_clean$lag,comm_half_clean$Prevalence,method="spearman")
 
 
 #plot everything together with patchwork
-corr_plots <- cc_corr/(size_corr | temp_corr)
+corr_plots <- cc_corr| size_corr| temp_corr
 corr_plots
-
-cc_corr/ size_corr/ temp_corr
