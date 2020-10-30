@@ -44,9 +44,13 @@ biplot(pca_env_output) # Generates a bi-plot with vectors
 spec_vec=envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
 plot(spec_vec, col="blue")
 
+#get loadings for environmental variables
+env_var <- as.data.frame(pca_env_output$loadings[,1:2])
+
+
 env_scores <- pca_env_output$score[,1:2] # get the PC1 and PC2 scores 
 env_comm_scores <- cbind(env_scores,community_mat) # merge with species 
-correlations <- cor(env_comp_scores)
+correlations <- cor(env_comm_scores)
 spec_corr <- correlations[3:23,1:2] # the loadings we want
 
 
@@ -67,18 +71,52 @@ env_scores %<>% mutate(CC=as.factor(ifelse(cc>45000,"Hi","Lo")))
 
 spec_scores <- as.data.frame(scores(spec_vec, display = "vectors"))
 
+
 #what is the difference between spec_scores and spec_corr
 
+env_scores %>% drop_na(cc) %>% ggplot(.) +
+  geom_point(aes(x=Comp.1, y=Comp.2, shape = CC, color = cc)) +
+  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
+  geom_segment(data=spec_scores,
+             aes(x = 0, xend = myScaleUp1*Comp.1, y = 0, yend = myScaleUp1*Comp.2),
+             arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_text_repel(data = spec_scores, aes(x = myScaleUp1*Comp.1, y = myScaleUp1*Comp.2, label = row.names(spec_scores)),
+                  size = 2.5,color="darkorange2")+
+  geom_segment(data=env_var,
+               aes(x = 0, xend = myScaleUp2*Comp.1, y = 0, yend = myScaleUp2*Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_text_repel(data = env_var, aes(x = myScaleUp2*Comp.1, y = myScaleUp2*Comp.2, label = rownames(env_var)),
+                  size = 2.5,color="purple")+
+  coord_fixed()
+
+env_scores %>% drop_na(cc) %>% ggplot(.) +
+  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
+  geom_segment(data=spec_scores,
+               aes(x = 0, xend = myScaleUp1*Comp.1, y = 0, yend = myScaleUp1*Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_text_repel(data = spec_scores, aes(x = myScaleUp1*Comp.1, y = myScaleUp1*Comp.2, label = row.names(spec_scores)),
+                  size = 2.5,color="darkorange2")+
+  geom_segment(data=env_var,
+               aes(x = 0, xend = myScaleUp2*Comp.1, y = 0, yend = myScaleUp2*Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_text_repel(data = env_var, aes(x = myScaleUp2*Comp.1, y = myScaleUp2*Comp.2, label = rownames(env_var)),
+                  size = 2.5,color="purple")+
+  coord_fixed()
+
+  
+  
+  
+vec1=envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
 spp.scrs <- as.data.frame(scores(vec1, display = "vectors"))
 spp.scrs <- cbind(spp.scrs, Species = rownames(spp.scrs))
-vec2=envfit(output$score[,1:2], env_mat, permutations=0)
+vec2=envfit(pca_env_output$score[,1:2], env_mat, permutations=0)
 env.scrs <- as.data.frame(scores(vec2, display = "vectors"))
 env.scrs <- cbind(env.scrs, Species = rownames(env.scrs))
 
 library(ggrepel)
 myScaleUp1 <- 5
 myScaleUp2 <- 2.5
-scores12 %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,color=CC),pch=21)+
+env_scores %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,color=CC),pch=21)+
   xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
   scale_fill_manual(values=c("darkgreen","lightgreen"))+
   scale_color_manual(values=c("darkgreen","black"))+
