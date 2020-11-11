@@ -74,19 +74,39 @@ site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
 
 #make same plot with NMDS scores rather than PCA scores
 library(vegan)
-library(ecodist)
-dist <- bcdist(community_mat)
-nmds <- nmds(dist)
-nmds_scores <- as.data.frame(nmds[[1]][[1]])
-nmds_rank <- tmp
-nmds_rank$comp1 <- nmds_scores$V1
-nmds_rank %<>% mutate(pc1Rank=dense_rank(comp1))
+set.seed(3000)
 
-nmds_rank %>% ggplot(.,aes(x=pc1Rank,y=cc))+
+vegdist <- vegdist(community_mat, method = "bray")
+
+#stress test for nmds
+stress <- c()
+for (i in 1:10){
+  output <- metaMDS(community_mat, distance = "bray", k = i, trace = F)
+  stress[i] <- output$stress
+}
+
+stress %<>% as.data.frame(.) %>% rename(., stress = .) %>% mutate(., dim = as.numeric(rownames(.)))
+
+ggplot(stress, aes (x = dim, y = stress)) + geom_point()
+#the difference between NMDS and PCA is that PCA uses euclidean distances while NMDS rank orders observations for ordination (this is why it is non-metric?)
+
+NMDS1 <- metaMDS(community_mat, distance = "bray", k = 4, trymax = 100, trace = F)
+stressplot(NMDS1)
+ordiplot(NMDS1, type = "n")
+orditorp(NMDS1, display = "species", col = "red")
+orditorp(NMDS1, display = "sites", cex = 1.1)
+
+
+points <- as.data.frame(NMDS1$points)
+points %<>% select(MDS1) %>% mutate(., siteID = rownames(.))
+points %<>% left_join(tmp, .)
+points %<>% mutate(rank = dense_rank(MDS1))
+
+points %>% ggplot(.,aes(x=rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = Size))+
   labs(x="NMDS Component 1 Rank", y = "Community Competence (CC)") + 
   scale_shape_manual(values = rep(1:20, len = 20)) +
   guides(shape=F) +
   theme_classic() +
-  theme(aspect.ratio=1/1.67, legend.position = c(0.85,0.4), legend.box = "horizontal") +
+  theme(aspect.ratio=1/1.67, legend.box = "horizontal") +
   scale_color_brewer(palette = "Paired")
