@@ -90,7 +90,7 @@ stress %<>% as.data.frame(.) %>% rename(., stress = .) %>% mutate(., dim = as.nu
 ggplot(stress, aes (x = dim, y = stress)) + geom_point()
 #the difference between NMDS and PCA is that PCA uses euclidean distances while NMDS rank orders observations for ordination (this is why it is non-metric?)
 
-NMDS1 <- metaMDS(community_mat, distance = "bray", k = 4, trymax = 100, trace = F)
+NMDS1 <- metaMDS(community_mat, distance = "bray", k = 6, trace = F, autotransform = FALSE)
 stressplot(NMDS1)
 ordiplot(NMDS1, type = "n")
 orditorp(NMDS1, display = "species", col = "red")
@@ -100,7 +100,7 @@ orditorp(NMDS1, display = "sites", cex = 1.1)
 points <- as.data.frame(NMDS1$points)
 points %<>% select(MDS1) %>% mutate(., siteID = rownames(.))
 points %<>% left_join(tmp, .)
-points %<>% mutate(rank = dense_rank(MDS1))
+points %<>% mutate(rank = dense_rank(desc(MDS1)))
 
 points %>% ggplot(.,aes(x=rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = Size))+
