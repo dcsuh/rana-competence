@@ -15,10 +15,11 @@
 #library
 library(tidyverse)
 library(magrittr)
+library(here)
 
 #load data
-data <- read_csv("competence.csv")
-
+#data <- read_csv("competence.csv")
+data <- read_csv("data/competence_111220.csv")
 
 tmp <- data %>% 
   group_by(WetAltID, Month.1, Species) %>% 
@@ -68,3 +69,4 @@ export %<>% rename(Prevalence = prevalence)
 
 
 #write_csv(export,path="weighted_prev_competence.csv")
+write_csv(export,path="data/weighted_prev_competence_111220.csv")

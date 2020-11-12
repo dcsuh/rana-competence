@@ -2,11 +2,13 @@
 
 library(tidyverse)
 library(magrittr)
+library(here)
 
 #This script calculates the value for community competence at each sitexmonth (i.e. community)
 #This assumes all individuals are exposed - so negative individuals count towards the average of a species
 
-q <- read_csv("Ranavirus_Salamander_091819.csv")
+#q <- read_csv("data/Ranavirus_Salamander_091819.csv")
+q <- read_csv("data/rv_data_111220.csv")
 
 v <- q %>% group_by(Species) %>% summarize(meanVL=mean(SQMean))
 
@@ -45,4 +47,5 @@ q %<>% mutate(cc=RA4*vl.4+
                 RA41*vl.41+
                 RA42*vl.42)
 
-write_csv(q,path="competence.csv")
+#write_csv(q,path="competence.csv")
+write_csv(q,"data/competence_111220.csv")
