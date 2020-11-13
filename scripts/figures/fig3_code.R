@@ -135,18 +135,18 @@ env_scores %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=C
 #need to look at getting the dots in there and finding a way to make it legible while keeping the original vector lengths
 #I need to be able to better explain what the direction and magnitude of each vector represents
 
-scores12 %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2),pch=21)+
-  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
-  scale_fill_manual(values=c("darkgreen","lightgreen"))+
-  scale_color_manual(values=c("darkgreen","black"))+
-  coord_fixed()+
-  geom_segment(data=spp.scrs,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_text_repel(data = spp.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
-                  size = 2.5,color="darkorange2")+
-  geom_segment(data=env.scrs,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_text_repel(data = env.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
-                  size = 2.5,color="purple")
+# scores12 %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2),pch=21)+
+#   xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
+#   scale_fill_manual(values=c("darkgreen","lightgreen"))+
+#   scale_color_manual(values=c("darkgreen","black"))+
+#   coord_fixed()+
+#   geom_segment(data=spp.scrs,
+#                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+#                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+#   geom_text_repel(data = spp.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
+#                   size = 2.5,color="darkorange2")+
+#   geom_segment(data=env.scrs,
+#                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+#                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+#   geom_text_repel(data = env.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
+#                   size = 2.5,color="purple")
