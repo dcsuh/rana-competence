@@ -4,6 +4,8 @@ library(here)
 old <- read_csv("data/weighted_prev_competence.csv")
 new <- read_csv("data/weighted_prev_competence_111220.csv")
 
+vl <- new %>% select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
+
 old %<>% select(WetAltID, Month.1, RA2:RA42, cc) %>% distinct() 
 new %<>% select(WetAltID, Month.1, RA2:RA42, cc) %>% distinct()
 
