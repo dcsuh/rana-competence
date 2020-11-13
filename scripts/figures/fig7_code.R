@@ -132,7 +132,7 @@ mySpan=1.5
 myColor="gray80"
 p4 <- ggplot() +
   geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
-  scale_color_gradient(low="blue", high="red") +
+  scale_color_viridis_c(direction = -1)+
   new_scale_color() +
   geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
   new_scale_color() +
