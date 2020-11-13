@@ -11,7 +11,7 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 
-data <- read_csv(here("data/weighted_prev_competence.csv"))
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
 
 #Get species richness from matrix
 
