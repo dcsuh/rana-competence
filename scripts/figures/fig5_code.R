@@ -37,29 +37,32 @@ for(n in 2:nrow(order)){
 clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 #plot cleaned plot with lag
-cc_corr <- clean %>% filter(Prevalence>0) %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
+cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "Community Competence", y = "Prevalence")
+  labs(title = "", x = "Community Competence", y = "Prevalence") +
+  ylim(0,0.65)
 
 #correlation test
 cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
 
-size_corr <- clean %>% filter(Prevalence>0) %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
+size_corr <- clean %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
   labs(title = "", x = "ln(Community Size)", y = "") +
-  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank())
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
+  ylim(0,0.65)
 
 cor.test(clean$lag_size,clean$Prevalence,method="spearman")
 
 
-temp_corr <- clean %>% filter(Prevalence>0) %>% ggplot(.,aes(x=MeanWaterTempPredC, y=Prevalence)) +
+temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
   labs(title = "", x = "Mean Water Temp", y = "") +
-  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank())
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
+  ylim(0,0.65)
 
 
 cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
