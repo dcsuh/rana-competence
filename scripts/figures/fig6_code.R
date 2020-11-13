@@ -100,14 +100,13 @@ cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") + 
   theme_minimal() +
-  theme(axis.text.x = element_text(angle=90)) + ylab("CC")
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("CC") + xlab("site-months")
 #labs(title = "Values of cc for sites ordered by community size (descending)") +
 
 evenness_plot <- abundances %>% dplyr::select(siteID, J) %>% distinct() %>%
   ggplot(., aes(y=J, x=siteID)) +
   geom_bar(position = position_dodge(), stat = "identity") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle=90))+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Pielou's J")
 #labs(title = "Values of evenness for sites ordered by community size (descending)") +
 
@@ -120,12 +119,15 @@ z$siteID <- reorder(z$siteID, -z$total) #order by total community size
 
 AB_plot <- z %>% ggplot(.,aes(x=siteID,y=abund))+
   geom_bar(stat="identity")+
-  ylab("Abundance")+theme_minimal()+
+  ylab("Abundance")+
+  theme_minimal()+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
+
 RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity")+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
-  theme_minimal()+theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
+  theme_minimal()+
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
 
 #still need to clean this up but final figure should have a similar format to this
 final <- AB_plot/evenness_plot/RA_plot/cc_plot
