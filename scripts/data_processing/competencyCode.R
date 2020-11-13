@@ -6,6 +6,7 @@ library(here)
 
 #This script calculates the value for community competence at each sitexmonth (i.e. community)
 #This assumes all individuals are exposed - so negative individuals count towards the average of a species
+#There are a number of species without measurements of viral load. They are excluded from this calculation because they would only contribute values of 0 (i.e. RA5*0 = 0)
 
 #q <- read_csv("data/Ranavirus_Salamander_091819.csv")
 q <- read_csv("data/rv_data_111220.csv")
