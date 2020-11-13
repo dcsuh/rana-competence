@@ -20,7 +20,7 @@ library(here)
 
 read data and make species and environmental matrices
 ```{r}
-data <- read_csv(here("data/weighted_prev_competence.csv"))
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
 
 
 #make community matrix
