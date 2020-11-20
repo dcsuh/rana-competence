@@ -99,7 +99,7 @@ plot(vectors, ascale=1, col="blue")
 
 PCA: Principal Component Analysis - a rotation-based ordination method
 ```{r}
-
+#Direct Gradient Analysis w/ PCA
 pca_env_output <- princomp(env_mat, cor=T) # PCA
 biplot(pca_env_output) # Generates a bi-plot with vectors
 vec1 <- envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
