@@ -62,12 +62,13 @@ site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
 
 site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = Size))+
-  labs(x="Principal Component 1 Rank", y = "Community Competence (CC)") + 
+  labs(x="Principal Component 1 Rank", y = "Community Competence (CC)", size = "Size") + 
   scale_shape_manual(values = rep(1:20, len = 20)) +
+  scale_size_continuous(range = c(2,10)) +
   guides(shape=F) +
   theme_classic() +
   theme(aspect.ratio=1/1.67, legend.position = c(0.85,0.4), legend.box = "horizontal") +
-  scale_color_brewer(palette = "Paired")
+  scale_color_viridis_d(direction = -1)
   
 #scale_color_manual(values = c( "#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"))
 
