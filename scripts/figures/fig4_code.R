@@ -40,6 +40,10 @@ pca <- princomp(community_mat, scores = TRUE)
 scores <- as.data.frame(pca$scores)
 scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
 
+#plot pca
+biplot(pca)
+
+
 tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Month, AB2:AB42) %>% 
   dplyr::select(-ABAmb, -ABSal) %>%  mutate(., Size = rowSums(.[5:25])) %>% #get totals for community size
   dplyr::select(-AB2:-AB42) %>%
