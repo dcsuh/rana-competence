@@ -150,3 +150,49 @@ env_scores %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=C
 #                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
 #   geom_text_repel(data = env.scrs, aes(x = Comp.1, y = Comp.2, label = Species),
 #                   size = 2.5,color="purple")
+
+
+
+#try this again for indirect gradient analysis with pca
+community_pca <- princomp(community_mat, scores = TRUE)
+biplot(community_pca)
+comm_scores <- community_pca$scores[,1:2]
+comm_env_scores <- cbind(comm_scores,env_mat)
+corrs <- cor(comm_env_scores)
+env_corrs <- corrs[3:8, 1:2]
+env_corrs %<>% as.data.frame
+
+comm_scores <- as.data.frame(community_pca$loadings[,1:2])
+env_vec <- envfit(community_pca$score[,1:2], env_mat, permutations=0) 
+env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
+
+
+comm_scores %>% ggplot(.) +
+  xlab("PC1")+ylab("PC2")+
+  geom_segment(data=comm_scores,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_text_repel(data = spec_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
+                  size = 2.5,color="darkorange2")+
+  geom_segment(data=env_vec,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_text_repel(data = env_var, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
+                  size = 2.5,color="purple")+
+  coord_fixed()
+
+comm_scores %>% ggplot(.) +
+  xlab("PC1")+ylab("PC2")+
+  geom_segment(data=comm_scores,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_segment(data=env_vec,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  coord_fixed()
+
+
+comm_scores %<>% as.data.frame(.)
+comm_scores %<>% mutate(siteID=rownames(.))
+comm_scores %<>% left_join(.,tmp)
+
