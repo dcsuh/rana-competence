@@ -37,6 +37,7 @@ env_mat[is.na(env_mat)] <- 0
 
 #pca on community matrix and gather scores for first two principal components
 pca <- princomp(community_mat, scores = TRUE)
+summary(pca)
 scores <- as.data.frame(pca$scores)
 scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
 

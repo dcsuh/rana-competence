@@ -92,14 +92,14 @@ env_scores %>% drop_na(cc) %>% ggplot(.) +
 env_scores %>% drop_na(cc) %>% ggplot(.) +
   xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
   geom_segment(data=spec_scores,
-               aes(x = 0, xend = myScaleUp1*Comp.1, y = 0, yend = myScaleUp1*Comp.2),
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_text_repel(data = spec_scores, aes(x = myScaleUp1*Comp.1, y = myScaleUp1*Comp.2, label = row.names(spec_scores)),
+  geom_text_repel(data = spec_scores, aes(x = Comp.1, y = Comp.2, label = row.names(spec_scores)),
                   size = 2.5,color="darkorange2")+
   geom_segment(data=env_var,
-               aes(x = 0, xend = myScaleUp2*Comp.1, y = 0, yend = myScaleUp2*Comp.2),
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_text_repel(data = env_var, aes(x = myScaleUp2*Comp.1, y = myScaleUp2*Comp.2, label = rownames(env_var)),
+  geom_text_repel(data = env_var, aes(x = Comp.1, y = Comp.2, label = rownames(env_var)),
                   size = 2.5,color="purple")+
   coord_fixed()
 
@@ -155,6 +155,7 @@ env_scores %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=C
 
 #try this again for indirect gradient analysis with pca
 community_pca <- princomp(community_mat, scores = TRUE)
+summary(community_pca)
 biplot(community_pca)
 comm_scores <- community_pca$scores[,1:2]
 comm_env_scores <- cbind(comm_scores,env_mat)
