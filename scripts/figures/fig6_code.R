@@ -83,7 +83,12 @@ for(n in 2:91){ #lag values by one month
 }
 #remove the first entry for each wetland to remove the carryover from the last wetland
 lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
-lag_evenness %<>% select(siteID, lag_richness:lag_size)
+#lag_evenness %<>% select(siteID, lag_richness:lag_size)
+
+lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence))+
+  geom_smooth(method="lm")
+cor.test(lag_evenness$lag_richness,lag_evenness$Prevalence,method="spearman")
+
 
 
 #barplots comparing community composition
