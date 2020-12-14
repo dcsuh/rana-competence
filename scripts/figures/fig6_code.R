@@ -62,6 +62,13 @@ evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
 evenness %<>% full_join(h, evenness, by = "siteID")
 evenness %<>% mutate(J = h/lnS) %>% rowwise() #calculate Pielou's J
 
+#test for prevalence-richness relationship
+
+evenness %>% ggplot(.,aes(x=richness, y=Prevalence))+
+  geom_smooth(method="lm")
+cor.test(evenness$richness,evenness$Prevalence,method="spearman")
+
+
 #create new df for ordered sites to test lagged richness and evenness on prevalence
 lag_evenness <- evenness[-c(4,14,47,90),] #remove site-months that are out of sequence
 lag_evenness$lag_richness <- c(0)
