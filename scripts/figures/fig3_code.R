@@ -173,12 +173,12 @@ comm_scores %>% ggplot(.) +
   geom_segment(data=comm_scores,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_text_repel(data = spec_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
+  geom_text_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
                   size = 2.5,color="darkorange2")+
   geom_segment(data=env_vec,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_text_repel(data = env_var, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
+  geom_text_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
                   size = 2.5,color="purple")+
   coord_fixed()
 
