@@ -114,9 +114,10 @@ env.scrs <- as.data.frame(scores(vec2, display = "vectors"))
 env.scrs <- cbind(env.scrs, Species = rownames(env.scrs))
 
 library(ggrepel)
-myScaleUp1 <- 5
-myScaleUp2 <- 2.5
-env_scores %>% drop_na(cc) %>% ggplot(.)+geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,color=CC),pch=21)+
+myScaleUp1 <- 1
+myScaleUp2 <- 1
+env_scores %>% drop_na(cc) %>% ggplot(.)+
+#  geom_point(aes(x=Comp.1,y=Comp.2,fill=CC,color=CC),pch=21)+
   xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
   scale_fill_manual(values=c("darkgreen","lightgreen"))+
   scale_color_manual(values=c("darkgreen","black"))+
