@@ -97,7 +97,8 @@ cor.test(lag_evenness$lag_richness,lag_evenness$Prevalence,method="spearman")
 
 evenness %<>% select(-WetAltID)
 abundances %<>% left_join(.,evenness, by = "siteID")
-abundances %<>% left_join(.,lag_evenness, by = "siteID")
+lag_evenness %<>% select(siteID, lag_cc, lag_richness, lag_J, lag_size)
+abundances %<>% inner_join(.,lag_evenness, by = "siteID")
 abundances <- mutate(abundances, ABHigh = (AB9 + AB21 + AB26 + AB42)) 
 abundances <- mutate(abundances, ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41))
 abundances <- mutate(abundances, total = ABHigh + ABLow)
@@ -143,6 +144,7 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
 
 #still need to clean this up but final figure should have a similar format to this
+
 final <- AB_plot/evenness_plot/RA_plot/cc_plot
 
 final
