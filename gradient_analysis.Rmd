@@ -122,4 +122,22 @@ env_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "s
 
 ```
 
+Indirect Grdient Analysis using PCA
+explanation of how envfit actually works -> https://stackoverflow.com/questions/60953996/how-are-envfit-results-created 
+```{r}
+#sites ordinated by species abundances
+#cor = F to use correlation matrix because variables are all on same scale
+species_pca <- princomp(community_mat, cor = F)
+plot(species_pca$scores, pch = 16)
+summary(species_pca)
+loadings(species_pca)
+scores(species_pca)
+biplot(species_pca)
+
+env_fit_vectors <- envfit(species_pca, env_mat)
+
+biplot(species_pca)
+plot(env_fit_vectors)
+```
+
 What is the difference between the scores for species from envfit and the values from the correlation between environmental ordination scores and the community matrix?
