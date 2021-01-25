@@ -4,6 +4,7 @@ author: "Daniel Suh"
 date: "10/30/2020"
 output: html_document
 ---
+I used this document as my instructions for most of this analysis. https://sites.ualberta.ca/~lkgray/uploads/7/3/6/2/7362679/07-gradientanalysis.pdf s
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
