@@ -33,17 +33,17 @@ env %<>% dplyr::select(-WetAltID, -Month.1)
 env <- env[-c(53, 90),]
 env_mat <- env %>% column_to_rownames(., var = "siteID")
 
-#replace NA's with zeros. Probably not the best option but will allow analysis to run for now
-community_mat[is.na(community_mat)] <- 0
-env_mat[is.na(env_mat)] <- 0
+#make presence-absence matrix
+presence_mat <- as.data.frame(ifelse(community_mat>0, 1, 0))
 
 site_labels <- rownames(community_mat)
 
 
 pca_env_output=princomp(env_mat, cor=T) # PCA
+summary(pca_env_output)
 biplot(pca_env_output) # Generates a bi-plot with vectors
 
-spec_vec=envfit(pca_env_output$score[,1:2], community_mat, permutations=0) 
+spec_vec=envfit(pca_env_output$score[,1:2], community_mat) 
 plot(spec_vec, col="blue")
 
 #get loadings for environmental variables
@@ -103,7 +103,7 @@ community_pca <- princomp(community_mat, scores = TRUE)
 summary(community_pca)
 
 comm_scores <- as.data.frame(community_pca$loadings[,1:2])
-env_vec <- envfit(community_pca, env_mat) 
+env_vec <- envfit(community_pca, env_mat, na.rm = T) 
 env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
 
 comm_scores %>% ggplot(.) +
@@ -121,17 +121,43 @@ comm_scores %>% ggplot(.) +
   geom_segment(data=comm_scores,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  #geom_label_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
-   #               size = 2,color="darkorange1")+
+  geom_label_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
+               size = 2,color="darkorange1", segment.colour = 'black')+
   geom_segment(data=env_vec,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
   geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
-                  size = 2,color="purple")+
+                  size = 2,color="purple", segment.colour = 'black')+
+  coord_fixed()
+
+comm_scores %>% ggplot(.) +
+  xlab("PC1")+ylab("PC2")+
+  geom_segment(data=env_vec,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
+                   size = 2.5,color="purple", segment.colour = 'black')+
   coord_fixed()
 
 
+#indirect gradient analysis with pca for presence-absence matrix
+presence_pca <- princomp(presence_mat, scores = TRUE)
+summary(presence_pca)
 
+pres_scores <- as.data.frame(presence_pca$loadings[,1:2])
+env_vec <- envfit(presence_pca, env_mat, na.rm = T) 
+env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
 
-
-
+pres_scores %>% ggplot(.) +
+  xlab("PC1 (21.1%)")+ylab("PC2 (12.6%)")+
+  geom_segment(data=pres_scores,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_label_repel(data = pres_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
+                   size = 2,color="darkorange1", segment.colour = 'black')+
+  geom_segment(data=env_vec,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
+                   size = 2,color="purple", segment.colour = 'black')+
+  coord_fixed()
