@@ -1,7 +1,7 @@
 #Daniel Suh and Andrew Park
 #6/3/20
 
-#Figure 5 in rv_cc manuscript
+#Figure 7 in rv_cc manuscript
 
 #install_github("thomasp85/patchwork")
 library(tidyverse)

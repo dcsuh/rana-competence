@@ -1,6 +1,6 @@
 #Script Originator: Daniel Suh
 
-#This script creates figure 7
+#This script creates figure 5
 
 
 library(tidyverse)
