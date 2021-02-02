@@ -141,24 +141,27 @@ p4 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
   new_scale_color() +
   geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
   theme_minimal()+ylim(0,3e+05)+
-  labs(x="Evenness", y = "CC", size = "Size") +
+  labs(x="evenness", y = "community competence", size = "Abundance") +
   annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
   annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
   # geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
   # geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
 p4
 
-ggplot(data = lag_evenness, aes(x=richness, y=J)) +
-  geom_point()
+ggplot(data = lag_evenness, aes(x=richness, y=cc)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  labs(x="richness", y="community competence")+
+  theme_minimal()+ylim(0,3e+05)
 
 ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
   geom_point() +
   theme_minimal()+ylim(0,3e+05)+
-  labs(x="Evenness", y = "CC")+
+  labs(x="evenness", y = "community competence")+
   new_scale_color() +
   geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
   new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
+  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F)+
   geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
   geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
 
