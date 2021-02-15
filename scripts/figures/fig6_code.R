@@ -149,6 +149,12 @@ final <- AB_plot/evenness_plot/RA_plot/cc_plot
 
 final
 
+
+#looking at correlations between total community abundance and community competence
+evenness %>% ggplot(.,aes(x=cc,y=size)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
 ########################################################################
 
 # pd is dataframe made in phylo_diversity.R
