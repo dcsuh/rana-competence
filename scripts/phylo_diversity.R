@@ -10,9 +10,11 @@ library(ggtree)
 library(tidytree)
 library(picante)
 library(rotl)
+library(ggnewscale)
 library(here)
 
-data <- read_csv(here("data/weighted_prev_competence.csv"))
+
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
 
 tree <- read.nexus("data/asup_just_tree.txt")
 
@@ -57,4 +59,29 @@ pd <- pd(phy_comm, tree, include.root = F)
 
 pd %<>% rownames_to_column(., var="siteID") 
 pd %<>% mutate(PD = replace_na(pd$PD, 0)) #is this okay to do?
+
+
+#make tree with values for viral load
+
+
+
+
+
+
+
+set.seed(2020)
+x <- rtree(30)
+d <- data.frame(label=x$tip.label, var1=abs(rnorm(30)), var2=abs(rnorm(30)))
+tree <- full_join(x, d, by='label')
+trs <- list(TREE1 = tree, TREE2 = tree)
+class(trs) <- 'treedataList'
+ggtree(data=trs) + facet_wrap(~.id) + 
+  geom_tippoint(aes(subset=.id == 'TREE1', colour=var1)) + 
+  scale_colour_gradient(low='blue', high='red') +  
+  ggnewscale::new_scale_colour()  + 
+  geom_tippoint(aes(colour=var2), data=td_filter(.id == "TREE2")) + 
+  scale_colour_viridis_c()
+
+ggtree(tree) + geom_tippoint(aes(color=var1)) +
+  scale_colour_gradient(low='blue', high='red')
 
