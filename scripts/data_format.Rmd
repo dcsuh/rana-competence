@@ -1,0 +1,35 @@
+---
+title: "Data Formatting"
+author: "Daniel Suh"
+date: "2/19/2021"
+output: html_document
+---
+
+This Rmd is used for all of the data formatting that is required for use by the scripts that create figures. Scripts for figures should only include minimal code that manipulates the data. 
+
+
+Packages
+```{r}
+library(tidyverse)
+library(magrittr)
+library(here)
+```
+
+
+
+Data
+```{r}
+here()
+data <- read_csv(here("/data/weighted_prev_competence_111220.csv"))
+names <- read_csv(here("/data/species_names_ids.csv"))
+```
+
+viral loads
+```{r}
+vl <- data %>% dplyr::select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
+vl$species_code <- as.double(gsub("vl.","",vl$name))
+nrow(vl)
+vl %<>% full_join(., names, by="species_code")
+sum(vl$value>0)
+```
+17 total species; 12 species with non-zero viral loads
