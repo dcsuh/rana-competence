@@ -26,8 +26,10 @@ names <- read_csv(here("/data/species_names_ids.csv"))
 community summary - includes each site_month as rows and variables cc, size, prevalenceetc... as columns
 ```{r}
 comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
-  dplyr::select(-ABAmb, -ABSal) %>%  mutate(., size = rowSums(.[5:25])) %>% #get totals for community size
-  dplyr::select(-AB2:-AB42) %>%
+  dplyr::select(-ABAmb, -ABSal) %>%  
+  mutate(., size = rowSums(.[5:25]), 
+    ABHigh = (AB9 + AB21 + AB26 + AB42), 
+    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
   mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
@@ -84,76 +86,6 @@ for (i in 1:nrow(presence_mat)){
 ```
 
 
-Transmission Model for two species - primarily used by fig1
-```{r}
-#define function contour(): inputs are parameters and output is values for grid search for R0
-contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, mort2, degr) {
-  #expand data
-  data <- expand_grid("trans1" = seq(from = trans_1_min, to = trans_1_max, by = 0.00001),
-                      "trans2" = c(0.0001),
-                      "trans3" = seq(from = trans_3_min, to = trans_3_max, by = 0.00001),
-                      "shed1" = c(rep(1/2, length("trans1"))),
-                      "shed2" = c(rep(1/2, length("trans1"))),
-                      "reco1" = c(rep(1/10, length("trans1"))),
-                      "reco2" = c(rep(1/10, length("trans1"))),
-                      "mort1" = c(mort1), 
-                      "mort2" = c(mort2), 
-                      "degr" = c(degr), 
-                      "birth1" = c(rep(5/3, length("trans1"))),
-                      "birth2" = c(rep(5/3, length("trans1"))))
-  
-  #calculate disease-free equilibria for use in next-gen matrix
-  data %<>% add_column(dfe1 = (data$birth1/data$mort1),dfe2 = (data$birth2/data$mort2), eigen = NA) 
-  #make matrix
-  mat <- matrix(1, nrow = 3, ncol = 3)
-  
-  
-  m <- nrow(data)
-
-  #calculate eigenvalue using next-gen matrix. max eigenvalue is R0
-  for(n in 1:m){
-    mat[1] = (data$trans1[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
-    mat[2] = (data$trans1[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
-    mat[3] = (data$shed1[n]/data$degr[n])
-    mat[4] = (data$trans2[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
-    mat[5] = (data$trans2[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
-    mat[6] = (data$shed2[n]/data$degr[n])
-    mat[7] = (data$trans3[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
-    mat[8] = (data$trans3[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
-    mat[9] = 0
-    eigen <- max(eigen(mat)$values)
-    data$eigen[n] <- eigen
-  }
-  
-  data$span1 <- 1/data$mort1 #lifespan for species 1
-  data$span2 <- 1/data$mort2 #lifespan for species 2
-  data$half <- log(1/2)/-data$degr #viral half-life
-  data$epid <- data$eigen > 1 #invasion potential (i.e. R0 > 1)
-  data$prop1 <- data$trans1/data$trans2 #proportion of transmission of species 2 over species 1
-  data$prop3 <- data$trans3/data$trans2 #proportion of environmental transmission over species 1
-  data$prop_mort <- data$mort1/data$mort2 #relative mortality for species 1 and 2
-  data$cap1 <- data$birth1/data$mort1 #carrying capacity for species 1
-  data$cap2 <- data$birth2/data$mort2 #carrying capacity for species 2
-  data$cap_prop <- data$cap1/data$cap2 #relative carrying capacities for species 1 and 2
-  data$tot <- data$cap1 + data$cap2 #total abundance for species 1 and 2
-  data$cc <- data$trans1*(data$cap1/data$tot) + data$trans2*(data$cap2/data$tot) #cc defined as transmission of a species multiplied by its relative abundance
-  output <- data %>% dplyr::select(trans1, trans2, prop1, prop3, trans3, eigen, prop_mort, mort1, mort2, degr, half, cap1, cap2, cap_prop, tot, cc) %>% distinct()
-  return(output)
-}
-
-reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/45,mort2 = 1/45,degr = 1/2)
-
-composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/60,mort2 = 1/30,degr = 1/2)
-
-size <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/50),mort2 = c(1/50),degr = 1/2)
-
-halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/40),mort2 = 1/40,degr = c(1/4))
-
-combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/66.6),mort2 = c(1/33.3),degr = c(1/4))
-
-```
-
-
 PCA for community matrix - primarily used by fig2
 ```{r}
 #pca on community matrix and gather scores for first two principal components
@@ -181,7 +113,7 @@ richness_cc <- full_join(comm_summ, richness, by = "siteID")
 
 shannon <- vegan::diversity(abundance_mat, index = "shannon")
 shannon <- melt(as.matrix(shannon))
-shannon %<>% mutate(siteID = X1, h = value) %>% dplyr::select(siteID, h)
+shannon %<>% mutate(siteID = Var1, h = value) %>% dplyr::select(siteID, h)
 
 evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
 
@@ -210,16 +142,10 @@ lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 data for bar plots - primarily used by fig4
 ```{r}
 #barplots comparing community composition
-abundances <- community_mat %>% left_join(.,evenness, by = "siteID")
-lag_evenness %<>% select(siteID, lag_cc, lag_richness, lag_J, lag_size)
-abundances %<>% inner_join(.,lag_evenness, by = "siteID")
-abundances <- mutate(abundances, ABHigh = (AB9 + AB21 + AB26 + AB42)) 
-abundances <- mutate(abundances, ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41))
-abundances <- mutate(abundances, total = ABHigh + ABLow)
-#final df for plots. includes data for abundance, prevalence, cc, diversity measure, lagged values
+abundances <- comm_summ %>% inner_join(.,evenness)
 
 
-abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
+abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by total community size
 #abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
 #abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
 

@@ -11,6 +11,9 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+
+
 #fit two lines to cc_evenness_prev plot
 lag_evenness$high <- c(0)
 lag_evenness$low <- c(0)
@@ -31,9 +34,9 @@ for (i in 1:nrow(lag_evenness)){
   }
 }
 
-# low_cc <- lag_evenness %>% filter(low==1)
+low_cc <- lag_evenness %>% filter(low==1)
 # cor.test(x=low_cc$lag_J, y=low_cc$lag_cc,method = "spearman")
-# high_cc <- lag_evenness %>% filter(high==1)
+high_cc <- lag_evenness %>% filter(high==1)
 # cor.test(x=high_cc$lag_J, y=high_cc$lag_cc,method = "spearman")
 
 p1 <- evenness %>% remove_missing() %>% ggplot(aes(x=richness, y=cc)) + 

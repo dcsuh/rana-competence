@@ -10,7 +10,7 @@ library(patchwork)
 library(here)
 
 
-data <- read_csv("data/weighted_prev_competence_111220.csv")
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 
 #plot cleaned plot with lag

@@ -11,6 +11,8 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+
 
 cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
@@ -28,11 +30,11 @@ evenness_plot <- abundances %>% dplyr::select(siteID, J, richness) %>% distinct(
 #labs(title = "Values of evenness for sites ordered by community size (descending)") +
 
 z <- abundances
-z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,total)
-z %<>% rename(Low=ABLow)
+z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,size)
+z %<>% mutate(Low=ABLow)
 z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is a site-month-species?
 #z %<>% filter(J<0.6)
-z$siteID <- reorder(z$siteID, -z$total) #order by total community size
+z$siteID <- reorder(z$siteID, -z$size) #order by total community size
 
 AB_plot <- z %>% ggplot(.,aes(x=siteID,y=abund))+
   geom_bar(stat="identity", width = 0.8)+
