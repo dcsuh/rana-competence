@@ -11,7 +11,30 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 
+#fit two lines to cc_evenness_prev plot
+lag_evenness$high <- c(0)
+lag_evenness$low <- c(0)
+for (i in 1:nrow(lag_evenness)){
+  if (lag_evenness$lag_J[i] > 0.6){
+    lag_evenness$high[i] <- 1
+    lag_evenness$low[i] <- 1
+  }
+  else if (lag_evenness$lag_cc[i] < 45000){
+    lag_evenness$low[i] <- 1
+  }
+  else if (lag_evenness$lag_cc[i] > 45000){
+    lag_evenness$high[i] <- 1
+  }
+  else {
+    lag_evenness$high[i] <- 0
+    lag_evenness$low[i] <- 0
+  }
+}
 
+# low_cc <- lag_evenness %>% filter(low==1)
+# cor.test(x=low_cc$lag_J, y=low_cc$lag_cc,method = "spearman")
+# high_cc <- lag_evenness %>% filter(high==1)
+# cor.test(x=high_cc$lag_J, y=high_cc$lag_cc,method = "spearman")
 
 p1 <- evenness %>% remove_missing() %>% ggplot(aes(x=richness, y=cc)) + 
   geom_smooth(method ="lm") +
