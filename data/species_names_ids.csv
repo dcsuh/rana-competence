@@ -1,18 +1,18 @@
-﻿species_name,species_code,order
-Anaxyrus_terrestris,21,Anura
-Acris_gryllus,24,Anura
-Hyla_avivoca,32,Anura
-Hyla_chrysoscelis,31,Anura
-Hyla_cinerea,27,Anura
-Hyla_femoralis,29,Anura
-Hyla_gratiosa,28,Anura
-Pseudacris_crucifer,26,Anura
-Pseudacris_nigrita,34,Anura
-Pseudacris_ornata,35,Anura
-Gastrophryne_carolinensis,38,Anura
-Lithobates_catesbeianus,39,Anura
-Lithobates_clamitans,41,Anura
-Lithobates_sphenocephalus,42,Anura
-Notophthalmus_viridescens,9,Urodela
-Scaphiopus_holbrookii,20,Anura
-Siren_intermedia,4,Urodela
+﻿species_name,species_code,order,abb name
+Anaxyrus_terrestris,21,Anura,A. terrestris
+Acris_gryllus,24,Anura,A. gryllus
+Hyla_avivoca,32,Anura,H. avivoca
+Hyla_chrysoscelis,31,Anura,H. chrysoscelis
+Hyla_cinerea,27,Anura,H. cinerea
+Hyla_femoralis,29,Anura,H. femoralis
+Hyla_gratiosa,28,Anura,H. gratiosa
+Pseudacris_crucifer,26,Anura,P. crucifer
+Pseudacris_nigrita,34,Anura,P. nigrita
+Pseudacris_ornata,35,Anura,P. ornata
+Gastrophryne_carolinensis,38,Anura,G. carolinensis
+Lithobates_catesbeianus,39,Anura,L. catesbeianus
+Lithobates_clamitans,41,Anura,L. clamitans
+Lithobates_sphenocephalus,42,Anura,L. sphenocephalus
+Notophthalmus_viridescens,9,Urodela,N. viridescens
+Scaphiopus_holbrookii,20,Anura,S. holbrookii
+Siren_intermedia,4,Urodela,S. intermedia
