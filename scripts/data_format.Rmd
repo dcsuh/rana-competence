@@ -7,7 +7,6 @@ output: html_document
 
 This Rmd is used for all of the data formatting that is required for use by the scripts that create figures. Scripts for figures should only include minimal code that manipulates the data. 
 
-
 Packages
 ```{r}
 library(tidyverse)
@@ -16,8 +15,6 @@ library(vegan)
 library(reshape)
 library(here)
 ```
-
-
 
 Data
 ```{r}
@@ -45,6 +42,7 @@ vl$species_code <- as.double(gsub("vl.","",vl$name))
 vl %<>% full_join(., names, by="species_code")
 vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
 ```
+
 `r nrow(vl)` total species; `sum(vl$value>0)`species with non-zero viral loads
 
 community matrices - abundance matrix and presence-absence matrix
@@ -59,7 +57,6 @@ presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
 ```
 
 
-
 environmental variables matrix - needs to be fixed!!
 ```{r}
 #select for environmental variables
@@ -71,6 +68,7 @@ env %<>% mutate(., siteID = paste(env$WetAltID, env$Month, sep = "_")) %>% disti
 #need to remove duplicated rows and determine what to do with NA's
 #env_mat <- env %>% column_to_rownames(., var = "siteID")
 ```
+
 environmental variables are `r colnames(env_mat)`
 
 site 13, month 1 and site 19, month 4 are duplicated. not sure why
@@ -155,6 +153,7 @@ combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 
 ```
 
+
 PCA for community matrix - primarily used by fig2
 ```{r}
 #pca on community matrix and gather scores for first two principal components
@@ -208,8 +207,6 @@ lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 ```
 
 
-
-
 data for bar plots - primarily used by fig4
 ```{r}
 #barplots comparing community composition
@@ -227,6 +224,7 @@ abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by tot
 #abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
 
 ```
+
 
 correlations - primarily used by fig5
 ```{r}
