@@ -1,163 +1,178 @@
-#Daniel Suh and Andrew Park
-#6/3/20
+#Script Originator: Daniel Suh
 
-#Figure 3 in rv_cc manuscript
+#This script creates figure 5
+
 
 library(tidyverse)
 library(magrittr)
-library(ecodist)
 library(vegan)
+library(reshape2)
+library(patchwork)
+library(ggnewscale)
 library(here)
-library(ggrepel)
-
 
 data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
 
+#Get species richness from matrix
 
-#make community matrix
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42)
-community_mat$Month.1 <- gsub("Month", "", community_mat$Month.1) 
-community_mat %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% 
-  distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() 
+
+community_mat <- community_mat[order(community_mat$WetAltID, community_mat$Month.1),]
+
+community_mat %<>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+
+abundances <- community_mat
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 
+presence_mat <- ifelse(community_mat>0, 1, 0)
 
-#select for environmental variables
-env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
-env$Month.1 <- gsub("Month", "", env$Month.1)
-#make siteID rowname
-env$siteID <- paste(env$WetAltID, env$Month.1, sep = "_")
-env %<>% dplyr::select(-WetAltID, -Month.1)
-#remove duplicated rows (siteID is duplicated but env. variables are not... not sure why this is)
-env <- env[-c(53, 90),]
-env_mat <- env %>% column_to_rownames(., var = "siteID")
+siteID <- rownames(presence_mat)
 
-#make presence-absence matrix
-presence_mat <- as.data.frame(ifelse(community_mat>0, 1, 0))
+richness_mat <- tibble()
+for (i in 1:length(siteID)){
+  richness_mat[i,1] <- siteID[i]
+  richness_mat[i,2] <- sum(presence_mat[i,])
+}
+richness_mat %<>% rename(siteID = 1, richness = 2)
 
-site_labels <- rownames(community_mat)
+order <- richness_mat
 
+#Get species richness for each site and community competence values
 
-pca_env_output=princomp(env_mat, cor=T) # PCA
-summary(pca_env_output)
-biplot(pca_env_output) # Generates a bi-plot with vectors
-
-spec_vec=envfit(pca_env_output$score[,1:2], community_mat) 
-plot(spec_vec, col="blue")
-
-#get loadings for environmental variables
-env_var <- as.data.frame(pca_env_output$loadings[,1:2])
-
-
-site_scores <- data %>% dplyr::select(WetAltID, Month.1, cc) 
-site_scores$Month.1 <- gsub("Month", "", site_scores$Month.1)
-site_scores %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% 
+tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence,AB2:AB8, AB9, AB20:AB42) %>% 
   distinct() %>% 
-  arrange(.,WetAltID) %>% 
-  dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, cc)
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_"))
+tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
+tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
+tmp %<>% dplyr::select(-Month.1)
 
-env_scores <- pca_env_output$score[,1:2] # get the PC1 and PC2 scores 
-env_scores %<>% as.data.frame(.)
-env_scores %<>% mutate(siteID=rownames(.))
-tmp <- site_scores %>% select(siteID,cc)
-env_scores %<>% left_join(.,tmp)
-env_scores %<>% mutate(CC=as.factor(ifelse(cc>45000,"Hi","Lo")))
-
-spec_scores <- as.data.frame(scores(spec_vec, display = "vectors"))
-
-
-env_scores %>% drop_na(cc) %>% ggplot(.) +
-  geom_point(aes(x=Comp.1, y=Comp.2, shape = CC, color = cc)) +
-  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
-  geom_segment(data=spec_scores,
-             aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-             arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_text_repel(data = spec_scores, aes(x = Comp.1, y = Comp.2, label = row.names(spec_scores)),
-                  size = 2.5,color="darkorange2")+
-  geom_segment(data=env_var,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_text_repel(data = env_var, aes(x = Comp.1, y = Comp.2, label = rownames(env_var)),
-                  size = 2.5,color="purple")+
-  coord_fixed()
-
-env_scores %>% drop_na(cc) %>% ggplot(.) +
-  xlab("PC1 (48.2%)")+ylab("PC2 (27.5%)")+
-  geom_segment(data=spec_scores,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_text_repel(data = spec_scores, aes(x = Comp.1, y = Comp.2, label = row.names(spec_scores)),
-                  size = 2.5,color="darkorange2")+
-  geom_segment(data=env_var,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_text_repel(data = env_var, aes(x = Comp.1, y = Comp.2, label = rownames(env_var)),
-                  size = 2.5,color="purple")+
-  coord_fixed()
+richness_cc <- full_join(tmp, richness_mat, by = "siteID")
 
 
 
-#try this again for indirect gradient analysis with pca
-community_pca <- princomp(community_mat, scores = TRUE)
-summary(community_pca)
+#J = H'/ln(S)
+#H' = Shannon diversity index
+#S = Species Richness
 
-comm_scores <- as.data.frame(community_pca$loadings[,1:2])
-env_vec <- envfit(community_pca, env_mat, na.rm = T) 
-env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
+h <- vegan::diversity(community_mat, index = "shannon")
+h <- melt(as.matrix(h))
+h %<>% rename(siteID = Var1, h = value) %>% dplyr::select(-Var2)
 
-comm_scores %>% ggplot(.) +
-  xlab("PC1")+ylab("PC2")+
-  geom_segment(data=comm_scores,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_segment(data=env_vec,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  coord_fixed()
+evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
 
-comm_scores %>% ggplot(.) +
-  xlab("PC1")+ylab("PC2")+
-  geom_segment(data=comm_scores,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_label_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
-               size = 2,color="darkorange1", segment.colour = 'black')+
-  geom_segment(data=env_vec,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
-                  size = 2,color="purple", segment.colour = 'black')+
-  coord_fixed()
+evenness %<>% full_join(h, evenness, by = "siteID")
 
-comm_scores %>% ggplot(.) +
-  xlab("PC1")+ylab("PC2")+
-  geom_segment(data=env_vec,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
-                   size = 2.5,color="purple", segment.colour = 'black')+
-  coord_fixed()
+evenness %<>% mutate(J = h/lnS) %>% rowwise()
+
+#create new df for ordered sites to test lagged richness and evenness on prevalence
+lag_evenness <- evenness[-c(4,14,47,90),]
+lag_evenness$lag_richness <- c(0)
+lag_evenness$lag_J <- c(0)
+lag_evenness$lag_cc <- c(0)
+lag_evenness$lag_size <- c(0)
+for(n in 2:91){
+  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
+  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
+  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
+  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+
+#fit two lines to cc_evenness_prev plot
+lag_evenness$high <- c(0)
+lag_evenness$low <- c(0)
+for (i in 1:nrow(lag_evenness)){
+  if (lag_evenness$lag_J[i] > 0.6){
+    lag_evenness$high[i] <- 1
+    lag_evenness$low[i] <- 1
+  }
+  else if (lag_evenness$lag_cc[i] < 45000){
+    lag_evenness$low[i] <- 1
+  }
+  else if (lag_evenness$lag_cc[i] > 45000){
+    lag_evenness$high[i] <- 1
+  }
+  else {
+    lag_evenness$high[i] <- 0
+    lag_evenness$low[i] <- 0
+  }
+}
+low_cc <- lag_evenness %>% filter(low==1)
+cor.test(x=low_cc$lag_J, y=low_cc$lag_cc,method = "spearman")
+high_cc <- lag_evenness %>% filter(high==1)
+cor.test(x=high_cc$lag_J, y=high_cc$lag_cc,method = "spearman")
+
+p1 <- evenness %>% remove_missing() %>% ggplot(aes(x=richness, y=cc)) + 
+  geom_smooth(method ="lm") +
+  geom_point() +
+  labs(x = "Richness", y = "CC", title = ) +
+  theme_classic()
+
+cor.test(richness_cc$cc, richness_cc$richness, method="spearman")
+
+p2 <- lag_evenness %>% remove_missing() %>% ggplot(aes(x=lag_richness, y=Prevalence)) + 
+  geom_smooth(method ="lm") +
+  geom_point() +
+  labs(x = "Richness", y = "Prevalence", title = ) +
+  theme_classic()
+
+cor.test(x = lag_evenness$lag_richness, y = lag_evenness$Prevalence, method = "spearman")
+
+#make plot w/ linear model using regular (not lagged) J and cc
+p3 <- lag_evenness %>% ggplot(aes(x = J, y = cc)) +
+  geom_point() +
+  #geom_smooth(method = "lm") +
+  labs(x="Evenness", y = "CC") +
+  theme_minimal()+ylim(0,3e+05)
+  
+cor.test(y = lag_evenness$cc, x = lag_evenness$J, method = "spearman")
+
+mySpan=1.5
+myColor="gray80"
+p4 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
+  geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
+  scale_color_viridis_c("Prevalence\n(t+1)", direction = -1) +
+  new_scale_color() +
+  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
+  new_scale_color() +
+  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
+  theme_minimal()+ylim(0,3e+05)+
+  labs(x="evenness", y = "community competence", size = "Abundance") +
+  annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
+  annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
+  # geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
+  # geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
+p4
+
+ggplot(data = lag_evenness, aes(x=richness, y=cc)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  labs(x="richness", y="community competence")+
+  theme_minimal()+ylim(0,3e+05)
+
+ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
+  geom_point() +
+  theme_minimal()+ylim(0,3e+05)+
+  labs(x="evenness", y = "community competence")+
+  new_scale_color() +
+  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
+  new_scale_color() +
+  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F)+
+  geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
+  geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
+
+#make plot w/ linear model using lagged J and cc
+ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
+  geom_point() +
+  geom_smooth(method="loess")+
+  theme_minimal()+ylim(0,3e+05)+
+  labs(x="Evenness", y = "CC")
+cor.test(y = lag_evenness$lag_cc, x = lag_evenness$lag_J, method = "spearman")
 
 
-#indirect gradient analysis with pca for presence-absence matrix
-presence_pca <- princomp(presence_mat, scores = TRUE)
-summary(presence_pca)
-
-pres_scores <- as.data.frame(presence_pca$loadings[,1:2])
-env_vec <- envfit(presence_pca, env_mat, na.rm = T) 
-env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
-
-pres_scores %>% ggplot(.) +
-  xlab("PC1 (21.1%)")+ylab("PC2 (12.6%)")+
-  geom_segment(data=pres_scores,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
-  geom_label_repel(data = pres_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
-                   size = 2,color="darkorange1", segment.colour = 'black')+
-  geom_segment(data=env_vec,
-               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
-               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
-  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
-                   size = 2,color="purple", segment.colour = 'black')+
-  coord_fixed()
+final <- p4
+final

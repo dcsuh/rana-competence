@@ -1,118 +1,180 @@
-#Daniel Suh and Andrew Park
-#6/3/20
+#Script Originator: Daniel Suh
 
-#Figure 4 in rv_cc manuscript
+#This script creates figure 6
+
 
 library(tidyverse)
 library(magrittr)
-library(ggforce)
+library(vegan)
+library(reshape2)
+library(patchwork)
+library(ggnewscale)
 library(here)
 
+data <- read_csv(here("data/weighted_prev_competence_111220.csv")) #read data
 
-data <- read_csv("data/weighted_prev_competence_111220.csv")
+#Get species richness from matrix
 
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() #select data and make siteID column
 
+community_mat <- community_mat[order(community_mat$WetAltID, community_mat$Month.1),] #order by wetland and month
 
+community_mat %<>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
 
-#select for community variables
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
-community_mat$Month.1 <- gsub("Month", "", community_mat$Month.1)
-community_mat %<>% mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
-#rownames
-community_mat %<>% column_to_rownames(., var = "siteID")
+abundances <- community_mat #make abundances df
 
-#select for environmental variables
-env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
-env$Month.1 <- gsub("Month", "", env$Month.1)
-#make siteID rowname
-env$siteID <- paste(env$WetAltID, env$Month.1, sep = "_")
-env %<>% dplyr::select(-WetAltID, -Month.1)
-#remove duplicated rows (siteID is duplicated but env. variables are not... not sure why this is)
-env <- env[-c(53, 90),]
-env_mat <- env %>% column_to_rownames(., var = "siteID")
+community_mat %<>% column_to_rownames(., var = "siteID") #make sitexspecies matrix
 
-#replace NA's with zeros. Probably not the best option but will allow analysis to run for now
-community_mat[is.na(community_mat)] <- 0
-env_mat[is.na(env_mat)] <- 0
+presence_mat <- ifelse(community_mat>0, 1, 0) #make pres-abs sitexspecies matrix
 
-#pca on community matrix and gather scores for first two principal components
-pca <- princomp(community_mat, scores = TRUE)
-summary(pca)
-scores <- as.data.frame(pca$scores)
-scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+siteID <- rownames(presence_mat)
 
-#plot pca
-biplot(pca)
+richness_mat <- tibble()
+for (i in 1:length(siteID)){
+  richness_mat[i,1] <- siteID[i]
+  richness_mat[i,2] <- sum(presence_mat[i,])
+}
+richness_mat %<>% rename(siteID = 1, richness = 2) #make df with siteIDs and corresponding species richness
 
+#Get species richness for each site and community competence values
 
-tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Month, AB2:AB42) %>% 
-  dplyr::select(-ABAmb, -ABSal) %>%  mutate(., Size = rowSums(.[5:25])) %>% #get totals for community size
-  dplyr::select(-AB2:-AB42) %>%
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
-  distinct()
-tmp$siteID <- gsub("Month", "", tmp$siteID)
+tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence,AB2:AB8, AB9, AB20:AB42) %>% 
+    distinct() %>% 
+    mutate(., siteID = paste(WetAltID, Month.1, sep = "_"))
+tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
+tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
+tmp %<>% dplyr::select(-Month.1)
 
-site_scores  <- inner_join(tmp, scores, by = "siteID")
-
-#order months
-site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
-
-#rank order components and plot in order
-site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
-site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
-  geom_point(aes(color = Month.1, shape = factor(WetAltID)), show.legend = F)+
-  theme_classic()+labs(x="Principal Component 1 Rank", y = "Community Competence") + 
-  scale_shape_manual(values = rep(1:20, len = 20))+
-  facet_zoom(xlim= c(5,25))
-
-site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
-  geom_point(aes(color = Month, shape = factor(WetAltID), size = Size))+
-  labs(x="Principal Component 1 Rank", y = "Community Competence (CC)", size = "Size") + 
-  scale_shape_manual(values = rep(1:20, len = 20)) +
-  scale_size_continuous(range = c(2,10)) +
-  guides(shape=F) +
-  theme_classic() +
-  theme(aspect.ratio=1/1.67, legend.position = c(0.85,0.4), legend.box = "horizontal") +
-  scale_color_viridis_d(direction = -1)
-  
-#scale_color_manual(values = c( "#4575b4", "#91bfdb", "#e0f3f8", "#fee090", "#fc8d59", "#d73027"))
+richness_cc <- full_join(richness_mat, tmp, by = "siteID") #make df with siteIDs, richness, and cc
 
 
-# #make same plot with NMDS scores rather than PCA scores
-# library(vegan)
-# set.seed(3000)
+
+#J = H'/ln(S)
+#H' = Shannon diversity index
+#S = Species Richness
+
+h <- vegan::diversity(community_mat, index = "shannon") #calculate shannons index for each site-month
+h <- melt(as.matrix(h)) #melt into df
+h %<>% rename(siteID = Var1, h = value) %>% dplyr::select(-Var2) #get df with shannons index for each site-month
+
+evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise() 
+evenness %<>% full_join(h, evenness, by = "siteID")
+evenness %<>% mutate(J = h/lnS) %>% rowwise() #calculate Pielou's J
+
+#test for prevalence-richness relationship
+
+evenness %>% ggplot(.,aes(x=richness, y=Prevalence))+
+  geom_smooth(method="lm")
+cor.test(evenness$richness,evenness$Prevalence,method="spearman")
+
+
+#create new df for ordered sites to test lagged richness and evenness on prevalence
+lag_evenness <- evenness[-c(4,14,47,90),] #remove site-months that are out of sequence
+lag_evenness$lag_richness <- c(0)
+lag_evenness$lag_J <- c(0)
+lag_evenness$lag_cc <- c(0)
+lag_evenness$lag_size <- c(0)
+for(n in 2:91){ #lag values by one month
+  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
+  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
+  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
+  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
+}
+#remove the first entry for each wetland to remove the carryover from the last wetland
+lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+#lag_evenness %<>% select(siteID, lag_richness:lag_size)
+
+lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence))+
+  geom_smooth(method="lm")
+cor.test(lag_evenness$lag_richness,lag_evenness$Prevalence,method="spearman")
+
+
+
+#barplots comparing community composition
+
+
+
+evenness %<>% select(-WetAltID)
+abundances %<>% left_join(.,evenness, by = "siteID")
+lag_evenness %<>% select(siteID, lag_cc, lag_richness, lag_J, lag_size)
+abundances %<>% inner_join(.,lag_evenness, by = "siteID")
+abundances <- mutate(abundances, ABHigh = (AB9 + AB21 + AB26 + AB42)) 
+abundances <- mutate(abundances, ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41))
+abundances <- mutate(abundances, total = ABHigh + ABLow)
+#final df for plots. includes data for abundance, prevalence, cc, diversity measure, lagged values
+
+
+abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
+#abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
+#abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
+
+cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
+  ggplot(., aes(y=cc, x=siteID)) +
+  geom_bar(position = position_dodge(), stat = "identity", width = 0.8) + 
+  theme_minimal() +
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("CC") + xlab("site-months")
+#labs(title = "Values of cc for sites ordered by community size (descending)") +
+
+evenness_plot <- abundances %>% dplyr::select(siteID, J, richness) %>% distinct() %>%
+  ggplot(., aes(y=J, x=siteID, fill = richness)) +
+  scale_fill_viridis_c("Richness", direction = -1) +
+  geom_bar(position = position_dodge(), stat = "identity", width = 0.8) +
+  theme_minimal() +
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Pielou's J")
+#labs(title = "Values of evenness for sites ordered by community size (descending)") +
+
+z <- abundances
+z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,total)
+z %<>% rename(Low=ABLow)
+z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is a site-month-species?
+#z %<>% filter(J<0.6)
+z$siteID <- reorder(z$siteID, -z$total) #order by total community size
+
+AB_plot <- z %>% ggplot(.,aes(x=siteID,y=abund))+
+  geom_bar(stat="identity", width = 0.8)+
+  ylab("Abundance")+
+  theme_minimal()+
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
+
+RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
+  geom_bar(position="fill",stat="identity", width = 0.8)+
+  scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
+  theme_minimal()+
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
+
+#still need to clean this up but final figure should have a similar format to this
+
+final <- AB_plot/evenness_plot/RA_plot/cc_plot
+
+final
+
+
+#looking at correlations between total community abundance and community competence
+evenness %>% ggplot(.,aes(x=cc,y=size)) +
+  geom_point() +
+  geom_smooth(method="lm")
+
+########################################################################
+
+# pd is dataframe made in phylo_diversity.R
+# abundances %<>% left_join(.,pd)
 # 
-# vegdist <- vegdist(community_mat, method = "bray")
 # 
-# #stress test for nmds
-# stress <- c()
-# for (i in 1:10){
-#   output <- metaMDS(community_mat, distance = "bray", k = i, trace = F)
-#   stress[i] <- output$stress
-# }
+# abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
 # 
-# stress %<>% as.data.frame(.) %>% rename(., stress = .) %>% mutate(., dim = as.numeric(rownames(.)))
+# pd_plot <- abundances %>% filter(is.na(cc)==F) %>% dplyr::select(siteID, PD) %>% distinct() %>%
+#   ggplot(., aes(y=PD, x=siteID)) +
+#   geom_bar(position = position_dodge(), stat = "identity") +
+#   labs(title = "Values of phylogenetic diversity for sites ordered by community size (descending)") +
+#   theme_minimal() +
+#   theme(axis.text.x = element_text(angle=90))+
+#   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
+# pd_plot
 # 
-# ggplot(stress, aes (x = dim, y = stress)) + geom_point()
-# #the difference between NMDS and PCA is that PCA uses euclidean distances while NMDS rank orders observations for ordination (this is why it is non-metric?)
+# final <- evenness_plot/pd_plot/cc_plot
 # 
-# NMDS1 <- metaMDS(community_mat, distance = "bray", k = 6, trace = F, autotransform = FALSE)
-# stressplot(NMDS1)
-# ordiplot(NMDS1, type = "n")
-# orditorp(NMDS1, display = "species", col = "red")
-# orditorp(NMDS1, display = "sites", cex = 1.1)
+# final
 # 
-# 
-# points <- as.data.frame(NMDS1$points)
-# points %<>% select(MDS1) %>% mutate(., siteID = rownames(.))
-# points %<>% left_join(tmp, .)
-# points %<>% mutate(rank = dense_rank(desc(MDS1)))
-# 
-# points %>% ggplot(.,aes(x=rank,y=cc))+
-#   geom_point(aes(color = Month, shape = factor(WetAltID), size = Size))+
-#   labs(x="NMDS Component 1 Rank", y = "Community Competence (CC)") + 
-#   scale_shape_manual(values = rep(1:20, len = 20)) +
-#   guides(shape=F) +
-#   theme_classic() +
-#   theme(aspect.ratio=1/1.67, legend.box = "horizontal") +
-#   scale_color_brewer(palette = "Paired")
+# ggplot(abundances, aes(x=PD, y=J)) + geom_point() + geom_smooth()
+# ggplot(abundances, aes(x=J, y=PD)) + geom_point() + geom_smooth()

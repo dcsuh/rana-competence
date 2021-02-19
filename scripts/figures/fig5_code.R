@@ -1,178 +1,73 @@
-#Script Originator: Daniel Suh
+#Daniel Suh and Andrew Park
+#6/3/20
 
-#This script creates figure 5
+#Figure 7 in rv_cc manuscript
 
-
+#install_github("thomasp85/patchwork")
 library(tidyverse)
 library(magrittr)
-library(vegan)
-library(reshape2)
 library(patchwork)
-library(ggnewscale)
 library(here)
 
-data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
 
-#Get species richness from matrix
+data <- read_csv("data/weighted_prev_competence_111220.csv")
 
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() 
+prev_cc <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence, Month, AB2:AB42, MeanWaterTempPredC)
+prev_cc %<>% dplyr::select(-ABAmb, -ABSal) %>%  mutate(., total = rowSums(.[6:26])) #get totals for community size
+prev_cc %<>% dplyr::select(-AB2:-AB42)
+prev_cc %<>% distinct()
 
-community_mat <- community_mat[order(community_mat$WetAltID, community_mat$Month.1),]
+order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
 
-community_mat %<>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+#this removes months out of sequence
+order <- order[-c(4,14,47,90),]
 
-abundances <- community_mat
+order$lag_cc <- order$cc
+order$lag_size <- order$total
+order$lag_temp <- order$MeanWaterTempPredC
 
-community_mat %<>% column_to_rownames(., var = "siteID")
-
-presence_mat <- ifelse(community_mat>0, 1, 0)
-
-siteID <- rownames(presence_mat)
-
-richness_mat <- tibble()
-for (i in 1:length(siteID)){
-  richness_mat[i,1] <- siteID[i]
-  richness_mat[i,2] <- sum(presence_mat[i,])
-}
-richness_mat %<>% rename(siteID = 1, richness = 2)
-
-order <- richness_mat
-
-#Get species richness for each site and community competence values
-
-tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence,AB2:AB8, AB9, AB20:AB42) %>% 
-  distinct() %>% 
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_"))
-tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
-tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
-tmp %<>% dplyr::select(-Month.1)
-
-richness_cc <- full_join(tmp, richness_mat, by = "siteID")
-
-
-
-#J = H'/ln(S)
-#H' = Shannon diversity index
-#S = Species Richness
-
-h <- vegan::diversity(community_mat, index = "shannon")
-h <- melt(as.matrix(h))
-h %<>% rename(siteID = Var1, h = value) %>% dplyr::select(-Var2)
-
-evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
-
-evenness %<>% full_join(h, evenness, by = "siteID")
-
-evenness %<>% mutate(J = h/lnS) %>% rowwise()
-
-#create new df for ordered sites to test lagged richness and evenness on prevalence
-lag_evenness <- evenness[-c(4,14,47,90),]
-lag_evenness$lag_richness <- c(0)
-lag_evenness$lag_J <- c(0)
-lag_evenness$lag_cc <- c(0)
-lag_evenness$lag_size <- c(0)
-for(n in 2:91){
-  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
-  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
-  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
-  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
+#create new column that includes previous month's value for cc
+for(n in 2:nrow(order)){
+  order$lag_cc[n] <- order$cc[n-1]
+  order$lag_size[n] <- order$total[n-1]
+  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
 }
 
 #remove the first entry for each wetland to remove the carryover from the last wetland
-lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
-#fit two lines to cc_evenness_prev plot
-lag_evenness$high <- c(0)
-lag_evenness$low <- c(0)
-for (i in 1:nrow(lag_evenness)){
-  if (lag_evenness$lag_J[i] > 0.6){
-    lag_evenness$high[i] <- 1
-    lag_evenness$low[i] <- 1
-  }
-  else if (lag_evenness$lag_cc[i] < 45000){
-    lag_evenness$low[i] <- 1
-  }
-  else if (lag_evenness$lag_cc[i] > 45000){
-    lag_evenness$high[i] <- 1
-  }
-  else {
-    lag_evenness$high[i] <- 0
-    lag_evenness$low[i] <- 0
-  }
-}
-low_cc <- lag_evenness %>% filter(low==1)
-cor.test(x=low_cc$lag_J, y=low_cc$lag_cc,method = "spearman")
-high_cc <- lag_evenness %>% filter(high==1)
-cor.test(x=high_cc$lag_J, y=high_cc$lag_cc,method = "spearman")
-
-p1 <- evenness %>% remove_missing() %>% ggplot(aes(x=richness, y=cc)) + 
-  geom_smooth(method ="lm") +
+#plot cleaned plot with lag
+cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   geom_point() +
-  labs(x = "Richness", y = "CC", title = ) +
-  theme_classic()
+  theme_classic() + geom_smooth(method = "lm") +
+  labs(title = "", x = "Community Competence", y = "Prevalence") +
+  ylim(0,0.65)
 
-cor.test(richness_cc$cc, richness_cc$richness, method="spearman")
+#correlation test
+cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
-p2 <- lag_evenness %>% remove_missing() %>% ggplot(aes(x=lag_richness, y=Prevalence)) + 
-  geom_smooth(method ="lm") +
+
+size_corr <- clean %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
   geom_point() +
-  labs(x = "Richness", y = "Prevalence", title = ) +
-  theme_classic()
+  theme_classic() + geom_smooth(method = "lm") +
+  labs(title = "", x = "ln(Community Size)", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
+  ylim(0,0.65)
 
-cor.test(x = lag_evenness$lag_richness, y = lag_evenness$Prevalence, method = "spearman")
+cor.test(clean$lag_size,clean$Prevalence,method="spearman")
 
-#make plot w/ linear model using regular (not lagged) J and cc
-p3 <- lag_evenness %>% ggplot(aes(x = J, y = cc)) +
+
+temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
   geom_point() +
-  #geom_smooth(method = "lm") +
-  labs(x="Evenness", y = "CC") +
-  theme_minimal()+ylim(0,3e+05)
-  
-cor.test(y = lag_evenness$cc, x = lag_evenness$J, method = "spearman")
-
-mySpan=1.5
-myColor="gray80"
-p4 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
-  geom_point(data = lag_evenness, aes(x=lag_J, y=lag_cc, color = Prevalence, size = lag_size)) +
-  scale_color_viridis_c("Prevalence\n(t+1)", direction = -1) +
-  new_scale_color() +
-  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
-  new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
-  theme_minimal()+ylim(0,3e+05)+
-  labs(x="evenness", y = "community competence", size = "Abundance") +
-  annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
-  annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
-  # geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
-  # geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
-p4
-
-ggplot(data = lag_evenness, aes(x=richness, y=cc)) +
-  geom_point() +
-  geom_smooth(method="lm") +
-  labs(x="richness", y="community competence")+
-  theme_minimal()+ylim(0,3e+05)
-
-ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
-  geom_point() +
-  theme_minimal()+ylim(0,3e+05)+
-  labs(x="evenness", y = "community competence")+
-  new_scale_color() +
-  geom_smooth(data = low_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F) +
-  new_scale_color() +
-  geom_smooth(data = high_cc, aes(x=lag_J, y=lag_cc), method = "loess",span=mySpan,se=F,col=myColor, show.legend = F)+
-  geom_vline(xintercept = 0.6, linetype = 'dashed', color = "red") +
-  geom_hline(yintercept = 45000, linetype = 'dashed', color = "red")
-
-#make plot w/ linear model using lagged J and cc
-ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
-  geom_point() +
-  geom_smooth(method="loess")+
-  theme_minimal()+ylim(0,3e+05)+
-  labs(x="Evenness", y = "CC")
-cor.test(y = lag_evenness$lag_cc, x = lag_evenness$lag_J, method = "spearman")
+  theme_classic() + geom_smooth(method = "lm") +
+  labs(title = "", x = "Mean Water Temp", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
+  ylim(0,0.65)
 
 
-final <- p4
-final
+cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
+
+
+#plot everything together with patchwork
+corr_plots <- cc_corr| size_corr| temp_corr
+corr_plots
