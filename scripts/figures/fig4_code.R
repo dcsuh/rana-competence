@@ -1,6 +1,6 @@
 #Script Originator: Daniel Suh
 
-#This script creates figure 6
+#This script creates figure 4
 
 
 library(tidyverse)
@@ -11,103 +11,6 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 
-data <- read_csv(here("data/weighted_prev_competence_111220.csv")) #read data
-
-#Get species richness from matrix
-
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() #select data and make siteID column
-
-community_mat <- community_mat[order(community_mat$WetAltID, community_mat$Month.1),] #order by wetland and month
-
-community_mat %<>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
-
-abundances <- community_mat #make abundances df
-
-community_mat %<>% column_to_rownames(., var = "siteID") #make sitexspecies matrix
-
-presence_mat <- ifelse(community_mat>0, 1, 0) #make pres-abs sitexspecies matrix
-
-siteID <- rownames(presence_mat)
-
-richness_mat <- tibble()
-for (i in 1:length(siteID)){
-  richness_mat[i,1] <- siteID[i]
-  richness_mat[i,2] <- sum(presence_mat[i,])
-}
-richness_mat %<>% rename(siteID = 1, richness = 2) #make df with siteIDs and corresponding species richness
-
-#Get species richness for each site and community competence values
-
-tmp <- data %>% dplyr::select(WetAltID, Month.1, cc, Prevalence,AB2:AB8, AB9, AB20:AB42) %>% 
-    distinct() %>% 
-    mutate(., siteID = paste(WetAltID, Month.1, sep = "_"))
-tmp %<>% mutate(.,size = rowSums(.[5:25])) %>% select(-c(AB2:AB42))
-tmp <- tmp[order(tmp$WetAltID, tmp$Month.1),]
-tmp %<>% dplyr::select(-Month.1)
-
-richness_cc <- full_join(richness_mat, tmp, by = "siteID") #make df with siteIDs, richness, and cc
-
-
-
-#J = H'/ln(S)
-#H' = Shannon diversity index
-#S = Species Richness
-
-h <- vegan::diversity(community_mat, index = "shannon") #calculate shannons index for each site-month
-h <- melt(as.matrix(h)) #melt into df
-h %<>% rename(siteID = Var1, h = value) %>% dplyr::select(-Var2) #get df with shannons index for each site-month
-
-evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise() 
-evenness %<>% full_join(h, evenness, by = "siteID")
-evenness %<>% mutate(J = h/lnS) %>% rowwise() #calculate Pielou's J
-
-#test for prevalence-richness relationship
-
-evenness %>% ggplot(.,aes(x=richness, y=Prevalence))+
-  geom_smooth(method="lm")
-cor.test(evenness$richness,evenness$Prevalence,method="spearman")
-
-
-#create new df for ordered sites to test lagged richness and evenness on prevalence
-lag_evenness <- evenness[-c(4,14,47,90),] #remove site-months that are out of sequence
-lag_evenness$lag_richness <- c(0)
-lag_evenness$lag_J <- c(0)
-lag_evenness$lag_cc <- c(0)
-lag_evenness$lag_size <- c(0)
-for(n in 2:91){ #lag values by one month
-  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
-  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
-  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
-  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
-}
-#remove the first entry for each wetland to remove the carryover from the last wetland
-lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
-#lag_evenness %<>% select(siteID, lag_richness:lag_size)
-
-lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence))+
-  geom_smooth(method="lm")
-cor.test(lag_evenness$lag_richness,lag_evenness$Prevalence,method="spearman")
-
-
-
-#barplots comparing community composition
-
-
-
-evenness %<>% select(-WetAltID)
-abundances %<>% left_join(.,evenness, by = "siteID")
-lag_evenness %<>% select(siteID, lag_cc, lag_richness, lag_J, lag_size)
-abundances %<>% inner_join(.,lag_evenness, by = "siteID")
-abundances <- mutate(abundances, ABHigh = (AB9 + AB21 + AB26 + AB42)) 
-abundances <- mutate(abundances, ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41))
-abundances <- mutate(abundances, total = ABHigh + ABLow)
-#final df for plots. includes data for abundance, prevalence, cc, diversity measure, lagged values
-
-
-abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
-#abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
-#abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
 
 cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
