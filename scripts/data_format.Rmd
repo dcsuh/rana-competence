@@ -50,6 +50,8 @@ vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
 
 `r nrow(vl)` total species; `sum(vl$value>0)`species with non-zero viral loads
 
+Note: Species 32 - Hyla avivoca is the bird-voiced tree frog. Data exists for this species' viral load but there is no data regarding its abundance.
+
 community matrices - abundance matrix and presence-absence matrix
 ```{r}
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 

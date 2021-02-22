@@ -68,7 +68,8 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity", width = 0.8)+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "black"))+
   theme_minimal()+
-  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+ylab("Rel. Abun.")
+  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+  ylab("Rel. Abun.")
 
 #still need to clean this up but final figure should have a similar format to this
 
