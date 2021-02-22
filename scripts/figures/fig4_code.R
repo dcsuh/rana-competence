@@ -9,6 +9,8 @@ library(vegan)
 library(reshape2)
 library(patchwork)
 library(ggnewscale)
+library(ggtree)
+library(rotl)
 library(here)
 
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
