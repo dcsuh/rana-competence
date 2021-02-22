@@ -71,9 +71,8 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+
   ylab("Rel. Abun.")
 
-#still need to clean this up but final figure should have a similar format to this
 
-final <- p1.h|(cc_plot/RA_plot)
+# final <- p1.h|(cc_plot/RA_plot)
 final <- (cc_plot/RA_plot)/p1.v
 final
 
@@ -83,26 +82,3 @@ final
 #   geom_point() +
 #   geom_smooth(method="lm")
 
-########################################################################
-
-# pd is dataframe made in phylo_diversity.R
-# abundances %<>% left_join(.,pd)
-# 
-# 
-# abundances$siteID <- reorder(abundances$siteID, -abundances$total) #order by total community size
-# 
-# pd_plot <- abundances %>% filter(is.na(cc)==F) %>% dplyr::select(siteID, PD) %>% distinct() %>%
-#   ggplot(., aes(y=PD, x=siteID)) +
-#   geom_bar(position = position_dodge(), stat = "identity") +
-#   labs(title = "Values of phylogenetic diversity for sites ordered by community size (descending)") +
-#   theme_minimal() +
-#   theme(axis.text.x = element_text(angle=90))+
-#   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
-# pd_plot
-# 
-# final <- evenness_plot/pd_plot/cc_plot
-# 
-# final
-# 
-# ggplot(abundances, aes(x=PD, y=J)) + geom_point() + geom_smooth()
-# ggplot(abundances, aes(x=J, y=PD)) + geom_point() + geom_smooth()
