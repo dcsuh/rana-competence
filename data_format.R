@@ -112,7 +112,7 @@ lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 ## ---------------------------------------------------------------------------------------------------------------------------------
 #barplots comparing community composition
-abundances <- comm_summ %>% inner_join(.,evenness)
+abundances <- comm_summ %>% full_join(.,evenness)
 
 
 abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by total community size

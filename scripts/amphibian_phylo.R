@@ -5,11 +5,38 @@ library(rotl)
 library(phangorn)
 library(geiger)
 library(phytools)
+library(patchwork)
+library(ggtree)
 library(here)
 
 #files
 #prev_test.csv
 #asup_just_tree.txt
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+
+names <- c("Notophthalamus viridescens", "Scaphiopus holbrookii", "Anaxyrus terrestris", "Pseudacris crucifer", "Hyla gratiosa", "Hyla avivoca",
+           "Pseudacris nigrita", "Pseudacris ornata", "Gastrophyrne carolinensis", "Lithobates clamitans", "Lithobates sphenocephalus",
+           "Acris gryllus", "Hyla chrysoscelis", "Hyla cinerea", "Hyla femoralis", "Lithobates catesbeianus", "Siren intermedia")
+resolved <- tnrs_match_names(names)
+tree_1 <- tol_induced_subtree(resolved$ott_id)
+tree_1$tip.label <- strip_ott_ids(tree_1$tip.label,remove_underscores=T)
+vl %<>% select(tnrs_name,value) %>% mutate(.,label = tnrs_name) %>% select(-tnrs_name)
+tree_1 %<>% full_join(.,vl)
+#horizontal tree
+p1.h <- ggtree(tree_1,color="gray")+
+  geom_tippoint(aes(color=value))+
+  scale_colour_viridis_c("Viral load",direction = -1)+
+  geom_tiplab(size=3,hjust=0,offset=0.2,fontface="italic")+
+  xlim(0, 10)
+#vertical tree
+p1.v <- ggtree(tree_1,color="gray")+
+  geom_tippoint(aes(color=value))+
+  scale_colour_viridis_c("Viral load")+
+  geom_tiplab(size=2.2,hjust=1,offset=-0.6,fontface="italic",angle=90)+
+  scale_x_reverse(limits=c(20,0))+
+  coord_flip() 
+
+
 
 
 #trait1 <- rTraitCont(tree, "OU", theta = 0, alpha=.1, sigma=.01)
@@ -101,6 +128,38 @@ ggtree(tree_vl) +geom_tiplab(hjust=0,offset =5)+
   geom_tippoint(aes(color=value,size=10)) +
   scale_color_gradient(low = "#fdc70c",high = "#e93e3a") +
   theme(legend.position = c(0.10,0.75))
+
+
+names <- c("Notophthalamus viridescens", "Scaphiopus holbrookii", "Anaxyrus terrestris", "Pseudacris crucifer", "Hyla gratiosa", "Hyla avivoca",
+           "Pseudacris nigrita", "Pseudacris ornata", "Gastrophyrne carolinensis", "Lithobates clamitans", "Lithobates sphenocephalus",
+           "Acris gryllus", "Hyla chrysoscelis", "Hyla cinerea", "Hyla femoralis", "Lithobates catesbeianus", "Siren intermedia")
+resolved <- tnrs_match_names(names)
+tree <- tol_induced_subtree(resolved$ott_id)
+tree$tip.label <- strip_ott_ids(tree$tip.label,remove_underscores=T)
+set.seed(123)
+vlExample <- tibble(label=tree$tip.label,vl=runif(length(names)))
+tree %<>% full_join(.,vlExample)
+#horizontal tree
+p1.h <- ggtree(tree,color="gray")+
+  geom_tippoint(aes(color=vl))+
+  scale_colour_viridis_c("Viral load")+
+  geom_tiplab(size=3,hjust=0,offset=0.2,fontface="italic")+
+  xlim(0, 10)
+#vertical tree
+p1.v <- ggtree(tree,color="gray")+
+  geom_tippoint(aes(color=vl))+
+  scale_colour_viridis_c("Viral load")+
+  geom_tiplab(size=2.2,hjust=1,offset=-0.6,fontface="italic",angle=90)+
+  scale_x_reverse(limits=c(20,0))+
+  coord_flip() 
+data(cars)
+p2 <- cars %>% ggplot(.,aes(x=speed,y=dist))+geom_point()
+p3 <- cars %>% ggplot(.,aes(x=speed,y=dist))+geom_bar(stat="identity")
+p1.h|(p2/p3)
+p1.v/(p2/p3)
+
+
+
 
 
 
