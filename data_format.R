@@ -1,4 +1,4 @@
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 library(tidyverse)
 library(magrittr)
 library(vegan)
@@ -6,13 +6,13 @@ library(reshape)
 library(here)
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 here()
 data <- read_csv(here("/data/weighted_prev_competence_111220.csv"))
 names <- read_csv(here("/data/species_names_ids.csv"))
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
   dplyr::select(-ABAmb, -ABSal) %>%  
   mutate(., size = rowSums(.[5:25]), 
@@ -23,14 +23,17 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 vl <- data %>% dplyr::select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
-vl$species_code <- as.double(gsub("vl.","",vl$name))
+vl %<>% mutate(species_code = as.double(gsub("vl.","",vl$name)))
 vl %<>% full_join(., names, by="species_code")
+vl %<>% mutate(name = gsub("_"," ",vl$species_name))
+vl$value %<>% na_if(.,0)
 vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
+vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
 community_mat$Month <- gsub("Month", "", community_mat$Month.1)
 community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
@@ -40,7 +43,7 @@ abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
 presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 #select for environmental variables
 env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
 env$Month <- gsub("Month", "", env$Month.1)
@@ -51,7 +54,7 @@ env %<>% mutate(., siteID = paste(env$WetAltID, env$Month, sep = "_")) %>% disti
 #env_mat <- env %>% column_to_rownames(., var = "siteID")
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 #Get species richness from pres/abs matrix
 richness <- tibble(siteID="", richness=1:nrow(presence_mat))
 for (i in 1:nrow(presence_mat)){
@@ -60,7 +63,7 @@ for (i in 1:nrow(presence_mat)){
 }
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 #pca on community matrix and gather scores for first two principal components
 pca <- princomp(abundance_mat, scores = TRUE)
 summary(pca)
@@ -76,7 +79,7 @@ site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "
 site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 richness_cc <- full_join(comm_summ, richness, by = "siteID")
 
 #J = H'/ln(S)
@@ -110,7 +113,7 @@ for(n in 2:91){
 lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 #barplots comparing community composition
 abundances <- comm_summ %>% full_join(.,evenness)
 
@@ -121,7 +124,7 @@ abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by tota
 
 
 
-## ---------------------------------------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------------------------------------------------------
 prev_cc <- comm_summ
 
 order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
