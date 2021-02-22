@@ -18,7 +18,7 @@ source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 resolved <- tnrs_match_names(vl$tnrs_name)
 tree <- tol_induced_subtree(resolved$ott_id)
 tree$tip.label <- strip_ott_ids(tree$tip.label,remove_underscores=T)
-vl %<>% select(tnrs_name,value) %>% mutate(.,label = tnrs_name) %>% select(-tnrs_name)
+vl %<>% select(tnrs_name,value,ln_value,log10_value) %>% mutate(.,label = tnrs_name) %>% select(-tnrs_name)
 tree %<>% full_join(.,vl)
 
 #horizontal tree
@@ -30,10 +30,18 @@ p1.h <- ggtree(tree,color="gray")+
 #vertical tree
 p1.v <- ggtree(tree,color="gray")+
   geom_tippoint(aes(color=value))+
-  scale_colour_viridis_c("Viral load",direction = -1)+
+  scale_colour_viridis_c("Viral load",direction = -1, option = "A")+
   geom_tiplab(size=2.2,hjust=1,offset=-0.6,fontface="italic",angle=75,)+
   scale_x_reverse(limits=c(20,0))+
   coord_flip() 
+
+p1.v.ln <- ggtree(tree,color="gray")+
+  geom_tippoint(aes(color=log10_value))+
+  scale_colour_viridis_c("log10(Viral load)",direction = -1, option = "A")+
+  geom_tiplab(size=2.2,hjust=1,offset=-0.6,fontface="italic",angle=75,)+
+  scale_x_reverse(limits=c(20,0))+
+  coord_flip() 
+
 
 abundances$siteID <- reorder(abundances$siteID, -abundances$cc)
 cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
@@ -73,7 +81,7 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
 
 
 # final <- p1.h|(cc_plot/RA_plot)
-final <- (cc_plot/RA_plot)/p1.v
+final <- (cc_plot/RA_plot)/p1.v.ln
 final
 
 
