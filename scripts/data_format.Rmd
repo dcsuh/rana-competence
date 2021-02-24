@@ -12,7 +12,6 @@ Packages
 library(tidyverse)
 library(magrittr)
 library(vegan)
-library(reshape)
 library(here)
 ```
 
@@ -116,9 +115,9 @@ richness_cc <- full_join(comm_summ, richness, by = "siteID")
 #H' = Shannon diversity index
 #S = Species Richness
 
-shannon <- vegan::diversity(abundance_mat, index = "shannon")
-shannon <- melt(as.matrix(shannon))
-shannon %<>% mutate(siteID = Var1, h = value) %>% dplyr::select(siteID, h)
+shannon <- as_tibble(vegan::diversity(abundance_mat, index = "shannon"),rownames= "siteID")
+
+shannon %<>% mutate(h = value) %>% dplyr::select(siteID, h)
 
 evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
 
