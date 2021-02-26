@@ -13,7 +13,7 @@ source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "Community Competence", y = "Prevalence") +
+  labs(title = "", x = "Community Competence", y = "Prevalence (t+1)") +
   ylim(0,0.65)
 
 #cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
