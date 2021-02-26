@@ -8,12 +8,6 @@ library(here)
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 
-site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
-  geom_point(aes(color = Month.1, shape = factor(WetAltID)), show.legend = F)+
-  theme_classic()+labs(x="Principal Component 1 Rank", y = "Community Competence") + 
-  scale_shape_manual(values = rep(1:20, len = 20))+
-  facet_zoom(xlim= c(5,25))
-
 figure_2 <- site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = size))+
   labs(x="Principal Component 1 Rank", y = "Community Competence (CC)", size = "Size") + 
