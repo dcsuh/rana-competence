@@ -3,10 +3,6 @@
 
 #Figure 5 in rv_cc manuscript
 
-#install_github("thomasp85/patchwork")
-library(tidyverse)
-library(magrittr)
-library(patchwork)
 library(here)
 
 
@@ -20,8 +16,7 @@ cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   labs(title = "", x = "Community Competence", y = "Prevalence") +
   ylim(0,0.65)
 
-#correlation test
-cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
+#cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
 
 size_corr <- clean %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
@@ -31,7 +26,7 @@ size_corr <- clean %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
   theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
   ylim(0,0.65)
 
-cor.test(clean$lag_size,clean$Prevalence,method="spearman")
+#cor.test(clean$lag_size,clean$Prevalence,method="spearman")
 
 
 temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
@@ -41,10 +36,10 @@ temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
   theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
   ylim(0,0.65)
 
-
-cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
+#cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
 
 
 #plot everything together with patchwork
-corr_plots <- cc_corr| size_corr| temp_corr
-corr_plots
+figure_5 <- cc_corr| size_corr| temp_corr
+ggsave("fig_5.png",plot=figure_5,device="png",path=here("/figures"))
+
