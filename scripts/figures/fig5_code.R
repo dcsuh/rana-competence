@@ -19,10 +19,10 @@ cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
 #cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
 
-size_corr <- clean %>% ggplot(.,aes(x=log(lag_size), y=Prevalence)) +
+size_corr <- clean %>% ggplot(.,aes(x=log10(lag_size), y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "ln(Community Size)", y = "") +
+  labs(title = "", x = "log(Community Size)", y = "") +
   theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
   ylim(0,0.65)
 
