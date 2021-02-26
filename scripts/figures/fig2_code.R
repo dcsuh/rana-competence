@@ -3,9 +3,6 @@
 
 #Figure 2 in rv_cc manuscript
 
-library(tidyverse)
-library(magrittr)
-library(ggforce)
 library(here)
 
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))

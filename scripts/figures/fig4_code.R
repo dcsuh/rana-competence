@@ -3,13 +3,7 @@
 #This script creates figure 4
 
 
-library(tidyverse)
-library(magrittr)
-library(vegan)
-library(reshape2)
-library(patchwork)
-library(ggnewscale)
-library(ggtree)
+
 library(rotl)
 library(here)
 

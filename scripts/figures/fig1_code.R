@@ -3,11 +3,10 @@
 
 #Figure 1 in rv_cc manuscript
 
-#install_github("thomasp85/patchwork")
 library(tidyverse)
 library(magrittr)
+#install_github("thomasp85/patchwork")
 library(patchwork)
-#install.packages("ggnewscale")
 library(ggnewscale)
 library(here)
 

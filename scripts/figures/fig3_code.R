@@ -2,12 +2,6 @@
 
 #This script creates figure 3
 
-
-library(tidyverse)
-library(magrittr)
-library(vegan)
-library(patchwork)
-library(ggnewscale)
 library(here)
 
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
