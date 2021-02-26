@@ -9,6 +9,7 @@ library(magrittr)
 library(patchwork)
 #install.packages("ggnewscale")
 library(ggnewscale)
+library(here)
 
 #define function contour(): inputs are parameters and output is values for grid search for R0
 contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, mort2, degr) {
@@ -97,7 +98,7 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   labs(x = "", y = "Contact") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "Composition")
+  labs(title = "A")
 
 
 p3 <- size %>% filter(tot != 150) %>% 
@@ -111,7 +112,7 @@ p3 <- size %>% filter(tot != 150) %>%
   labs(x = "", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "Size")
+  labs(title = "B")
 
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
@@ -124,7 +125,7 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   labs(x = "Environmental", y = "Contact") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "Half-life")
+  labs(title = "C")
 
 
 p5 <- combined %>%
@@ -138,7 +139,8 @@ p5 <- combined %>%
   labs(x = "Environmental", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "Combined")
+  labs(title = "D")
 
 figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
+#ggsave("fig_1.png",plot=figure_1,device="png",path=here("/figures"),width = 11.6,height = 0.75*11.6,units = "cm")
