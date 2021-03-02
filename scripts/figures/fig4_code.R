@@ -6,6 +6,7 @@
 library(ggnewscale)
 library(ggtree)
 library(rotl)
+library(ape)
 library(here)
 here()
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
@@ -45,7 +46,7 @@ z %<>% mutate(Low=ABLow)
 z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is a site-month-species?
 #z %<>% filter(J<0.6)
 z$siteID <- reorder(z$siteID, -z$cc) #order by total community size
-z %<>% mutate(Species=if_else(Species=="AB21","Anaxyrus terrestris",Species))
+z %<>% mutate(Species=if_else(Species=="AB21","Bufo terrestris",Species))
 z %<>% mutate(Species=if_else(Species=="AB26","Pseudacris crucifer",Species))
 z %<>% mutate(Species=if_else(Species=="AB42","Rana sphenocephala",Species))
 z %<>% mutate(Species=if_else(Species=="AB9","Notophthalmus viridescens",Species))
@@ -64,12 +65,12 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   theme_minimal()+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+
   ylab("Relative\nabundance")
-newTree <- tree %>% ggtree(.,color="gray")+
-  geom_tippoint(aes(color=labelAlt,size=log10_value))+
-  scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
-  geom_tiplab(size=2.2,hjust=,offset=7,angle=90)+#fontface="italic",
-  scale_size_continuous(name="log10(Viral load)")+
-  coord_flip()+guides(color=F)+xlim(0,300)
+# newTree <- tree %>% ggtree(.,color="gray")+
+#   geom_tippoint(aes(color=labelAlt,size=log10_value))+
+#   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
+#   geom_tiplab(size=2.2,hjust=,offset=7,angle=90)+#fontface="italic",
+#   scale_size_continuous(name="log10(Viral load)")+
+#   coord_flip()+guides(color=F)+xlim(0,300)
 newTree <- tree %>% ggtree(.,color="gray")+
   geom_tippoint(aes(color=labelAlt,size=log10_value))+
   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
