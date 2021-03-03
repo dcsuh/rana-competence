@@ -44,8 +44,8 @@ z <- abundances
 z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,size,cc)
 z %<>% mutate(Low=ABLow)
 z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is a site-month-species?
-#z %<>% filter(J<0.6)
-z$siteID <- reorder(z$siteID, -z$cc) #order by total community size
+
+z$siteID <- reorder(z$siteID, -z$cc) #order by community competence
 z %<>% mutate(Species=if_else(Species=="AB21","Bufo terrestris",Species))
 z %<>% mutate(Species=if_else(Species=="AB26","Pseudacris crucifer",Species))
 z %<>% mutate(Species=if_else(Species=="AB42","Rana sphenocephala",Species))
@@ -83,9 +83,4 @@ figure_4 <- cc_plot/RA_plot/newTree
 figure_4
 
 ggsave("fig_4.png",plot=figure_4,device="png",path=here("/figures"))
-
-#looking at correlations between total community abundance and community competence
-# evenness %>% ggplot(.,aes(x=cc,y=size)) +
-#   geom_point() +
-#   geom_smooth(method="lm")
 
