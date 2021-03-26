@@ -47,6 +47,8 @@ geo_gam <- full_join(comm_summ, coords, by = "WetAltID") %>% dplyr::select(siteI
 geo_gam$Month <- gsub("Month", "", geo_gam$Month.1)
 geo_gam$Month <- as.factor(geo_gam$Month)
 
-gam1<-gam(cc~te(dd_x,dd_y)*s(Month,bs="re")+s(log(size)),family=Gamma(link=log),data=geo_gam)
+gam1<-gam(cc~te(dd_x,dd_y)+s(Month,bs="re")+s(log(size)),family=Gamma(link=log),data=geo_gam)
+gam2<-gam(cc~s(Month,bs="re")+s(log(size)),family=Gamma(link=log),data=geo_gam) #no geo-additive term
 
 summary(gam1)
+plot.gam(gam1)
