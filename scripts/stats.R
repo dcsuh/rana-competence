@@ -8,6 +8,8 @@ library(here)
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 
+#### multivariate test for effect of cc, abundance, and temp on future month's infection prevalence
+
 tmp <- data %>% 
   group_by(WetAltID, Month.1) %>% 
   summarize(infected = sum(RV.Status), total = n()) 
@@ -39,12 +41,14 @@ corr_plots <- comm_summ %>% ggplot(., aes(x = log10(size), y = cc)) + geom_point
 
 by_month <- comm_summ %>% group_by(Month.1) %>% nest()
 
-cor_fun <- function(df){
-  return((cor.test(log10(df$size), df$cc, method = "spearman")))
+p_fun <- function(df){
+  return((cor.test(log10(df$size), df$cc, method = "spearman")$p.value))
+}
+est_fun <- function(df){
+  return((cor.test(log10(df$size), df$cc, method = "spearman")$estimate))
 }
 
-by_month <- mutate(by_month, model = purrr::map(data, cor_fun))
-
+by_month <- mutate(by_month, p.val = purrr::map(data, cor_fun), estimate = purrr::map(data, est_fun))
 
 
 #### geo-additive gam for cc~space,month,size
