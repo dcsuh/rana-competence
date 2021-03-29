@@ -8,6 +8,8 @@ library(here)
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 
+#### multivariate test for effect of cc, abundance, and temp on future month's infection prevalence
+
 tmp <- data %>% 
   group_by(WetAltID, Month.1) %>% 
   summarize(infected = sum(RV.Status), total = n()) 
@@ -33,7 +35,25 @@ summary(Model)
 
 
 
+#### regression analysis for cc~size for each month
 
+corr_plots <- comm_summ %>% ggplot(., aes(x = log10(size), y = cc)) + geom_point() + geom_smooth(method="lm") + facet_wrap(vars(Month.1))
+
+by_month <- comm_summ %>% group_by(Month.1) %>% nest()
+
+p_fun <- function(df){
+  return((cor.test(log10(df$size), df$cc, method = "spearman")$p.value))
+}
+est_fun <- function(df){
+  return((cor.test(log10(df$size), df$cc, method = "spearman")$estimate))
+}
+
+by_month <- mutate(by_month, p.val = purrr::map(data, cor_fun), estimate = purrr::map(data, est_fun))
+
+
+#### geo-additive gam for cc~space,month,size
+#### space found to not be significant so instead just plotted regressions for each month (seen above)
+#### this can go into supp methods
 
 library(mgcv)
 library(biogeo)
@@ -52,3 +72,6 @@ gam2<-gam(cc~s(Month,bs="re")+s(log(size)),family=Gamma(link=log),data=geo_gam) 
 
 summary(gam1)
 plot.gam(gam1)
+
+
+
