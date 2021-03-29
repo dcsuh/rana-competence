@@ -117,7 +117,7 @@ comm_scores %>% ggplot(.) +
   coord_fixed()
 
 comm_scores %>% ggplot(.) +
-  xlab("PC1")+ylab("PC2")+
+  xlab("PC1 (71.2% Var. Explained)")+ylab("PC2 (26% Var. Explained)")+
   geom_segment(data=comm_scores,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +

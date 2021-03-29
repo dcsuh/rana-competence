@@ -109,6 +109,21 @@ site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "
 site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
 ```
 
+Make matrix for environmental variables
+```{r}
+#select for environmental variables
+env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
+env$Month.1 <- gsub("Month", "", env$Month.1)
+#make siteID rowname
+env$siteID <- paste(env$WetAltID, env$Month.1, sep = "_")
+env %<>% dplyr::select(-WetAltID, -Month.1)
+#remove duplicated rows (siteID is duplicated but env. variables are not... not sure why this is)
+env <- env[-c(53, 90),]
+env_mat <- env %>% column_to_rownames(., var = "siteID")
+```
+
+
+
 cc x evenness data - primarily used by fig3
 ```{r}
 richness_cc <- full_join(comm_summ, richness, by = "siteID")

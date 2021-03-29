@@ -129,10 +129,10 @@ explanation of how envfit actually works -> https://stackoverflow.com/questions/
 #sites ordinated by species abundances
 #cor = F to use correlation matrix because variables are all on same scale
 species_pca <- princomp(community_mat, cor = F)
-plot(species_pca$scores, pch = 16)
+#plot(species_pca$scores, pch = 16)
 summary(species_pca)
-loadings(species_pca)
-scores(species_pca)
+#loadings(species_pca)
+#scores(species_pca)
 biplot(species_pca)
 
 env_fit_vectors <- envfit(species_pca, env_mat)
