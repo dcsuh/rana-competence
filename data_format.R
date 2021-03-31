@@ -9,8 +9,8 @@ library(here)
 
 ## -------------------------------------------------------------------------------------------------------------------------------------------------
 here()
-data <- read_csv(here("/data/weighted_prev_competence_111220.csv"))
-names <- read_csv(here("/data/species_names_ids.csv"))
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
+names <- read_csv(here("data/species_names_ids.csv"))
 
 
 ## -------------------------------------------------------------------------------------------------------------------------------------------------
