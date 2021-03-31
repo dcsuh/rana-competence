@@ -9,7 +9,7 @@ library(rotl)
 library(ape)
 library(here)
 here()
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 vl %<>% filter(tnrs_name!="Dryophytes avivoca") # as doesn't appear sampled in any communities? (AP)
 
 

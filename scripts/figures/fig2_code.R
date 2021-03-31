@@ -5,7 +5,7 @@
 
 library(here)
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 figure_2 <- site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+

@@ -6,7 +6,7 @@
 library(here)
 
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 #plot cleaned plot with lag

@@ -4,7 +4,7 @@
 
 library(here)
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 #fit two lines to cc_evenness_prev plot
