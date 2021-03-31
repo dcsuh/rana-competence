@@ -16,6 +16,8 @@ cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   labs(title = "", x = "Community Competence", y = "Prevalence (t+1)") +
   ylim(0,0.65)
 
+
+
 #cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
 
@@ -42,4 +44,20 @@ temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
 #plot everything together with patchwork
 figure_5 <- cc_corr| size_corr| temp_corr
 ggsave("fig_5.png",plot=figure_5,device="png",path=here("/figures"))
+
+
+
+#test with 0's filtered out
+
+tmp <- clean %>% filter(Prevalence>0)
+cor.test(tmp$lag_cc,tmp$Prevalence,method="spearm")
+cor.test(tmp$lag_size,tmp$Prevalence,method="spearm")
+cor.test(tmp$lag_temp,tmp$Prevalence,method="spearm")
+
+tmp %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
+  geom_point() +
+  theme_classic() + geom_smooth(method = "lm") +
+  labs(title = "", x = "Mean Water Temp", y = "") +
+  theme(axis.text.y = element_blank(), axis.ticks.y=element_blank()) +
+  ylim(0,0.65)
 
