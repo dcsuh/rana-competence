@@ -34,6 +34,19 @@ Model <- glm(as.matrix(M)~lagged$lag_cc+lagged$lag_size+lagged$lag_temp, family=
 summary(Model)
 
 
+### univariate version of multivariate glm
+
+Model_cc <- glm(as.matrix(M)~lagged$lag_cc, family="quasibinomial")
+summary(Model_cc)
+Model_size <- glm(as.matrix(M)~lagged$lag_size, family="quasibinomial")
+summary(Model_size)
+Model_temp <- glm(as.matrix(M)~lagged$lag_temp, family="quasibinomial")
+summary(Model_temp)
+
+
+
+
+
 
 #### regression analysis for cc~size for each month
 

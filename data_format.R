@@ -115,7 +115,7 @@ lag_evenness$lag_richness <- c(0)
 lag_evenness$lag_J <- c(0)
 lag_evenness$lag_cc <- c(0)
 lag_evenness$lag_size <- c(0)
-for(n in 2:91){
+for(n in 2:92){
   lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
   lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
   lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]

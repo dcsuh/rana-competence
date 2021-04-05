@@ -6,7 +6,7 @@
 library(here)
 
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
