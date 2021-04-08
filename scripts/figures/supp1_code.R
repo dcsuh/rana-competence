@@ -8,7 +8,7 @@ library(here)
 
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
-vl %>% arrange(log10_value) %>% 
+supp1 <- vl %>% arrange(log10_value) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
   ggplot(.,aes(x=abb_name,y=log10_value)) +
   geom_point() + 
@@ -17,3 +17,5 @@ vl %>% arrange(log10_value) %>%
   labs(title = "Viral Loads") + 
   theme_classic() + 
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
+
+ggsave("supp1.png",plot=supp1,device="png",path=here("/figures"))
