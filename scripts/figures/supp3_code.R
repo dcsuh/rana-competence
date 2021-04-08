@@ -31,4 +31,4 @@ supp3 <- comm_scores %>% ggplot(.) +
                    size = 2,color="purple", segment.colour = 'black')+
   coord_fixed()
 
-ggsave("supp2.png",plot=supp2,device="png",path=here("/figures"))
+ggsave("supp3.png",plot=supp3,device="png",path=here("/figures"))
