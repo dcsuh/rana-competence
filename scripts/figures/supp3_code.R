@@ -4,7 +4,7 @@
 #This script creates supplementary figure 3: PCA
 
 library(here)
-
+library(ggrepel)
 
 source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
@@ -17,7 +17,7 @@ comm_scores <- as.data.frame(community_pca$loadings[,1:2])
 env_vec <- envfit(community_pca, env_mat, na.rm = T) 
 env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
 
-comm_scores %>% ggplot(.) +
+supp3 <- comm_scores %>% ggplot(.) +
   xlab("PC1 (71.2% Var. Explained)")+ylab("PC2 (26% Var. Explained)")+
   geom_segment(data=comm_scores,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
@@ -30,3 +30,5 @@ comm_scores %>% ggplot(.) +
   geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
                    size = 2,color="purple", segment.colour = 'black')+
   coord_fixed()
+
+ggsave("supp2.png",plot=supp2,device="png",path=here("/figures"))
