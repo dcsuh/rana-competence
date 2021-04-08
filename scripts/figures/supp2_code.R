@@ -11,7 +11,7 @@ source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 
-supp2 <- Imagine(t(community_mat), 
+Imagine(t(community_mat), 
         fill = FALSE, 
         order = TRUE, 
         xlab = "", 
@@ -27,4 +27,4 @@ rownames(ordered_matrix)
 
 results <- Metacommunity(community_mat, binary = T)
 
-ggsave("supp2.png",plot=supp2,device="png",path=here("/figures"))
+#wasn't able to save output from Imagine as a plot and had to save using dialog within RStudio
