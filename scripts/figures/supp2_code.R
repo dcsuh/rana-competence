@@ -3,21 +3,15 @@
 
 #Figure 2 in rv_cc manuscript
 
-library(tidyverse)
-library(magrittr)
-library(metacom)
 library(here)
+library(metacom)
 
 
-data <- read_csv("data/weighted_prev_competence_111220.csv")
-
-#make community matrix
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) %>%
-  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(-WetAltID, -Month.1) %>% dplyr::select(siteID, AB2:AB42)
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 
-Imagine(t(community_mat), 
+supp2 <- Imagine(t(community_mat), 
         fill = FALSE, 
         order = TRUE, 
         xlab = "", 
@@ -32,3 +26,5 @@ ordered_matrix <- OrderMatrix(community_mat)
 rownames(ordered_matrix)
 
 results <- Metacommunity(community_mat, binary = T)
+
+ggsave("supp2.png",plot=supp2,device="png",path=here("/figures"))
