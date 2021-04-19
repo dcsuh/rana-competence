@@ -71,7 +71,7 @@ by_month <- mutate(by_month, p.val = purrr::map(data, cor_fun), estimate = purrr
 library(mgcv)
 library(biogeo)
 
-coords <- read_csv(here("/data/srs_wetland_coordinates.csv"))
+coords <- read_csv(here("data/srs_wetland_coordinates.csv"))
 coords$dd_x <- dms2dd(coords$xdd,coords$xmm,coords$xss,coords$xdir)
 coords$dd_y <- dms2dd(coords$ydd,coords$ymm,coords$yss,coords$ydir)
 coords %<>% dplyr::select(WetAltID, dd_x, dd_y)
