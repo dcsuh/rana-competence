@@ -7,7 +7,7 @@ library(here)
 library(metacom)
 
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 
