@@ -5,7 +5,7 @@
 
 library(here)
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 #### multivariate test for effect of cc, abundance, and temp on future month's infection prevalence
