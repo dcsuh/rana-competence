@@ -65,15 +65,15 @@ contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, m
   return(output)
 }
 
-reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/45,mort2 = 1/45,degr = 1/2)
+reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/45,mort2 = 1/45,degr = 1/1.947799)
 
-composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/60,mort2 = 1/30,degr = 1/2)
+composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/60,mort2 = 1/30,degr = 1/1.947799)
 
-size <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/50),mort2 = c(1/50),degr = 1/2)
+size <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/52.5),mort2 = c(1/52.5),degr = 1/1.947799)
 
-halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/40),mort2 = 1/40,degr = c(1/4))
+halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/40),mort2 = 1/40,degr = 1/3.895598)
 
-combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/66.6),mort2 = c(1/33.3),degr = c(1/4))
+combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
 
 
@@ -142,4 +142,4 @@ p5 <- combined %>%
 
 figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
-ggsave("fig_1.png",plot=figure_1,device="png",path=here("/figures"),width = 11,height = 11.6,units = "cm")
+ggsave("fig_1.png",plot=figure_1,device="png",path=here("figures"),width = 11,height = 11.6,units = "cm")
