@@ -4,6 +4,5 @@
 .Ruserdata
 .DS_Store
 *.Rproj
-scripts/.DS_Store
+*.DS_Store
 *.history
-scripts/.DS_Store
