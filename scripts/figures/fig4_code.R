@@ -6,20 +6,15 @@
 library(ggnewscale)
 library(ggtree)
 library(rotl)
-library(ape)
 library(here)
-here()
+
 source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 vl %<>% filter(tnrs_name!="Dryophytes avivoca") # as doesn't appear sampled in any communities? (AP)
+#H. avivoca (ID=32) has no abundance measured but has one recording for viral load
+#viral load for H. avivoca is actually the highest but should not be included because there is no abundance data
 
 
-tr2 <- ape::read.nexus("./data/asup_just_tree.txt")
-names %<>% filter(tnrs_name!="Dryophytes avivoca")
-mySpp <- c(union(names$tnrs_name,names$species_name),"Bufo terrestris")
-mySpp <- gsub(" ","_",mySpp)
-getRid <- setdiff(tr2$tip.label,mySpp)
-tr2.pruned <- drop.tip(tr2,getRid)
-tr2.pruned$tip.label <- gsub("_"," ",tr2.pruned$tip.label)
+pruned_tree$tip.label <- gsub("_"," ",pruned_tree$tip.label)
 
 
 vl %<>% select(species_name,value,ln_value,log10_value) %>% mutate(.,label = species_name) %>% select(-species_name)
@@ -36,7 +31,7 @@ top4sampled <- c("Pseudacris crucifer","Rana sphenocephala","Bufo terrestris","N
 vl %<>% mutate(labelAlt=as_factor(if_else(labelAlt %in% top4sampled,labelAlt,"Low competence")))
 vl %<>% mutate(labelAlt=fct_relevel(labelAlt,c(top4sampled,"Low competence")))
 
-tree <- tr2.pruned %<>% full_join(.,vl)
+vl_tree <- pruned_tree %>% full_join(.,vl)
 
 
 abundances$siteID <- reorder(abundances$siteID, -abundances$cc)
@@ -71,7 +66,7 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
 #   geom_tiplab(size=2.2,hjust=,offset=7,angle=90)+#fontface="italic",
 #   scale_size_continuous(name="log10(Viral load)")+
 #   coord_flip()+guides(color=F)+xlim(0,300)
-newTree <- tree %>% ggtree(.,color="gray")+
+newTree <- vl_tree %>% ggtree(.,color="gray")+
   geom_tippoint(aes(color=labelAlt,size=log10_value))+
   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
   geom_tiplab(size=2.2,hjust=,offset=7,angle=0)+#fontface="italic",

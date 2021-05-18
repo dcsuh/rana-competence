@@ -3,18 +3,13 @@
 #This script creates supplemental figure 6
 
 
-library(ape)
 library(here)
 
 source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
-tr2 <- ape::read.nexus(here("data/asup_just_tree.txt"))
-mySpp <- c(union(names$tnrs_name,names$species_name),"Bufo terrestris")
-mySpp <- gsub(" ","_",mySpp)
-getRid <- setdiff(tr2$tip.label,mySpp)
-tr2.pruned <- drop.tip(tr2,getRid)
-plot(tr2.pruned)
-pd <- cophenetic(tr2.pruned)
+
+plot(pruned_tree)
+pd <- cophenetic(pruned_tree)
 rownames(pd) <- gsub("_"," ",rownames(pd))
 #mpd and min.pd
 y <- abundances
@@ -36,6 +31,12 @@ y %<>% mutate(mpd=-999,min.pd=-999,mpdAbund=-999,min.pdAbund=-999)
 #top4sampledSyn <- c(top4sampled,"Bufo terrestris")
 #y %<>% filter(Species %in% top4sampledSyn)
 #end optional focus
+
+#y is a df where every row is one species in one site-month
+#so row numbers should equal number of distinct species * number of site-months
+#i.e. y = 16 species * 96 site-months = 1536 rows
+
+
 for (k in 1:dim(y)[1]){
   tmp <- y %>% filter(siteID==y$siteID[k])
   pd.row <- which(rownames(pd)==y$Species[k])
@@ -55,6 +56,7 @@ for (k in 1:dim(y)[1]){
   y$mpdAbund[k] <- mpdAbund
   y$min.pdAbund[k] <- min.pdAbund
 }
+
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpd,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
 supp6 <- y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pd,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpdAbund,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)

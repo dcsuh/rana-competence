@@ -14,6 +14,8 @@ library(magrittr)
 library(vegan)
 library(patchwork)
 library(ggnewscale)
+library(ape)
+library(rotl)
 library(here)
 ```
 
@@ -21,6 +23,7 @@ Data
 ```{r}
 here()
 data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("data/asup_just_tree.txt"))
 names <- read_csv(here("data/species_names_ids.csv"))
 ```
 
@@ -195,3 +198,24 @@ for(n in 2:nrow(order)){
 #remove the first entry for each wetland to remove the carryover from the last wetland
 clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 ```
+
+
+Phylogeny
+```{r}
+resolved <- tnrs_match_names(names$tnrs_name)
+resolved$unique_name <- gsub(" ", "_",resolved$unique_name)
+resolved$search_string <- paste(toupper(substr(resolved$search_string, 1, 1)), 
+                                  substr(resolved$search_string,2,nchar(resolved$search_string)),sep = "")
+
+resolved %<>% rename("species_name" = "search_string") %>% select(species_name, unique_name, ott_id)
+
+names %<>% left_join(.,resolved)
+
+names %<>% filter(tnrs_name!="Dryophytes avivoca") #drop species because there is no abundance data
+mySpp <- c(union(names$tnrs_name,names$species_name),"Bufo terrestris") #make vector for all species names
+mySpp <- gsub(" ","_",mySpp)
+getRid <- setdiff(tree$tip.label,mySpp)
+pruned_tree <- drop.tip(tree,getRid)
+
+```
+
