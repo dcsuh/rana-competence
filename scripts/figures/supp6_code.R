@@ -1,5 +1,14 @@
+#Script Originator: Daniel Suh
+
+#This script creates supplemental figure 6
+
+
 library(ape)
-tr2 <- ape::read.nexus("./data/asup_just_tree.txt")
+library(here)
+
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+
+tr2 <- ape::read.nexus(here("data/asup_just_tree.txt"))
 mySpp <- c(union(names$tnrs_name,names$species_name),"Bufo terrestris")
 mySpp <- gsub(" ","_",mySpp)
 getRid <- setdiff(tr2$tip.label,mySpp)
@@ -47,6 +56,8 @@ for (k in 1:dim(y)[1]){
   y$min.pdAbund[k] <- min.pdAbund
 }
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpd,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
-y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pd,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
+supp6 <- y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pd,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpdAbund,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pdAbund,y=relAbund))+geom_point()+geom_smooth(method="loess",span=1.4)
+
+ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))

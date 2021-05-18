@@ -195,4 +195,3 @@ for(n in 2:nrow(order)){
 #remove the first entry for each wetland to remove the carryover from the last wetland
 clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 ```
-
