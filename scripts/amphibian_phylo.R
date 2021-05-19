@@ -1,12 +1,4 @@
-library(tidyverse)
-library(magrittr)
-library(ape)
-library(rotl)
-library(phangorn)
-library(geiger)
-library(phytools)
-library(patchwork)
-library(ggtree)
+
 library(here)
 
 #make phylogeny with viral load
@@ -17,7 +9,7 @@ library(here)
 #files
 
 #asup_just_tree.txt
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
 resolved <- tnrs_match_names(vl$tnrs_name)

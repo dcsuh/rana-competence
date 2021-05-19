@@ -17,6 +17,7 @@ IDs <- c(subset$species_code)
 
 
 phy_comm <- community_mat %>% column_to_rownames(var = "siteID")
+phy_comm_1 <- community_mat %>% column_to_rownames(var = "siteID")
 sum(phy_comm)
 for (i in 1:nrow(subset)){
   col_name <- paste("AB",IDs[i],sep = "")
@@ -25,7 +26,7 @@ for (i in 1:nrow(subset)){
 #same thing but presence-absence matrix instead of abundances
 phy_comm_pa <- as.data.frame(ifelse(phy_comm>0,1,0))
 
-#use community matrix and phylogeny to calculate pairwise distances
+#use community matrix and phylogeny to calculate faith's phylogenetic diversity
 pd <- pd(phy_comm, tree, include.root = F)
 
 pd %<>% rownames_to_column(., var="siteID") 
@@ -46,3 +47,26 @@ pd %>% filter(is.na(PD)==F) %>% dplyr::select(siteID, PD) %>% distinct() %>%
   labs(title = "Values of phylogenetic diversity for sites") +
   theme_minimal()
 
+
+#calculate mean pairwise distances
+pruned_tree$tip.label <- strip_ott_ids(pruned_tree$tip.label,remove_underscores=T)
+dist_mat <- as.data.frame(cophenetic(pruned_tree))
+#rename a few species for the community data
+subset_1 <- subset
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Anaxyrus terrestris","Bufo terrestris",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Lithobates catesbeianus","Rana catesbeiana",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Lithobates sphenocephalus","Rana sphenocephala",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Lithobates clamitans","Rana clamitans",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Dryophytes cinereus","Hyla cinerea",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Dryophytes gratiosus","Hyla gratiosa",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Dryophytes femoralis","Hyla femoralis",tnrs_name))
+subset_1 %<>% mutate(tnrs_name=if_else(tnrs_name=="Dryophytes chrysoscelis","Hyla chrysoscelis",tnrs_name))
+
+for (i in 1:nrow(subset_1)){
+  col_name <- paste("AB",IDs[i],sep = "")
+  phy_comm_1 <- rename(phy_comm_1, !!subset_1$tnrs_name[i] := col_name)
+}
+
+phy_comm_1 %<>% select(-c("AB8")) #remove because we don't know the identity of this species
+
+mean_pairwise_distances <- comdist(phy_comm_1,dist_mat)
