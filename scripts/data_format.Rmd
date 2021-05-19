@@ -203,11 +203,11 @@ clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 Phylogeny
 ```{r}
 resolved <- tnrs_match_names(names$tnrs_name)
-resolved$unique_name <- gsub(" ", "_",resolved$unique_name)
-resolved$search_string <- paste(toupper(substr(resolved$search_string, 1, 1)), 
-                                  substr(resolved$search_string,2,nchar(resolved$search_string)),sep = "")
+resolved %<>% rename("tnrs_name" = "unique_name")
+#resolved$search_string <- paste(toupper(substr(resolved$search_string, 1, 1)), 
+#                                  substr(resolved$search_string,2,nchar(resolved$search_string)),sep = "")
 
-resolved %<>% rename("species_name" = "search_string") %>% select(species_name, unique_name, ott_id)
+resolved %<>% select(tnrs_name, ott_id)
 
 names %<>% left_join(.,resolved)
 
