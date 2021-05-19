@@ -39,12 +39,10 @@ pd %>% ggplot(.,aes(x=PD,y=size)) + geom_point() + geom_smooth(method="loess")
 
 pd %>% ggplot(.,aes(x=PD)) + geom_histogram(binwidth=50)
 
-pd_plot <- pd %>% filter(is.na(PD)==F) %>% dplyr::select(siteID, PD) %>% distinct()
-  ggplot(pd_plot, aes(x=siteID, y=PD)) +
-  geom_point()
+
+pd %>% filter(is.na(PD)==F) %>% dplyr::select(siteID, PD) %>% distinct() %>%
+  ggplot(., aes(x=siteID, y=PD)) +
+  geom_point() +
   labs(title = "Values of phylogenetic diversity for sites") +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle=90))+
-  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())
-pd_plot
+  theme_minimal()
 
