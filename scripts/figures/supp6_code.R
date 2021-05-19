@@ -25,7 +25,7 @@ names2 %<>% mutate(Species=if_else(Species=="Lithobates clamitans","Rana clamita
 y %<>% left_join(.,names2)
 # relabundo
 y %<>% rowwise() %>% mutate(relAbund=abund/size)
-#y %<>% drop_na(Species)
+y %<>% drop_na(Species)
 y %<>% mutate(mpd=-999,min.pd=-999,mpdAbund=-999,min.pdAbund=-999)
 #optional focus on top4
 #top4sampledSyn <- c(top4sampled,"Bufo terrestris")
@@ -37,7 +37,7 @@ y %<>% mutate(mpd=-999,min.pd=-999,mpdAbund=-999,min.pdAbund=-999)
 #i.e. y = 16 species * 96 site-months = 1536 rows
 
 
-#y %<>% filter(abund>0) #shouldn't we filter out any species that were absent? (DS 5/18/21)
+y %<>% filter(abund>0) #shouldn't we filter out any species that were absent? (DS 5/18/21)
 #the mean pd and min pd should just be calculated for species that are present but without 
 #filtering out those absent then you calculate mean pd and min pd for all of the possible 16 species
 
@@ -78,6 +78,7 @@ supp6 <- y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pd,y=relAbund))+
 supp6
 #supp6 gives us the relative abundance for each species and the pd for their closest phylogenetic neighbor in their site-month
 #so each vertical stack should be an instance where two species co-occurred
+
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpdAbund,y=relAbund))+
   geom_point()+geom_smooth(method="loess",span=1.4)
 y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pdAbund,y=relAbund))+
