@@ -76,4 +76,4 @@ amphib_mpd <- tibble("siteID" = site_IDs, "mpd" = mean_pairwise_distances)
 
 amphib_mpd <- inner_join(pd,amphib_mpd,by="siteID")
 
-ggplot(amphib_mpd, aes(x=mpd)) + geom_histogram()
+ggplot(amphib_mpd, aes(x=mpd)) + geom_histogram(bins="50")
