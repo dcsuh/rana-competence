@@ -69,4 +69,4 @@ for (i in 1:nrow(subset_1)){
 
 phy_comm_1 %<>% select(-c("AB8")) #remove because we don't know the identity of this species
 
-mean_pairwise_distances <- comdist(phy_comm_1,dist_mat)
+mean_pairwise_distances <- mpd(phy_comm_1,dist_mat)
