@@ -67,7 +67,8 @@ for (i in 1:nrow(subset_1)){
   phy_comm_1 <- rename(phy_comm_1, !!subset_1$tnrs_name[i] := col_name)
 }
 
-phy_comm_1 %<>% select(-c("AB8")) #remove because we don't know the identity of this species
+phy_comm_1 %<>% select(-c("AB8","AB2","AB3","AB5","AB6")) 
+#remove because we don't know the identity of this species or species is not sampled for ranavirus
 
 mean_pairwise_distances <- mpd(phy_comm_1,dist_mat)
 
@@ -76,4 +77,5 @@ amphib_mpd <- tibble("siteID" = site_IDs, "mpd" = mean_pairwise_distances)
 
 amphib_mpd <- inner_join(pd,amphib_mpd,by="siteID")
 
-ggplot(amphib_mpd, aes(x=mpd)) + geom_histogram(bins="50")
+ggplot(amphib_mpd, aes(x=mpd)) + geom_histogram(bins="40") + theme_minimal()+
+  labs(x="Mean Pairwise Distances", y = "Frequency")

@@ -18,8 +18,10 @@ cor.test(evenness$richness, evenness$Prevalence, method="spearm")
 
 supp4 <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
   geom_point() +
-  geom_smooth(method="lm")
+  geom_smooth(method="lm") +
+  theme_classic() +
+  labs(x="Richness", y="Prevalence (t+1)")
 
 cor.test(lag_evenness$lag_richness, lag_evenness$Prevalence, method="spearm")
 
-ggsave("supp4.png",plot=supp4,device="png",path=here("/figures"))
+#ggsave("supp4.png",plot=supp4,device="png",path=here("/figures"))

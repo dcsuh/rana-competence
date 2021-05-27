@@ -43,7 +43,7 @@ temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
 
 #plot everything together with patchwork
 figure_5 <- cc_corr| size_corr| temp_corr
-ggsave("fig_5.png",plot=figure_5,device="png",path=here("/figures"))
+#ggsave("fig_5.png",plot=figure_5,device="png",path=here("/figures"))
 
 
 
