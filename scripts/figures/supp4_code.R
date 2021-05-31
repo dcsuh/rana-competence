@@ -15,8 +15,15 @@ evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
 
 cor.test(evenness$richness, evenness$Prevalence, method="spearm")
 
+supp4a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  theme_classic() +
+  labs(x="Richness", y="Community Competence")
 
-supp4 <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
+cor.test(evenness$richness, evenness$cc, method="spearm")
+
+supp4b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -24,4 +31,6 @@ supp4 <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
 
 cor.test(lag_evenness$lag_richness, lag_evenness$Prevalence, method="spearm")
 
-#ggsave("supp4.png",plot=supp4,device="png",path=here("/figures"))
+ggsave("supp4a.png",plot=supp4,device="png",path=here("figures"))
+ggsave("supp4b.png",plot=supp4,device="png",path=here("figures"))
+
