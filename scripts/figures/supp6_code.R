@@ -102,4 +102,4 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pdAbund,y=relAbund))+
 
 
 
-ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))
+#ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))
