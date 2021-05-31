@@ -44,7 +44,8 @@ figure_3 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
   annotate("text", label = "i", family="Times", fontface="italic", x = 0.134, y = 46000, size = 4, colour = "white")+
   annotate("text", label = "ii", family="Times", fontface="italic", x = 0.427, y = 61000, size = 3, colour = "white")
 
-
 figure_3
-ggsave("fig_3.png",plot=figure_3,device="png",path=here("/figures"))
+#ggsave("fig_3.png",plot=figure_3,device="png",path=here("/figures"))
+
+
 
