@@ -33,7 +33,6 @@ vl %<>% mutate(labelAlt=fct_relevel(labelAlt,c(top4sampled,"Low competence")))
 
 vl_tree <- pruned_tree %>% full_join(.,vl)
 
-
 abundances$siteID <- reorder(abundances$siteID, -abundances$cc)
 z <- abundances
 z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,size,cc)
