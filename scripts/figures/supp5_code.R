@@ -11,7 +11,9 @@ source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 supp5a <- evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
   geom_point() +
-  geom_smooth(method="lm")
+  geom_smooth(method="lm") +
+  theme_classic() +
+  labs(x="Richness", y="Prevalence")
 
 cor.test(evenness$richness, evenness$Prevalence, method="spearm")
 
@@ -36,6 +38,12 @@ evenness %>% ggplot(.,aes(x=J, y=cc)) +
   geom_smooth(method="lm") +
   theme_classic() +
   labs(x="Evenness", y="Community Competence")
+
+evenness %>% ggplot(.,aes(x=J, y=Prevalence)) +
+  geom_point() +
+  geom_smooth(method="lm") +
+  theme_classic() +
+  labs(x="Evenness", y="Prevalence")
 
 cor.test(evenness$J, evenness$cc, method="spearm")
 
