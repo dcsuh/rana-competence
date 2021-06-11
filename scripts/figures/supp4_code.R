@@ -1,22 +1,34 @@
-## Daniel Suh
+## Script originator: Daniel Suh
+## Date created: Mar. 29, 2021
 
-
-#supplementary figures for cc values by month and size
-
+#This script creates supplementary figure 3: PCA
 
 library(here)
+library(ggrepel)
+
+source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
 
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
-evenness$Month <- factor(evenness$Month,levels=c("Feb","Mar","Apr","May","Jun","Jul"))
+community_pca <- princomp(abundance_mat, scores = TRUE)
+summary(community_pca)
 
-supp5a <- evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + ylab("Community Competence")
+comm_scores <- as.data.frame(community_pca$loadings[,1:2])
+env_vec <- envfit(community_pca, env_mat, na.rm = T) 
+env_vec <- as.data.frame(scores(env_vec, display = "vectors"))
 
-evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
+supp4 <- comm_scores %>% ggplot(.) +
+  xlab("PC1 (71.2% Var. Explained)")+ylab("PC2 (26% Var. Explained)")+
+  geom_segment(data=comm_scores,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
+  geom_label_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
+                   size = 2,color="darkorange1", segment.colour = 'black')+
+  geom_segment(data=env_vec,
+               aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
+               arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
+  geom_label_repel(data = env_vec, aes(x = Comp.1, y = Comp.2, label = rownames(env_vec)),
+                   size = 2,color="purple", segment.colour = 'black')+
+  coord_fixed()
 
-supp5b <- evenness %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
-cor.test(log10(evenness$size), evenness$cc, method = "spearman")
-  
-ggsave("supp4a.png",plot=supp4a,device="png",path=here("figures"))
-ggsave("supp4b.png",plot=supp4b,device="png",path=here("figures"))
+ggsave("supp4.png",plot=supp4,device="png",path=here("figures"))
