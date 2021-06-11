@@ -15,7 +15,7 @@ evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
 
 cor.test(evenness$richness, evenness$Prevalence, method="spearm")
 
-supp4a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
+supp5a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -23,7 +23,7 @@ supp4a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
 
 cor.test(evenness$richness, evenness$cc, method="spearm")
 
-supp4b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
+supp5b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -31,7 +31,7 @@ supp4b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
 
 cor.test(lag_evenness$lag_richness, lag_evenness$Prevalence, method="spearm")
 
-supp4c <- evenness %>% ggplot(.,aes(x=J, y=cc)) +
+supp5c <- evenness %>% ggplot(.,aes(x=J, y=cc)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -39,7 +39,7 @@ supp4c <- evenness %>% ggplot(.,aes(x=J, y=cc)) +
 
 cor.test(evenness$J, evenness$cc, method="spearm")
 
-supp4d <- lag_evenness %>% ggplot(.,aes(x=lag_J, y=Prevalence)) +
+supp5d <- lag_evenness %>% ggplot(.,aes(x=lag_J, y=Prevalence)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -49,4 +49,6 @@ cor.test(lag_evenness$lag_J, lag_evenness$Prevalence, method="spearm")
 
 #ggsave("supp4a.png",plot=supp4a,device="png",path=here("figures"))
 #ggsave("supp4b.png",plot=supp4b,device="png",path=here("figures"))
+#ggsave("supp4c.png",plot=supp4c,device="png",path=here("figures"))
+#ggsave("supp4d.png",plot=supp4d,device="png",path=here("figures"))
 
