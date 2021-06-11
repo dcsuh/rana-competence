@@ -23,7 +23,7 @@ supp4 <- comm_scores %>% ggplot(.) +
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "darkorange1") +
   geom_label_repel(data = comm_scores, aes(x = Comp.1, y = Comp.2, label = row.names(comm_scores)),
-                   size = 2,color="darkorange1", segment.colour = 'black')+
+                   size = 2,color="darkorange1", segment.colour = 'black', max.overlaps = 35)+
   geom_segment(data=env_vec,
                aes(x = 0, xend = Comp.1, y = 0, yend = Comp.2),
                arrow = arrow(length = unit(0.1, "cm")), colour = "purple") +
