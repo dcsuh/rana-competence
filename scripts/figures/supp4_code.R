@@ -18,5 +18,5 @@ evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_
 supp5b <- evenness %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
 cor.test(log10(evenness$size), evenness$cc, method = "spearman")
   
-#ggsave("supp5a.png",plot=supp5a,device="png",path=here("figures"))
-#ggsave("supp5b.png",plot=supp5b,device="png",path=here("figures"))
+ggsave("supp4a.png",plot=supp4a,device="png",path=here("figures"))
+ggsave("supp4b.png",plot=supp4b,device="png",path=here("figures"))

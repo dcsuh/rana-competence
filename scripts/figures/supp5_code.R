@@ -47,8 +47,8 @@ supp5d <- lag_evenness %>% ggplot(.,aes(x=lag_J, y=Prevalence)) +
 
 cor.test(lag_evenness$lag_J, lag_evenness$Prevalence, method="spearm")
 
-#ggsave("supp4a.png",plot=supp4a,device="png",path=here("figures"))
-#ggsave("supp4b.png",plot=supp4b,device="png",path=here("figures"))
-#ggsave("supp4c.png",plot=supp4c,device="png",path=here("figures"))
-#ggsave("supp4d.png",plot=supp4d,device="png",path=here("figures"))
+ggsave("supp5a.png",plot=supp5a,device="png",path=here("figures"))
+ggsave("supp5b.png",plot=supp5b,device="png",path=here("figures"))
+ggsave("supp5c.png",plot=supp5c,device="png",path=here("figures"))
+ggsave("supp5d.png",plot=supp5d,device="png",path=here("figures"))
 
