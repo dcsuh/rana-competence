@@ -13,9 +13,10 @@ supp1 <- vl %>% arrange(log10_value) %>%
   ggplot(.,aes(x=abb_name,y=log10_value)) +
   geom_point() + 
   xlab("Species") + ylab("log10(Viral Load)") + 
-  geom_hline(yintercept = log10(20)) + 
+  geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1))
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_y_continuous(breaks=seq(0,6,1))
 
-ggsave("supp1.png",plot=supp1,device="png",path=here("/figures"))
+ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))
