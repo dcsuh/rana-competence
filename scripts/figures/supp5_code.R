@@ -9,13 +9,13 @@ library(here)
 source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 
-evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
+supp5a <- evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
   geom_point() +
   geom_smooth(method="lm")
 
 cor.test(evenness$richness, evenness$Prevalence, method="spearm")
 
-supp5a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
+supp5b <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -23,7 +23,7 @@ supp5a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
 
 cor.test(evenness$richness, evenness$cc, method="spearm")
 
-supp5b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
+supp5c <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
@@ -31,7 +31,7 @@ supp5b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
 
 cor.test(lag_evenness$lag_richness, lag_evenness$Prevalence, method="spearm")
 
-supp5c <- evenness %>% ggplot(.,aes(x=J, y=cc)) +
+evenness %>% ggplot(.,aes(x=J, y=cc)) +
   geom_point() +
   geom_smooth(method="lm") +
   theme_classic() +
