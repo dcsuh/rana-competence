@@ -1,54 +1,22 @@
-## Script originator: Daniel Suh
-## Date created: Mar. 29, 2021
+## Daniel Suh
 
-#This script creates supplementary figure 4: prevalence ~ richness
+
+#supplementary figures for cc values by month and size
+
 
 library(here)
 
 
 source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
+evenness$Month <- factor(evenness$Month,levels=c("Feb","Mar","Apr","May","Jun","Jul"))
 
-evenness %>% ggplot(.,aes(x=richness, y=Prevalence)) +
-  geom_point() +
-  geom_smooth(method="lm")
+supp5a <- evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + ylab("Community Competence")
 
-cor.test(evenness$richness, evenness$Prevalence, method="spearm")
+evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
 
-supp5a <- evenness %>% ggplot(.,aes(x=richness, y=cc)) +
-  geom_point() +
-  geom_smooth(method="lm") +
-  theme_classic() +
-  labs(x="Richness", y="Community Competence")
-
-cor.test(evenness$richness, evenness$cc, method="spearm")
-
-supp5b <- lag_evenness %>% ggplot(.,aes(x=lag_richness, y=Prevalence)) +
-  geom_point() +
-  geom_smooth(method="lm") +
-  theme_classic() +
-  labs(x="Richness", y="Prevalence (t+1)")
-
-cor.test(lag_evenness$lag_richness, lag_evenness$Prevalence, method="spearm")
-
-supp5c <- evenness %>% ggplot(.,aes(x=J, y=cc)) +
-  geom_point() +
-  geom_smooth(method="lm") +
-  theme_classic() +
-  labs(x="Evenness", y="Community Competence")
-
-cor.test(evenness$J, evenness$cc, method="spearm")
-
-supp5d <- lag_evenness %>% ggplot(.,aes(x=lag_J, y=Prevalence)) +
-  geom_point() +
-  geom_smooth(method="lm") +
-  theme_classic() +
-  labs(x="Evenness", y="Prevalence (t+1)")
-
-cor.test(lag_evenness$lag_J, lag_evenness$Prevalence, method="spearm")
-
-#ggsave("supp4a.png",plot=supp4a,device="png",path=here("figures"))
-#ggsave("supp4b.png",plot=supp4b,device="png",path=here("figures"))
-#ggsave("supp4c.png",plot=supp4c,device="png",path=here("figures"))
-#ggsave("supp4d.png",plot=supp4d,device="png",path=here("figures"))
-
+supp5b <- evenness %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
+cor.test(log10(evenness$size), evenness$cc, method = "spearman")
+  
+#ggsave("supp5a.png",plot=supp5a,device="png",path=here("figures"))
+#ggsave("supp5b.png",plot=supp5b,device="png",path=here("figures"))
