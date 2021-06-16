@@ -1,0 +1,86 @@
+---
+title: "Eq's and params"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(magrittr)
+library(knitr)
+library(here)
+```
+
+Equations
+
+$$
+\begin{aligned}
+ \frac{dS_a}{dt} &= -\beta_a S_a I_a - \beta_b S_a I_b - \phi S_aV + \lambda_a - \mu_a S_a \\ \\
+ \frac{dS_b}{dt} &= -\beta_b S_b I_b - \beta_a S_b I_a - \phi S_bV + \lambda_b - \mu_b S_b \\ \\
+ \frac{dI_a}{dt} &= \beta_a S_a I_a + \beta_b S_a I_b + \phi S_aV - \alpha_a I_a - \mu I_a \\ \\
+ \frac{dI_b}{dt} &= \beta_b S_b I_b + \beta_a S_b I_a + \phi S_bV - \alpha_b I_b - \mu I_b \\ \\
+ \frac{dR_a}{dt} &= \alpha_a I_a - \mu_a R_a\\ \\
+ \frac{dR_b}{dt} &= \alpha_b I_b - \mu_b R_b\\ \\
+ \frac{dV}{dt} &= \sigma_a I_a + \sigma_b I_b - \epsilon V\\ \\
+\end{aligned}
+$$
+
+
+Parameters
+
+
+$$
+\begin{align*}
+ & \beta_a = transmission\ rate\ for\ highly\ competent\\ \\ 
+ & \beta_b = transmission\ rate\ for\ less\ competent\\ \\ 
+ & \phi = environmental\ transmission\ rate\\ \\ 
+ & \lambda = birth\ rate\\ \\ 
+ & \mu = death\ rate\\ \\
+ & \alpha = recovery\ rate\\ \\
+ & \sigma = shedding\ rate\\ \\
+ & \epsilon = viral\ degradation\ rate\\ \\
+\end{align*}
+$$
+
+```{r}
+Parameter <- c("$\\beta_a$","$\\beta_b$","$\\phi$","$\\lambda$","$\\mu$","$\\alpha$","$\\sigma$","$\\epsilon$")
+Description <- c("transmission rate for highly competent","transmission rate for less competent",
+                 "environmental transmission rate", "birth rate", "death rate", "recovery rate",
+                 "shedding rate", "viral degradation rate")
+param_table <- tibble(Parameter, Description)
+kable(param_table)
+```
+
+```{r}
+library(metacom)
+
+source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+
+community_mat %<>% column_to_rownames(., var = "siteID")
+
+Imagine(t(community_mat), 
+        fill = FALSE, 
+        order = TRUE, 
+        xlab = "", 
+        ylab = "",
+        xline = 5,
+        yline = 4,
+        sitenames = ,
+        speciesnames = ,
+        binary=T)
+
+ordered_matrix <- OrderMatrix(community_mat)
+rownames(ordered_matrix)
+
+results <- Metacommunity(community_mat, binary = T)
+coherence <- results$Coherence
+turnover <- results$Turnover
+boundary <- results$Boundary
+kable(coherence)
+kable(turnover)
+kable(boundary)
+
+```
+
+

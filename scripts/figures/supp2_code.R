@@ -26,5 +26,8 @@ ordered_matrix <- OrderMatrix(community_mat)
 rownames(ordered_matrix)
 
 results <- Metacommunity(community_mat, binary = T)
+coherence <- results$Coherence
+turnover <- results$Turnover
+boundary <- results$Boundary
 
 #wasn't able to save output from Imagine as a plot and had to save using dialog within RStudio
