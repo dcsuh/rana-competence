@@ -77,9 +77,9 @@ results <- Metacommunity(community_mat, binary = T)
 coherence <- results$Coherence
 turnover <- results$Turnover
 boundary <- results$Boundary
-kable(coherence)
-kable(turnover)
-kable(boundary)
+kable(coherence, caption = "Coherence")
+kable(turnover, caption = "Turnover")
+kable(boundary, caption = "Block Replacement")
 
 ```
 
