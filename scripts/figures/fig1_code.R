@@ -76,6 +76,8 @@ halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
 
+axis_text_size = 8
+plot_label_size = 20
 
 p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
@@ -92,13 +94,16 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   theme_classic()+
   scale_colour_manual(values = c(NA, "red")) + 
   new_scale_color()+
-  geom_contour(data = reference, aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "", y = "Contact") +
+  labs(x = "", y = "Contact Transmission Rate") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "A")
-
+  labs(title = "A") + 
+  theme(axis.title = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size))
+#p2
 
 p3 <- size %>% filter(tot != 150) %>% 
   ggplot(.,aes(x=prop3,y=prop1))+
@@ -106,39 +111,46 @@ p3 <- size %>% filter(tot != 150) %>%
   theme_classic()+
   scale_colour_manual(values = c(NA, "orange")) + 
   new_scale_color()+
-  geom_contour(data = reference, aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(values = c(NA, "gray")) +
   labs(x = "", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
-  labs(title = "B")
-
+  labs(title = "B") + 
+  theme(plot.title = element_text(size=plot_label_size))
+#p3
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
-  theme_classic()+
   scale_colour_manual(values = c(NA, "green")) + 
   new_scale_color()+
-  geom_contour(data = reference, aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "Environmental", y = "Contact") +
+  labs(x = "Environmental Transmission Rate", y = "Contact Transmission Rate", title = "C") +
   xlim(2,8) +
-  ylim(2,10) + 
-  labs(title = "C")
-
+  ylim(2,10) +
+  theme_classic() +
+  theme(axis.title = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size))
+#p4
 
 p5 <- combined %>%
-  ggplot(.,aes(x=prop3,y=prop1))+
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
-  theme_classic()+
+  ggplot(.,aes(x=prop3,y=prop1)) +
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE) +
   scale_colour_manual(values = c(NA, "purple")) + 
   new_scale_color()+
-  geom_contour(data = reference, aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "Environmental", y = "") +
+  labs(x = "Environmental Transmission Rate", y = "", title = "D") +
   xlim(2,8) +
-  ylim(2,10) + 
-  labs(title = "D")
+  ylim(2,10) +
+  theme_classic() +
+  theme(axis.title = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size))
+#p5
 
 figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
