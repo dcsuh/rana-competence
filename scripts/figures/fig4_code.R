@@ -52,13 +52,13 @@ cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(color="gray",fill="gray",position = position_dodge(), stat = "identity", width = 0.8) + 
   theme_minimal() +
-  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Community\ncompetence") + xlab("site-months")
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Community\ncompetence (CC)") + xlab("Communities")
 RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity", width = 0.8)+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
   theme_minimal()+
   theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+
-  ylab("Relative\nabundance")
+  ylab("Relative\nAbundance")
 # newTree <- tree %>% ggtree(.,color="gray")+
 #   geom_tippoint(aes(color=labelAlt,size=log10_value))+
 #   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
@@ -76,5 +76,5 @@ newTree <- vl_tree %>% ggtree(.,color="gray")+
 figure_4 <- cc_plot/RA_plot/newTree
 figure_4
 
-#ggsave("fig_4.png",plot=figure_4,device="png",path=here("figures"))
+ggsave("fig_4.png",plot=figure_4,device="png",path=here("figures"))
 
