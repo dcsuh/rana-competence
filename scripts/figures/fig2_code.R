@@ -16,8 +16,9 @@ figure_2 <- site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   guides(shape=F) +
   theme_classic() +
   theme(aspect.ratio=1/1.618, legend.position = c(0.85,0.4), legend.box = "horizontal") +
-  scale_color_viridis_d(direction = -1)
+  scale_color_viridis_d(direction = -1) +
+  theme(text = element_text(size=18))
 
 figure_2
   
-ggsave("fig_2.png",plot=figure_2,device="png",path=here("/figures"))
+ggsave("fig_2.png",plot=figure_2,device="png",path=here("figures"))
