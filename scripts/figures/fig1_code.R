@@ -128,7 +128,7 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "Environmental Transmission Rate", y = "Contact Transmission Rate", title = "C") +
+  labs(x="Relative Environmental", y = "                                                               Relative Contact Transmission Rate", title = "C") +
   xlim(2,8) +
   ylim(2,10) +
   theme_classic() +
@@ -144,7 +144,7 @@ p5 <- combined %>%
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "Environmental Transmission Rate", y = "", title = "D") +
+  labs(x = "Transmission Rate", y = "", title = "D") +
   xlim(2,8) +
   ylim(2,10) +
   theme_classic() +
