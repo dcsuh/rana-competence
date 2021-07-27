@@ -97,7 +97,7 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(values = c(NA, "gray")) +
-  labs(x = "", y = "Contact Transmission Rate") +
+  labs(x = "", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
   labs(title = "A") + 
@@ -123,7 +123,7 @@ p3 <- size %>% filter(tot != 150) %>%
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
-  scale_colour_manual(values = c(NA, "green")) + 
+  scale_colour_manual(values = c(NA, "forestgreen")) + 
   new_scale_color()+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
@@ -133,8 +133,9 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   ylim(2,10) +
   theme_classic() +
   theme(axis.title = element_text(size=axis_text_size),
-        plot.title = element_text(size=plot_label_size))
-#p4
+        plot.title = element_text(size=plot_label_size),
+        axis.title.x=element_text(hjust=1.05))
+p4
 
 p5 <- combined %>%
   ggplot(.,aes(x=prop3,y=prop1)) +
@@ -149,7 +150,8 @@ p5 <- combined %>%
   ylim(2,10) +
   theme_classic() +
   theme(axis.title = element_text(size=axis_text_size),
-        plot.title = element_text(size=plot_label_size))
+        plot.title = element_text(size=plot_label_size),
+        axis.title.x=element_text(hjust=-0.625))
 #p5
 
 figure_1 <- (p2 | p3)/(p4 | p5)
