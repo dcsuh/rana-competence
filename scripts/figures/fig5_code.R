@@ -22,19 +22,19 @@ cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
 
 
 
-#cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
+m1 <- cor.test(clean$lag_cc,clean$Prevalence,method="spearman")
 
 
 size_corr <- clean %>% ggplot(.,aes(x=log10(lag_size), y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "log(Community Size)", y = "") +
+  labs(title = "", x = "log10(Host Abundance)", y = "") +
   theme(axis.text.y = element_blank(), axis.ticks.y=element_blank(), 
         axis.title = element_text(size=axis_title_size),
         axis.text = element_text(size=axis_text_size)) +
   ylim(0,0.65)
 
-#cor.test(clean$lag_size,clean$Prevalence,method="spearman")
+m2 <- cor.test(clean$lag_size,clean$Prevalence,method="spearman")
 
 
 temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
@@ -46,11 +46,16 @@ temp_corr <- clean %>% ggplot(.,aes(x=lag_temp, y=Prevalence)) +
         axis.text = element_text(size=axis_text_size)) +
   ylim(0,0.65)
 
-#cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
+m3 <- cor.test(clean$lag_temp,clean$Prevalence,method="spearman")
 
+#multiple comparisons test
+pvals <- c(m1$p.value,m2$p.value,m3$p.value)
+pvals
+p.adjust(pvals,method="holm")
 
 #plot everything together with patchwork
 figure_5 <- cc_corr| size_corr| temp_corr
+figure_5
 ggsave("fig_5.png",plot=figure_5,device="png",path=here("figures"))
 
 

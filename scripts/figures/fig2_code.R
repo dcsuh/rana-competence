@@ -10,7 +10,7 @@ source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
 figure_2 <- site_scores %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = size))+
-  labs(x="Principal Component 1 Rank", y = "Community Competence (CC)", size = "Abundance") + 
+  labs(x="Principal Component 1 Rank", y = "Community Competence (CC)", size = "Host\nAbundance") + 
   scale_shape_manual(values = rep(1:20, len = 20)) +
   scale_size_continuous(range = c(2,10)) +
   guides(shape=F) +
