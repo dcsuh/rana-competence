@@ -31,7 +31,6 @@ contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, m
   #make matrix
   mat <- matrix(1, nrow = 3, ncol = 3)
   
-  
   m <- nrow(data)
   
   #calculate eigenvalue using next-gen matrix. max eigenvalue is R0
