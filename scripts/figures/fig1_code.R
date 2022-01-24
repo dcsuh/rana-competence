@@ -81,7 +81,7 @@ plot_label_size = 20
 p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
   theme_classic()+
-  scale_colour_manual(values = c(NA, "red")) + 
+  scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
   labs(x = "Environmental", y = "Contact") +
   xlim(2,8) +
   ylim(2,10) + 
@@ -91,11 +91,11 @@ p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
 p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
   theme_classic()+
-  scale_colour_manual(values = c(NA, "red")) + 
+  scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
   new_scale_color()+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
-  scale_colour_manual(values = c(NA, "gray")) +
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
@@ -108,11 +108,11 @@ p3 <- size %>% filter(tot != 150) %>%
   ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
   theme_classic()+
-  scale_colour_manual(values = c(NA, "orange")) + 
+  scale_colour_manual(na.value = NA, values = c(NA, "orange")) + 
   new_scale_color()+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
-  scale_colour_manual(values = c(NA, "gray")) +
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
   xlim(2,8) +
   ylim(2,10) + 
@@ -122,11 +122,11 @@ p3 <- size %>% filter(tot != 150) %>%
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
-  scale_colour_manual(values = c(NA, "forestgreen")) + 
+  scale_colour_manual(na.value = NA, values = c(NA, "forestgreen")) + 
   new_scale_color()+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
-  scale_colour_manual(values = c(NA, "gray")) +
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x="Relative Environmental", y = "                                                               Relative Contact Transmission Rate", title = "C") +
   xlim(2,8) +
   ylim(2,10) +
@@ -139,11 +139,11 @@ p4
 p5 <- combined %>%
   ggplot(.,aes(x=prop3,y=prop1)) +
   geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE) +
-  scale_colour_manual(values = c(NA, "purple")) + 
+  scale_colour_manual(na.value = NA, values = c(NA, "purple")) + 
   new_scale_color()+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
-  scale_colour_manual(values = c(NA, "gray")) +
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "Transmission Rate", y = "", title = "D") +
   xlim(2,8) +
   ylim(2,10) +
