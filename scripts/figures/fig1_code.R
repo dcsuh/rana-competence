@@ -155,4 +155,4 @@ p5 <- combined %>%
 
 figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
-ggsave("fig_1.png",plot=figure_1,device="png",path=here("figures"),width = 11,height = 11.6,units = "cm")
+#ggsave("fig_1.png",plot=figure_1,device="png",path=here("figures"),width = 11,height = 11.6,units = "cm")
