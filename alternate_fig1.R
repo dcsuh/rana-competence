@@ -268,12 +268,12 @@ size_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) +
 half_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
   geom_contour_filled(aes(z=half_diff),breaks = breaks) +
   scale_fill_viridis_d(drop=F) +
+  theme(legend.position = "none") + 
   labs(x="environmental transmission", y = "contact transmission", title = "halflife")
 
 combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
   geom_contour_filled(aes(z=all_diff),breaks = breaks) +
   scale_fill_viridis_d(drop=F) +   
-  theme(legend.position = "none") + 
   labs(x="environmental transmission", y = "contact transmission", title = "combined")
 
 (comp_fig | size_fig)/(half_fig | combined_fig)
@@ -310,3 +310,34 @@ diff <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) +
   labs(x = "environmental", y = "", title = "difference (combined - sum of its parts)")
 
 comb / sum / diff
+
+#comparison between combined treament and additive effect by percent change
+
+ref_percent <- ref_comp %>% mutate(., comp_per = comp_diff/ref_eigen,
+                                   size_per = size_diff/ref_eigen,
+                                   half_per = half_diff/ref_eigen,
+                                   all_per = all_eigen/ref_eigen,
+                                   sum_per = diff_sum/ref_eigen)
+
+breaks <- c(0:20)*0.1
+
+comb_per <- ref_percent %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=all_per),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) +   
+  theme(legend.position = "none") + 
+  labs(x="", y = "", title = "combined")
+
+sum_per <- ref_percent %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=sum_per),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) + 
+  labs(x = "", y = "contact transmission", title = "sum of its parts")
+
+diff_per <- ref_percent %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=all_per-sum_per),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) + 
+  theme(legend.position = "none") +
+  labs(x = "environmental", y = "", title = "difference (combined - sum of its parts)")
+
+comb_per / sum_per / diff_per
+
+
