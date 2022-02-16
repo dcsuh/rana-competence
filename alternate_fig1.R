@@ -64,19 +64,19 @@ contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, m
   return(output)
 }
 
-reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0,trans_3_max = 0.001,
                      mort1 = 1/45,mort2 = 1/45,degr = 1/1.947799)
 
-composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0,trans_3_max = 0.001,
                        mort1 = 1/60,mort2 = 1/30,degr = 1/1.947799)
 
-size <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+size <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0,trans_3_max = 0.001,
                 mort1 = c(1/52.5),mort2 = c(1/52.5),degr = 1/1.947799)
 
-halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0,trans_3_max = 0.001,
                     mort1 = c(1/40),mort2 = 1/40,degr = 1/3.895598)
 
-combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0,trans_3_max = 0.001,
                     mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
 
@@ -205,6 +205,8 @@ combined %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) +
   scale_fill_gradient(low="white", high="red")
 
 
+#heatmaps and contour plots of difference between control and treatment
+
 ref_sel <- reference %>% select(prop3,prop1,eigen) %>% rename(.,ref_eigen = eigen)
 comp_sel <- composition %>% select(prop3,prop1,eigen) %>% rename(.,comp_eigen = eigen)
 size_sel <- size %>% select(prop3,prop1,eigen) %>% rename(.,size_eigen = eigen)
@@ -222,6 +224,8 @@ ref_comp %<>% mutate(.,comp_diff = comp_eigen-ref_eigen,
                      size_diff = size_eigen-ref_eigen,
                      half_diff = half_eigen-ref_eigen,
                      all_diff = all_eigen-ref_eigen)
+
+#heatmaps with contours
 
 comp_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=comp_diff)) + 
   geom_tile() +
@@ -245,6 +249,37 @@ combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=all_diff)) +
 
 (comp_fig | size_fig)/(half_fig | combined_fig)
 
+#filled contour with standardized breaks
+
+breaks <- c(-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,2)
+
+comp_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=comp_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) +
+  theme(legend.position = "none") + 
+  labs(x="environmental transmission", y = "contact transmission", title = "composition")
+
+size_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=size_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) +
+  theme(legend.position = "none") + 
+  labs(x="environmental transmission", y = "contact transmission", title = "abundance")
+
+half_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=half_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) +
+  labs(x="environmental transmission", y = "contact transmission", title = "halflife")
+
+combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=all_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) +   
+  theme(legend.position = "none") + 
+  labs(x="environmental transmission", y = "contact transmission", title = "combined")
+
+(comp_fig | size_fig)/(half_fig | combined_fig)
+
+#comparison between combined treatment and the additive effect
+
 ref_comp %<>% rowwise %>% mutate(diff_sum = comp_diff + size_diff + half_diff)
 ref_comp %<>% rowwise %>% mutate(effect = all_diff-diff_sum)
 
@@ -255,24 +290,23 @@ ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=effect)) +
 ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
   geom_contour_filled(aes(z=effect))
 
-breaks <- c(-0.1,0,0.1,0.2,0.3,0.4,0.5,2)
+breaks <- c(0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9)
 
-comp_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
-  geom_contour_filled(aes(z=comp_diff),breaks = breaks) +
-  scale_fill_viridis_d(drop=F)
-
-size_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
-  geom_contour_filled(aes(z=size_diff),breaks = breaks) +
-  scale_fill_viridis_d(drop=F)
-
-half_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
-  geom_contour_filled(aes(z=half_diff),breaks = breaks) +
-  scale_fill_viridis_d(drop=F)
-
-combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+comb <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
   geom_contour_filled(aes(z=all_diff),breaks = breaks) +
-  scale_fill_viridis_d(drop=F)
+  scale_fill_viridis_d(drop=F) +   
+  theme(legend.position = "none") + 
+  labs(x="", y = "", title = "combined")
 
-(comp_fig | size_fig)/(half_fig | combined_fig)
+sum <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=diff_sum),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) + 
+  labs(x = "", y = "contact transmission", title = "sum of its parts")
 
+diff <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=effect),breaks = breaks) +
+  scale_fill_viridis_d(drop=F) + 
+  theme(legend.position = "none") +
+  labs(x = "environmental", y = "", title = "difference (combined - sum of its parts)")
 
+comb / sum / diff
