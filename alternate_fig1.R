@@ -64,15 +64,20 @@ contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, m
   return(output)
 }
 
-reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/45,mort2 = 1/45,degr = 1/1.947799)
+reference <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+                     mort1 = 1/45,mort2 = 1/45,degr = 1/1.947799)
 
-composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = 1/60,mort2 = 1/30,degr = 1/1.947799)
+composition <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+                       mort1 = 1/60,mort2 = 1/30,degr = 1/1.947799)
 
-size <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/52.5),mort2 = c(1/52.5),degr = 1/1.947799)
+size <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+                mort1 = c(1/52.5),mort2 = c(1/52.5),degr = 1/1.947799)
 
-halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/40),mort2 = 1/40,degr = 1/3.895598)
+halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+                    mort1 = c(1/40),mort2 = 1/40,degr = 1/3.895598)
 
-combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
+combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.002,trans_3_min = 0.0001,trans_3_max = 0.001,
+                    mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
 
 axis_text_size = 8
@@ -182,3 +187,92 @@ fig_2 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
   xlim(1,8) +
   ylim(1,14) + 
   labs(title = "gray=reference; red=composition; orange=abundance; green=halflife; purple=combined")
+
+reference %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="red")
+composition %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="red")
+size %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="red")
+halflife %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="red")
+combined %>% ggplot(.,aes(x=prop3,y=prop1,fill=eigen)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="red")
+
+
+ref_sel <- reference %>% select(prop3,prop1,eigen) %>% rename(.,ref_eigen = eigen)
+comp_sel <- composition %>% select(prop3,prop1,eigen) %>% rename(.,comp_eigen = eigen)
+size_sel <- size %>% select(prop3,prop1,eigen) %>% rename(.,size_eigen = eigen)
+halflife_sel <- halflife %>% select(prop3,prop1,eigen) %>% rename(.,half_eigen = eigen)
+combined_sel <- combined %>% select(prop3,prop1,eigen) %>% rename(.,all_eigen = eigen)
+
+
+ref_comp <- inner_join(ref_sel,comp_sel, by = c("prop3","prop1"))
+ref_comp %<>% inner_join(.,size_sel, by =c("prop3","prop1"))
+ref_comp %<>% inner_join(.,halflife_sel, by =c("prop3","prop1"))
+ref_comp %<>% inner_join(.,combined_sel, by =c("prop3","prop1"))
+
+
+ref_comp %<>% mutate(.,comp_diff = comp_eigen-ref_eigen,
+                     size_diff = size_eigen-ref_eigen,
+                     half_diff = half_eigen-ref_eigen,
+                     all_diff = all_eigen-ref_eigen)
+
+comp_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=comp_diff)) + 
+  geom_tile() +
+  scale_fill_gradient2() + 
+  geom_contour(aes(z=comp_diff))
+
+size_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=size_diff)) + 
+  geom_tile() +
+  scale_fill_gradient2() + 
+  geom_contour(aes(z=size_diff))
+
+half_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=half_diff)) + 
+  geom_tile() +
+  scale_fill_gradient2() + 
+  geom_contour(aes(z=half_diff))
+
+combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=all_diff)) + 
+  geom_tile() +
+  scale_fill_gradient2() + 
+  geom_contour(aes(z=all_diff))
+
+(comp_fig | size_fig)/(half_fig | combined_fig)
+
+ref_comp %<>% rowwise %>% mutate(diff_sum = comp_diff + size_diff + half_diff)
+ref_comp %<>% rowwise %>% mutate(effect = all_diff-diff_sum)
+
+ref_comp %>% ggplot(.,aes(x=prop3,y=prop1,fill=effect)) + 
+  geom_tile() +
+  scale_fill_gradient2() + geom_contour(aes(z=effect))
+
+ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=effect))
+
+breaks <- c(-0.1,0,0.1,0.2,0.3,0.4,0.5,2)
+
+comp_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=comp_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F)
+
+size_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=size_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F)
+
+half_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=half_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F)
+
+combined_fig <- ref_comp %>% ggplot(.,aes(x=prop3,y=prop1)) + 
+  geom_contour_filled(aes(z=all_diff),breaks = breaks) +
+  scale_fill_viridis_d(drop=F)
+
+(comp_fig | size_fig)/(half_fig | combined_fig)
+
+
