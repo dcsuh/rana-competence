@@ -2,16 +2,13 @@ library(here)
 
 source(here("base","src.R"))
 
-
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-here()
 data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
 tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
 names <- read_csv(here("raw_data/species_names_ids.csv"))
 
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#makes community summary where each row is one wetland in one month (what we consider as unique communities)
+#includes data on community competence, prevalence, abundance of each species, and abundances of aggregated high and low competent species
 comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
   dplyr::select(-ABAmb, -ABSal) %>%  
   mutate(., size = rowSums(.[5:25]), 
@@ -21,8 +18,10 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#includes average viral load data for each species
+#each row is one host species
 vl <- data %>% dplyr::select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
 vl %<>% mutate(species_code = as.double(gsub("vl.","",vl$name)))
 vl %<>% full_join(., names, by="species_code")
@@ -31,8 +30,9 @@ vl$value %<>% na_if(.,0)
 vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
 vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
 
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# makes community matrix where each cell is the abundance of one species at one unique wetland-month combination
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
 community_mat$Month <- gsub("Month", "", community_mat$Month.1)
 community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
@@ -43,26 +43,33 @@ presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 #select for environmental variables
-env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
+env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% 
+  distinct() %>% arrange(.,WetAltID) 
 env$Month <- gsub("Month", "", env$Month.1)
 #make siteID rowname
-env %<>% mutate(., siteID = paste(env$WetAltID, env$Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, MeanAirT:Perimeter)
+env %<>% mutate(., siteID = paste(env$WetAltID, env$Month, sep = "_")) %>% 
+  distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, MeanAirT:Perimeter)
 
-#need to remove duplicated rows and determine what to do with NA's
-#env_mat <- env %>% column_to_rownames(., var = "siteID")
+#duplicated rows because canopy cover is slightly different. This line keeps only the first instance
+#13_1 and 19_4 were duplicated and their percent canopy cover were within three percent of their duplicate
+env %<>% filter(duplicated(env$siteID)==F)
 
+env_mat <- env %>% column_to_rownames(., var = "siteID")
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 #Get species richness from pres/abs matrix
+#each row is one unique wetland-month combination and the host species richness
 richness <- tibble(siteID="", richness=1:nrow(presence_mat))
 for (i in 1:nrow(presence_mat)){
   richness[i,1] <- rownames(presence_mat)[i]
   richness[i,2] <- sum(presence_mat[i,])
 }
 
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#same as community summary data but with added columns for PC1 and PC2 scores and PC1 rank
 #pca on community matrix and gather scores for first two principal components
 pca <- princomp(abundance_mat, scores = TRUE)
 summary(pca)
@@ -78,19 +85,10 @@ site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "
 site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
 
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#select for environmental variables
-env <- data %>% dplyr::select(WetAltID, Month.1, MeanAirT, MeanWaterTempPredC, DryingScore, CanopyCover, Area, Perimeter) %>% distinct() %>% arrange(.,WetAltID) 
-env$Month.1 <- gsub("Month", "", env$Month.1)
-#make siteID rowname
-env$siteID <- paste(env$WetAltID, env$Month.1, sep = "_")
-env %<>% dplyr::select(-WetAltID, -Month.1)
-#remove duplicated rows (siteID is duplicated but env. variables are not... not sure why this is)
-env <- env[-c(53, 90),]
-env_mat <- env %>% column_to_rownames(., var = "siteID")
-
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#same as community summary data with data on richness and evenness with and without lags included
 richness_cc <- full_join(comm_summ, richness, by = "siteID")
 
 #J = H'/ln(S)
@@ -125,6 +123,9 @@ lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#not sure if this is being used for anything
+
 #barplots comparing community composition
 abundances <- comm_summ %>% full_join(.,evenness)
 
@@ -136,6 +137,8 @@ abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by tota
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#same as community summary data but with out of sequence months removed
 prev_cc <- comm_summ
 
 order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
