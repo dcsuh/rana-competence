@@ -3,12 +3,13 @@
 #This script creates figure 4
 
 
-library(ggnewscale)
-library(ggtree)
-library(rotl)
 library(here)
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+source(here("base","src.R"))
+
+
+vl <- readRDS(here("processed_data","vl.rds"))
+pruned_tree <- readRDS(here("processed_data","tree.rds"))
 
 
 #format data for phylo tree

@@ -210,6 +210,7 @@ if(dir.exists(here("processed_data")) == FALSE) {
 
 saveRDS(comm_data, file = here("processed_data","comm_data.rds"))
 saveRDS(vl, file = here("processed_data","vl.rds"))
+saveRDS(pruned_tree, file = here("processed_data","tree.rds"))
 
 
 

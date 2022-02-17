@@ -5,6 +5,8 @@
 
 library(here)
 
+source(here("base","src.R"))
+
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 
