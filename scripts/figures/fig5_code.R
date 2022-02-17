@@ -8,10 +8,30 @@ library(here)
 source(here("base","src.R"))
 
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 axis_title_size = 18
 axis_text_size = 15
+
+prev_cc <- comm_data
+
+order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
+
+#this removes months out of sequence
+order <- order[-c(4,14,47,90),]
+
+order %<>% add_column(lag_cc = NA, lag_size = NA, lag_temp = NA)
+
+
+#create new column that includes previous month's value for cc
+for(n in 2:nrow(order)){
+  order$lag_cc[n] <- order$cc[n-1]
+  order$lag_size[n] <- order$size[n-1]
+  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 #plot cleaned plot with lag
 cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +

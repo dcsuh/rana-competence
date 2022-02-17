@@ -6,8 +6,26 @@ library(here)
 
 source(here("base","src.R"))
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
+comm_data <- comm_data[order(comm_data$WetAltID),]
+
+
+#create new df for ordered sites to test lagged richness and evenness on prevalence
+lag_evenness <- comm_data[-c(4,14,47,90),] #brute force remove site_months out of sequence
+lag_evenness$lag_richness <- c(0)
+lag_evenness$lag_J <- c(0)
+lag_evenness$lag_cc <- c(0)
+lag_evenness$lag_size <- c(0)
+for(n in 2:92){
+  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
+  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
+  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
+  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 #fit two lines to cc_evenness_prev plot
 lag_evenness$high <- c(0)

@@ -72,49 +72,7 @@ comm_data <- comm_summ %>% left_join(., evenness)
 comm_data %<>% left_join(., site_scores)
 
 
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#create new df for ordered sites to test lagged richness and evenness on prevalence
-lag_evenness <- evenness[-c(4,14,47,90),] #brute force remove site_months out of sequence
-lag_evenness$lag_richness <- c(0)
-lag_evenness$lag_J <- c(0)
-lag_evenness$lag_cc <- c(0)
-lag_evenness$lag_size <- c(0)
-for(n in 2:92){
-  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
-  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
-  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
-  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
-}
-
-#remove the first entry for each wetland to remove the carryover from the last wetland
-lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
-
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#same as community summary data but with out of sequence months removed
-prev_cc <- comm_summ
-
-order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
-
-#this removes months out of sequence
-order <- order[-c(4,14,47,90),]
-
-order %<>% add_column(lag_cc = NA, lag_size = NA, lag_temp = NA)
-
-
-#create new column that includes previous month's value for cc
-for(n in 2:nrow(order)){
-  order$lag_cc[n] <- order$cc[n-1]
-  order$lag_size[n] <- order$size[n-1]
-  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
-}
-
-#remove the first entry for each wetland to remove the carryover from the last wetland
-clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
-
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #includes average viral load data for each species
@@ -154,24 +112,6 @@ env %<>% mutate(., siteID = paste(env$WetAltID, env$Month, sep = "_")) %>%
 env %<>% filter(duplicated(env$siteID)==F)
 
 env_mat <- env %>% column_to_rownames(., var = "siteID")
-
-
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#not sure if this is being used for anything
-
-#barplots comparing community composition
-#abundances <- comm_summ %>% full_join(.,evenness)
-
-
-#abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by total community size
-#abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
-#abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
-
-
-
-
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
