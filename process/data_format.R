@@ -19,6 +19,103 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#same as community summary data but with added columns for PC1 and PC2 scores and PC1 rank
+#pca on community matrix and gather scores for first two principal components
+pca <- princomp(abundance_mat, scores = TRUE)
+summary(pca)
+pca_scores <- as.data.frame(pca$scores)
+pca_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
+site_scores  <- full_join(comm_summ, pca_scores, by = "siteID")
+
+#order months
+site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+
+#rank order components and plot in order
+site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#Get species richness from pres/abs matrix
+#each row is one unique wetland-month combination and the host species richness
+richness <- tibble(siteID="", richness=1:nrow(presence_mat))
+for (i in 1:nrow(presence_mat)){
+  richness[i,1] <- rownames(presence_mat)[i]
+  richness[i,2] <- sum(presence_mat[i,])
+}
+
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#same as community summary data with data on richness and evenness with and without lags included
+richness_cc <- full_join(comm_summ, richness, by = "siteID")
+
+#J = H'/ln(S)
+#H' = Shannon diversity index
+#S = Species Richness
+
+shannon <- as_tibble(vegan::diversity(abundance_mat, index = "shannon"),rownames= "siteID")
+
+shannon %<>% mutate(h = value) %>% dplyr::select(siteID, h)
+
+evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
+
+evenness %<>% full_join(shannon, evenness, by = "siteID")
+
+evenness %<>% mutate(J = h/lnS) %>% rowwise()
+evenness <- evenness[order(evenness$WetAltID),]
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#make final community data
+comm_data <- comm_summ %>% left_join(., evenness)
+comm_data %<>% left_join(., site_scores)
+
+
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#create new df for ordered sites to test lagged richness and evenness on prevalence
+lag_evenness <- evenness[-c(4,14,47,90),] #brute force remove site_months out of sequence
+lag_evenness$lag_richness <- c(0)
+lag_evenness$lag_J <- c(0)
+lag_evenness$lag_cc <- c(0)
+lag_evenness$lag_size <- c(0)
+for(n in 2:92){
+  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
+  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
+  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
+  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+#same as community summary data but with out of sequence months removed
+prev_cc <- comm_summ
+
+order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
+
+#this removes months out of sequence
+order <- order[-c(4,14,47,90),]
+
+order %<>% add_column(lag_cc = NA, lag_size = NA, lag_temp = NA)
+
+
+#create new column that includes previous month's value for cc
+for(n in 2:nrow(order)){
+  order$lag_cc[n] <- order$cc[n-1]
+  order$lag_size[n] <- order$size[n-1]
+  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 #includes average viral load data for each species
 #each row is one host species
@@ -58,68 +155,6 @@ env %<>% filter(duplicated(env$siteID)==F)
 
 env_mat <- env %>% column_to_rownames(., var = "siteID")
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#Get species richness from pres/abs matrix
-#each row is one unique wetland-month combination and the host species richness
-richness <- tibble(siteID="", richness=1:nrow(presence_mat))
-for (i in 1:nrow(presence_mat)){
-  richness[i,1] <- rownames(presence_mat)[i]
-  richness[i,2] <- sum(presence_mat[i,])
-}
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-#same as community summary data but with added columns for PC1 and PC2 scores and PC1 rank
-#pca on community matrix and gather scores for first two principal components
-pca <- princomp(abundance_mat, scores = TRUE)
-summary(pca)
-pca_scores <- as.data.frame(pca$scores)
-pca_scores %<>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
-
-site_scores  <- full_join(comm_summ, pca_scores, by = "siteID")
-
-#order months
-site_scores$Month <- factor(site_scores$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
-
-#rank order components and plot in order
-site_scores %<>% mutate(pc1Rank=dense_rank(Comp.1))
-
-
-
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-#same as community summary data with data on richness and evenness with and without lags included
-richness_cc <- full_join(comm_summ, richness, by = "siteID")
-
-#J = H'/ln(S)
-#H' = Shannon diversity index
-#S = Species Richness
-
-shannon <- as_tibble(vegan::diversity(abundance_mat, index = "shannon"),rownames= "siteID")
-
-shannon %<>% mutate(h = value) %>% dplyr::select(siteID, h)
-
-evenness <- richness_cc %>% mutate(lnS = log(richness)) %>% rowwise()
-
-evenness %<>% full_join(shannon, evenness, by = "siteID")
-
-evenness %<>% mutate(J = h/lnS) %>% rowwise()
-evenness <- evenness[order(evenness$WetAltID),]
-#create new df for ordered sites to test lagged richness and evenness on prevalence
-lag_evenness <- evenness[-c(4,14,47,90),] #brute force remove site_months out of sequence
-lag_evenness$lag_richness <- c(0)
-lag_evenness$lag_J <- c(0)
-lag_evenness$lag_cc <- c(0)
-lag_evenness$lag_size <- c(0)
-for(n in 2:92){
-  lag_evenness$lag_richness[n] <- lag_evenness$richness[n-1]
-  lag_evenness$lag_J[n] <- lag_evenness$J[n-1]
-  lag_evenness$lag_cc[n] <- lag_evenness$cc[n-1]
-  lag_evenness$lag_size[n] <- lag_evenness$size[n-1]
-}
-
-#remove the first entry for each wetland to remove the carryover from the last wetland
-lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -127,37 +162,16 @@ lag_evenness %<>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 #not sure if this is being used for anything
 
 #barplots comparing community composition
-abundances <- comm_summ %>% full_join(.,evenness)
+#abundances <- comm_summ %>% full_join(.,evenness)
 
 
-abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by total community size
+#abundances$siteID <- reorder(abundances$siteID, -abundances$size) #order by total community size
 #abundances$siteID <- reorder(abundances$siteID, -abundances$cc) #order by community competence
 #abundances$siteID <- reorder(abundances$siteID, -abundances$J) #order by Pielou's J
 
 
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-#same as community summary data but with out of sequence months removed
-prev_cc <- comm_summ
-
-order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
-
-#this removes months out of sequence
-order <- order[-c(4,14,47,90),]
-
-order %<>% add_column(lag_cc = NA, lag_size = NA, lag_temp = NA)
-
-
-#create new column that includes previous month's value for cc
-for(n in 2:nrow(order)){
-  order$lag_cc[n] <- order$cc[n-1]
-  order$lag_size[n] <- order$size[n-1]
-  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
-}
-
-#remove the first entry for each wetland to remove the carryover from the last wetland
-clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -181,4 +195,23 @@ mySpp <- c(union(names$tnrs_name,names$species_name),"Bufo terrestris") #make ve
 mySpp <- gsub(" ","_",mySpp)
 getRid <- setdiff(tree$tip.label,mySpp)
 pruned_tree <- drop.tip(tree,getRid)
+
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# please process data before this line 
+if(dir.exists(here("processed_data")) == FALSE) {
+  message("Welcome! Let's make some room for the processed data.")
+  dir.create(here("processed_data")) 
+} else {
+  message("/processed_data exists! Proceeeding to save.")
+}
+
+
+saveRDS(comm_data, file = here("processed_data","comm_data.rds"))
+saveRDS(vl, file = here("processed_data","vl.rds"))
+
+
+
+
 
