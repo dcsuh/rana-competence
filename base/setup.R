@@ -12,7 +12,7 @@ install_if_necessary <- function(x) {
 
 
 # all the necessary packages go here
-pckg_names <- c("tidyverse", "magrittr", "here", "vegan", "patchwork", "ggnewscale", "ape", "rotl", "picante", "ggtree")
+pckg_names <- c("tidyverse", "magrittr", "here", "vegan", "patchwork", "ggnewscale", "ape", "rotl", "picante", "ggtree", "metacom", "ggrepel")
 
 # load/install packages
 lapply(pckg_names, 

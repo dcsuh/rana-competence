@@ -4,10 +4,11 @@
 #Figure 2 in rv_cc manuscript
 
 library(here)
-library(metacom)
+
+source(here("base","src.R"))
 
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+community_mat <- readRDS(here("processed_data","comm_mat.rds"))
 
 community_mat %<>% column_to_rownames(., var = "siteID")
 

@@ -10,14 +10,17 @@
 
 library(here)
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+source(here("base","src.R"))
 
+
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 plot(pruned_tree)
 pd <- cophenetic(pruned_tree)
 rownames(pd) <- gsub("_"," ",rownames(pd))
 #mpd and min.pd
-y <- abundances
+
+y <- comm_data
 y %<>% pivot_longer(starts_with("AB"),names_to="species",values_to="abund")
 names2 <- names
 names2 %<>% mutate(species=paste("AB",species_code,sep=""))

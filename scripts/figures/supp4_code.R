@@ -4,10 +4,12 @@
 #This script creates supplementary figure 3: PCA
 
 library(here)
-library(ggrepel)
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+source(here("base","src.R"))
 
+
+abundance_mat <- readRDS(here("processed_data","abund_mat.rds"))
+env_mat <- readRDS(here("processed_data","env_mat.rds"))
 
 
 community_pca <- princomp(abundance_mat, scores = TRUE)

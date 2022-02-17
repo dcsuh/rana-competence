@@ -5,8 +5,10 @@
 
 library(here)
 
+source(here("base","src.R"))
 
-source(knitr::purl(here("/scripts/data_format.Rmd"), quiet=TRUE))
+
+vl <- readRDS(here("processed_data","vl.rds"))
 
 supp1 <- vl %>% arrange(log10_value) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 

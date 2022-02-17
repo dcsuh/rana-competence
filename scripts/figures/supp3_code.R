@@ -6,17 +6,19 @@
 
 library(here)
 
+source(here("base","src.R"))
 
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
 
-evenness$Month <- factor(evenness$Month,levels=c("Feb","Mar","Apr","May","Jun","Jul"))
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
-supp3a <- evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + ylab("Community Competence")
+comm_data$Month <- factor(comm_data$Month,levels=c("Feb","Mar","Apr","May","Jun","Jul"))
 
-evenness %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
+supp3a <- comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + ylab("Community Competence")
 
-supp3b <- evenness %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
-cor.test(log10(evenness$size), evenness$cc, method = "spearman")
+comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
+
+supp3b <- comm_data %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
+cor.test(log10(comm_data$size), evenness$cc, method = "spearman")
   
 ggsave("supp3a.png",plot=supp3a,device="png",path=here("figures"))
 ggsave("supp3b.png",plot=supp3b,device="png",path=here("figures"))
