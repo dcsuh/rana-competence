@@ -1,20 +1,14 @@
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-library(tidyverse)
-library(magrittr)
-library(vegan)
-library(patchwork)
-library(ggnewscale)
-library(ape)
-library(rotl)
-library(picante)
 library(here)
+
+source(here("base","src.R"))
+
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 here()
-data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
-tree <- ape::read.nexus(here("data/asup_just_tree.txt"))
-names <- read_csv(here("data/species_names_ids.csv"))
+data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
+names <- read_csv(here("raw_data/species_names_ids.csv"))
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
