@@ -7,7 +7,7 @@ library(here)
 
 source(here("base","src.R"))
 
-
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
 vl <- readRDS(here("processed_data","vl.rds"))
 pruned_tree <- readRDS(here("processed_data","tree.rds"))
 
@@ -40,8 +40,8 @@ vl_tree <- pruned_tree %>% ggtree(.,) %<+% vl #integrate vl data into tree and m
 
 
 #format data for bar plots
-abundances$siteID <- reorder(abundances$siteID, -abundances$cc)
-z <- abundances
+comm_data$siteID <- reorder(comm_data$siteID, -comm_data$cc)
+z <- comm_data
 z %<>% select(siteID,ABLow,AB26,AB42,AB21,AB9,J,size,cc)
 z %<>% mutate(Low=ABLow)
 z %<>% pivot_longer(cols=2:6,names_to="Species",values_to="abund") #every row is a site-month-species?
@@ -55,7 +55,7 @@ z %<>% mutate(Species=if_else(Species=="ABLow","Other (low competence)",Species)
 #z$Species <- factor(z$Species,levels=c(top4sampled,"Other (low competence)"))
 z %<>% mutate(Species=fct_relevel(Species,c(top4sampled,"Other (low competence)")))
 ####### plot ########
-cc_plot <- abundances %>% dplyr::select(siteID, cc) %>% distinct() %>%
+cc_plot <- comm_data %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(color="gray",fill="gray",position = position_dodge(), stat = "identity", width = 0.8) + 
   theme_minimal() +
