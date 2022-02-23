@@ -14,6 +14,8 @@ source(here("base","src.R"))
 
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
+pruned_tree <- readRDS(here("processed_data","pruned_tree.rds"))
+
 
 plot(pruned_tree)
 pd <- cophenetic(pruned_tree)
