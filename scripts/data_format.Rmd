@@ -23,9 +23,9 @@ library(here)
 Data
 ```{r}
 here()
-data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
-tree <- ape::read.nexus(here("data/asup_just_tree.txt"))
-names <- read_csv(here("data/species_names_ids.csv"))
+data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
+names <- read_csv(here("raw_data/species_names_ids.csv"))
 ```
 
 community summary - includes each site_month as rows and variables cc, size, prevalenceetc... as columns
