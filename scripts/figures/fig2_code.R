@@ -23,4 +23,4 @@ figure_2 <- comm_data %>% ggplot(.,aes(x=pc1Rank,y=cc))+
 
 figure_2
   
-ggsave("fig_2.png",plot=figure_2,device="png",path=here("figures"))
+#ggsave("fig_2.png",plot=figure_2,device="png",path=here("figures"))

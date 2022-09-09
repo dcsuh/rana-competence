@@ -69,7 +69,7 @@ figure_3 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
         legend.text = element_text(size=10))
 
 figure_3
-ggsave("fig_3.png",plot=figure_3,device="png",path=here("figures"))
+#ggsave("fig_3.png",plot=figure_3,device="png",path=here("figures"))
 
 
 
