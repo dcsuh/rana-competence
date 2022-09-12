@@ -1,0 +1,55 @@
+---
+title: "workshop"
+author: "Daniel Suh"
+date: "2022-09-12"
+output: html_document
+---
+
+
+```{r}
+library(here)
+
+source(here("base","src.R"))
+```
+
+
+```{r}
+data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
+names <- read_csv(here("raw_data/species_names_ids.csv"))
+```
+
+
+```{r}
+comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
+  dplyr::select(-ABAmb, -ABSal) %>%  
+  mutate(., size = rowSums(.[5:25]), 
+    ABHigh = (AB9 + AB21 + AB26 + AB42), 
+    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
+  distinct()
+comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
+```
+
+```{r}
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat$Month <- gsub("Month", "", community_mat$Month.1)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+
+#make abundance and pres/abs matrices with rownames as siteIDs
+abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
+presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
+```
+
+```{r}
+log_abun_mat <- log1p(abundance_mat)
+
+bc_dist <- vegdist(log_abun_mat, method = "bray") #bray-curtis dissimilarity is default
+
+bc_dist_mat <- as.matrix(bc_dist)
+bc_dist_df <- melt(bc_dist_mat, varnames=c("row", "col"))
+
+ggplot(bc_dist_df, aes(x = col, y = row, fill = value)) + geom_tile()
+```
+
+
