@@ -19,6 +19,15 @@ tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
 names <- read_csv(here("raw_data/species_names_ids.csv"))
 ```
 
+# Questions
+
+Do communities that are similar in community composition have similar community competence values?
+
+Can communities with different community compositions have similar community competence values?
+
+How are these communities distributed across space and time?
+i.e. how much spatial and temporal autocorrelation is there between sites in terms of community composition and community competence?
+
 
 ```{r}
 comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
@@ -41,15 +50,52 @@ abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
 presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
 ```
 
+Use Bray-Curtis distances to analyze how similar sites are to each other
+Higher BC distance means more dissimilar
+1 means perfect mismatch
 ```{r}
 log_abun_mat <- log1p(abundance_mat)
 
 bc_dist <- vegdist(log_abun_mat, method = "bray") #bray-curtis dissimilarity is default
 
 bc_dist_mat <- as.matrix(bc_dist)
-bc_dist_df <- melt(bc_dist_mat, varnames=c("row", "col"))
+bc_dist_df <- melt(bc_dist_mat, varnames=c("row", "col"), value.name = "bc_dist")
 
-ggplot(bc_dist_df, aes(x = col, y = row, fill = value)) + geom_tile()
+ggplot(bc_dist_df, aes(x = col, y = row, fill = bc_dist)) + geom_tile()
+```
+
+Manhattan method is the absolute value of the difference between two values
+So higher distance means larger difference
+Normalized to have range 0 to 1
+```{r}
+cc_diff <- comm_summ %>% dplyr::select(siteID, cc) %>% mutate(log_cc = log1p(cc)) %>% dplyr::select(-cc)
+cc_dist <- dist(cc_diff, method = "manhattan")
+cc_diff_mat <- as.matrix(cc_dist, labels = T)
+colnames(cc_diff_mat) <- cc_diff[[1]]
+rownames(cc_diff_mat) <- cc_diff[[1]]
+cc_diff_df <- melt(cc_diff_mat, varnames=c("row", "col"), value.name = "cc_dist") %>% 
+  mutate(cc_norm = (cc_dist-min(.$cc_dist))/(max(.$cc_dist)-min(.$cc_dist)))
+
+ggplot(cc_diff_df, aes(x = col, y = row, fill = cc_norm)) + geom_tile()
 ```
 
 
+```{r}
+bc_cc_df <- left_join(cc_diff_df, bc_dist_df)
+bc_cc_df %<>% mutate(diff = abs(bc_dist-cc_norm))
+
+ggplot(bc_cc_df, aes(x = col, y = row, fill = diff)) + geom_tile()
+
+bc_cc_df %>% filter(bc_dist!=1) %>% ggplot(.,aes(x=cc_norm, y=bc_dist)) + geom_point() + geom_smooth(method = "lm")
+```
+
+
+Principal Component Ranking may not be reliable as a proxy for community similarity because of double-zeroes
+
+If two sites both have zeroes for a species then that does not show that a site is similar but only shows that both sites may be unsuitable for the species
+
+Bray-Curtis dissimilarity does not face this limitation
+
+But the question is how similar are sites with the similar community competence?
+
+The manhattan distance is equivalent to bray-curtis distance
