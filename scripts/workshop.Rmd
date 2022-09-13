@@ -10,6 +10,8 @@ output: html_document
 library(here)
 
 source(here("base","src.R"))
+
+library(reshape2)
 ```
 
 
@@ -91,6 +93,9 @@ ggplot(cc_diff_df, aes(x = col, y = row, fill = cc_norm)) + geom_tile()
 
 ```{r}
 bc_cc_df <- left_join(cc_diff_df, bc_dist_df)
+
+bc_cc_df %<>% mutate(diff = cc_norm-bc_dist)
+
 ```
 
 
@@ -111,7 +116,6 @@ bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=cc_norm, y=bc_dist)) + geom_poin
 If diff is set as community competence similarity minus community composition similarity then a low value will mean the difference between composition similarity is large compared to competence similarity. Either competence similarity is very high (cc dist is low) and composition similarity (bc dist) is moderate or high OR composition similarity is low (i.e. BC dist is high) and competence similarity (cc dist is moderate or low)
 
 ```{r}
-bc_cc_df %<>% mutate(diff = cc_norm-bc_dist)
 
 ggplot(bc_cc_df, aes(x = col, y = row, fill = diff)) + geom_tile()
 
