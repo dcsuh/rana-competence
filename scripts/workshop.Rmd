@@ -113,7 +113,7 @@ But if community competence can be achieved through a variety of different commu
 So we are looking for low cc distance between two sites but high bc distance
 An upward trend is expected because more dissimilar sites in terms of competence probably have different composition
 ```{r}
-bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=cc_norm, y=bc_dist)) + geom_point() + geom_smooth(method = "lm")
+bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=bc_dist, y=cc_norm)) + geom_point() + geom_smooth(method = "lm")
 ```
 
 If diff is set as community competence similarity minus community composition similarity then a low value will mean the difference between composition similarity is large compared to competence similarity. Either competence similarity is very high (cc dist is low) and composition similarity (bc dist) is moderate or high OR composition similarity is low (i.e. BC dist is high) and competence similarity (cc dist is moderate or low)
@@ -124,7 +124,6 @@ ggplot(bc_cc_df, aes(x = col, y = row, fill = diff)) + geom_tile()
 
 bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=diff)) + geom_histogram()
 ```
-
 
 
 Principal Component Ranking may not be reliable as a proxy for community similarity because of double-zeroes
@@ -142,3 +141,37 @@ sometimes similar and sometimes not
 ## next step
 
 do PCA after Hellinger transformation of data. PCA has the double zero problem but Hellinger distance avoids that problem and avoids overweighting of abundance data by turning absolute species abundances into relative abundances. more info [here](https://davidzeleny.net/blog/2022/03/17/euclidean-distance-is-sensitive-to-double-zero-problem-while-hellinger-is-not-visualization/)
+
+
+```{r}
+pca <- princomp(abundance_mat)
+
+biplot(pca)
+
+abundance_hellinger <- decostand(log1p(abundance_mat), 'hellinger')
+
+tb_pca <- princomp(abundance_hellinger)
+
+biplot(tb_pca)
+```
+
+```{r}
+tb_pca_scores <- as.data.frame(tb_pca$scores) %>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
+tb_pca_scores_summ <- left_join(comm_summ, tb_pca_scores, by = "siteID")
+
+tb_pca_scores_summ$Month <- factor(tb_pca_scores_summ$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+
+tb_pca_scores_summ %<>% mutate(pc1Rank=dense_rank(Comp.1))
+
+tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point()
+
+tb_pca_scores_summ %>% ggplot(.,aes(x=Comp.1, y=cc)) + geom_point() + geom_smooth(method = "loess")
+
+```
+
+
+### Let's try to explain the residuals
+
+The residuals from the cc_norm ~ bc_dist represent when the community competence is more or less similar than expected given the similarity of the community. If community composition is not explaining similarity in community competence then this must be due to the two communities having 
+
