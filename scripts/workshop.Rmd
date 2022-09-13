@@ -183,5 +183,55 @@ tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point(aes(color = M
 
 ### Let's try to explain the residuals
 
-The residuals from the cc_norm ~ bc_dist represent when the community competence is more or less similar than expected given the similarity of the community. If community composition is not explaining similarity in community competence then this must be due to the two communities having 
+The residuals from the cc_norm ~ bc_dist represent when the community competence is more or less similar than expected given the similarity of the community. If community composition is not explaining similarity in community competence then this must be due to the communities having a tradeoff where competence is derived from a different class of hosts (low competence vs. high competence; abundant low competence hosts can result in community competence that is similar to rare high competent host) or a substitution of hosts (proportion of low vs. high competence hosts may be similar but the identity of those hosts may be different). These situations will result in community competence that is unexplained by community composition (i.e. high or low residual).
+
+
+plot residuals on y-axis and pairwise difference in evenness (tradeoff) and different in proportion high-low competence (substitution) on x-axis
+```{r}
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+
+delta_j <- comm_data %>% select(siteID, J)
+
+delta_p <- comm_data %>% select(siteID, ABHigh, ABLow) %>% mutate(P = ABHigh/(ABHigh+ABLow)) %>% select(-c(ABHigh, ABLow))
+
+```
+
+```{r}
+j_dist <- dist(delta_j, method = "manhattan")
+j_dist_mat <- as.matrix(j_dist, labels = T)
+colnames(j_dist_mat) <- delta_j[[1]]
+rownames(j_dist_mat) <- delta_j[[1]]
+
+j_dist_df <- melt(j_dist_mat, varnames=c("row", "col"), value.name = "j_dist")
+```
+
+```{r}
+p_dist <- dist(delta_p, method = "manhattan")
+p_dist_mat <- as.matrix(p_dist, labels = T)
+colnames(p_dist_mat) <- delta_p[[1]]
+rownames(p_dist_mat) <- delta_p[[1]]
+
+p_dist_df <- melt(p_dist_mat, varnames=c("row", "col"), value.name = "p_dist")
+```
+
+
+```{r}
+dist_df <- bc_cc_df %>% left_join(.,j_dist_df)
+dist_df %<>% left_join(.,p_dist_df)
+```
+
+```{r}
+model <- lm(cc_norm ~ bc_dist, data = dist_df)
+
+cc_bc_resid <- tibble(row = dist_df[[1]], col = dist_df[[2]], resid = residuals(model))
+
+dist_df %<>% left_join(.,cc_bc_resid)
+```
+
+```{r}
+dist_df %>% ggplot(.,aes(x=j_dist, y=resid)) + geom_point()
+
+dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
+```
+
 
