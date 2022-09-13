@@ -21,6 +21,9 @@ tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
 names <- read_csv(here("raw_data/species_names_ids.csv"))
 ```
 
+![motivating figure](https://dcsuh.github.io/rana-competence/figures/fig_2.png)
+
+
 # Questions
 
 Do communities that are similar in community composition have similar community competence values?
