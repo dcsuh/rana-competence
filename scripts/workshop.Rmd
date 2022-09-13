@@ -132,4 +132,3 @@ Bray-Curtis dissimilarity does not face this limitation
 
 But the question is how similar are sites with the similar community competence?
 
-The manhattan distance is equivalent to bray-curtis distance
