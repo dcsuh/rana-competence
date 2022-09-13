@@ -168,6 +168,16 @@ tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point()
 
 tb_pca_scores_summ %>% ggplot(.,aes(x=Comp.1, y=cc)) + geom_point() + geom_smooth(method = "loess")
 
+tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point(aes(color = Month, shape = factor(WetAltID), size = size))+
+  labs(x="Principal Component 1", y = "Community Competence (CC)", size = "Host\nAbundance") + 
+  scale_shape_manual(values = rep(1:20, len = 20)) +
+  scale_size_continuous(range = c(2,10)) +
+  guides(shape=F) +
+  theme_classic() +
+  theme(aspect.ratio=1/1.618, legend.box = "horizontal") +
+  scale_color_viridis_d(direction = -1) +
+  theme(text = element_text(size=18))
+
 ```
 
 
