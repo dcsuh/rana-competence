@@ -82,6 +82,7 @@ evenness <- evenness[order(evenness$WetAltID),]
 #make final community data
 comm_data <- comm_summ %>% left_join(., evenness)
 comm_data %<>% left_join(., site_scores)
+comm_data$Month <- factor(comm_data$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
