@@ -2,9 +2,9 @@ library(here)
 
 source(here("base","src.R"))
 
-data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
-tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
-names <- read_csv(here("raw_data/species_names_ids.csv"))
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("data/raw_data/asup_just_tree.txt"))
+names <- read_csv(here("data/raw_data/species_names_ids.csv"))
 
 
 #makes community summary where each row is one wetland in one month (what we consider as unique communities)
@@ -17,6 +17,18 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
   mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
+
+## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# makes community matrix where each cell is the abundance of one species at one unique wetland-month combination
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat$Month <- gsub("Month", "", community_mat$Month.1)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+
+#make abundance and pres/abs matrices with rownames as siteIDs
+abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
+presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
+
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #same as community summary data but with added columns for PC1 and PC2 scores and PC1 rank
@@ -85,16 +97,6 @@ vl$value %<>% na_if(.,0)
 vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
 vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
 
-## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-# makes community matrix where each cell is the abundance of one species at one unique wetland-month combination
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
-community_mat$Month <- gsub("Month", "", community_mat$Month.1)
-community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
-
-#make abundance and pres/abs matrices with rownames as siteIDs
-abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
-presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
 
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
