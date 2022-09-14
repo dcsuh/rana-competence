@@ -7,7 +7,7 @@ library(tidyverse)
 library(magrittr)
 library(here)
 
-data <- read_csv("data/raw_data/Ranavirus_Salamander_091819.csv")
+data <- read_csv(here("data/raw_data/Ranavirus_Salamander_091819.csv"))
 data %<>% select(X1:AB42) #remove original RA values
 data %<>% mutate(., total = AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB9 + AB20 + AB21 + AB24 + 
                    AB26 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41 + AB42) #sum is everything except for ABAmb and ABSal
