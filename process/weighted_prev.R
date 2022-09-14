@@ -19,7 +19,7 @@ library(here)
 
 #load data
 #data <- read_csv("competence.csv")
-data <- read_csv("data/competence_111220.csv")
+data <- read_csv("data/raw_data/competence_111220.csv")
 
 tmp <- data %>% 
   group_by(WetAltID, Month.1, Species) %>% 

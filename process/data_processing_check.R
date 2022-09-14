@@ -1,7 +1,7 @@
 library(here)
 
 
-old <- read_csv("data/weighted_prev_competence.csv")
+old <- read_csv("data/raw_data/weighted_prev_competence.csv")
 new <- read_csv("data/weighted_prev_competence_111220.csv")
 
 vl <- new %>% select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)

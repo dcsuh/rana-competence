@@ -9,7 +9,7 @@ library(here)
 #There are a number of species without measurements of viral load. They are excluded from this calculation because they would only contribute values of 0 (i.e. RA5*0 = 0)
 
 #q <- read_csv("data/Ranavirus_Salamander_091819.csv")
-q <- read_csv("data/rv_data_111220.csv")
+q <- read_csv("data/raw_data/rv_data_111220.csv")
 
 v <- q %>% group_by(Species) %>% summarize(meanVL=mean(SQMean))
 
