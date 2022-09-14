@@ -68,8 +68,8 @@ figure_3 <- ggplot(data=lag_evenness,aes(x=lag_J, y=lag_cc)) +
         legend.title = element_text(size=15),
         legend.text = element_text(size=10))
 
-figure_3
-#ggsave("fig_3.png",plot=figure_3,device="png",path=here("figures"))
+figure_3 
+ggsave("fig_3.png",plot=figure_3 + proj_theme,device="png",path=here("figures"))
 
 
 
