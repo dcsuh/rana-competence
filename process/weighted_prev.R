@@ -1,5 +1,8 @@
 #Script originator: Daniel Suh
 
+#Run this script after competencyCode.R
+
+
 #This script recalculates prevalence of ranavirus at each site by estimating a prevalence value that is weighted by overall abundances at that site
 #i.e. sum of ((known prevalence in species n) X (relative abundance of species n)) / (total individuals in community) = weighted prevalence
 

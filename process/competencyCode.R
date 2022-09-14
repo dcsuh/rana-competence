@@ -1,5 +1,8 @@
 #Script originated by Andrew Park and edited by Daniel Suh
 
+
+#Run this script after 'relative_abundance.R'
+
 library(tidyverse)
 library(magrittr)
 library(here)

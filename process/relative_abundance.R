@@ -2,6 +2,10 @@
 ##Script Originator: Daniel Suh
 ##Date: 11/12/20
 
+
+#Process this script first
+
+
 #load packages
 library(tidyverse)
 library(magrittr)

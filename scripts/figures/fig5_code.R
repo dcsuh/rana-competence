@@ -78,7 +78,7 @@ p.adjust(pvals,method="holm")
 #plot everything together with patchwork
 figure_5 <- cc_corr| size_corr| temp_corr
 figure_5
-#ggsave("fig_5.png",plot=figure_5,device="png",path=here("figures"))
+ggsave("fig_5.png",plot=figure_5+ proj_theme,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 
 
