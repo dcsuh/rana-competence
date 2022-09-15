@@ -2,7 +2,10 @@
 title: "manuscript"
 author: "Daniel Suh"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
-output: pdf_document
+output:   
+  word_document:
+    reference_docx: rv_ms_081921.docx
+  pdf_document: default
 bibliography: refs.bib
 ---
 
