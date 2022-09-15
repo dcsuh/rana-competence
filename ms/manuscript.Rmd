@@ -3,9 +3,12 @@ title: "manuscript"
 author: "Daniel Suh"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
 output: pdf_document
+bibliography: refs.bib
 ---
 
 # Introduction
+Effects of diversity on disease exist [@ostfeld_effects_2012].
+
 
 # Methods
 
