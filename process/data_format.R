@@ -103,7 +103,6 @@ vl <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
                                                se = sqrt(var(SQMean)/n()),
                                                n = n())
 vl_log <- data %>% 
-  filter(!is.na(LogSQMean)) %>% 
   group_by(Species) %>% 
   summarize(log10_mean = mean(log10_SQ), 
             log10_var = var(log10_SQ),
