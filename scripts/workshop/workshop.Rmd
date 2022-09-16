@@ -16,9 +16,9 @@ library(reshape2)
 
 
 ```{r}
-data <- read_csv(here("raw_data/weighted_prev_competence_111220.csv"))
-tree <- ape::read.nexus(here("raw_data/asup_just_tree.txt"))
-names <- read_csv(here("raw_data/species_names_ids.csv"))
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("data/raw_data/asup_just_tree.txt"))
+names <- read_csv(here("data/raw_data/species_names_ids.csv"))
 ```
 
 ![motivating figure](https://dcsuh.github.io/rana-competence/figures/fig_2.png)
@@ -232,6 +232,17 @@ dist_df %<>% left_join(.,cc_bc_resid)
 dist_df %>% ggplot(.,aes(x=j_dist, y=resid)) + geom_point()
 
 dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
+```
+
+
+## Variation in competence for each species
+
+```{r}
+species_comp <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
+                                                         var = var(SQMean),
+                                                         se = sqrt(var(SQMean)/n()))
+
+species_comp %>% ggplot(.,aes(x=Species, y=mean)) + geom_point() + geom_linerange(aes(ymin=mean-se,ymax=mean+se))
 ```
 
 
