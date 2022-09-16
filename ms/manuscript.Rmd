@@ -9,6 +9,10 @@ output:
 bibliography: refs.bib
 ---
 
+# To do
+
+*update supp1 with standard error bars
+
 # Notes
 
 Community composition is a primary driver of epidemics caused by generalist parasites. Dilution effects are an example of community composition influencing parasite transmission and species richness can be predictive of dilution effects when the necessary conditions are present. These conditions include a correlation between relative abundance of hosts, the rarity of hosts, and predictable assembly/disassembly of communities. For example, if host competence correlates positively with relative abundance and if more competent hosts are less likely to be lost as communities disassemble, then species richness can be predictive of parasite transmission via these mechanisms. Another way to understand this relationship is to use community competence as a community-level metric for how competent a community is. When dilution effect conditions exist, community competence will predictably increase as species are lost in a community. However, similar community competence values can be achieved via alternative community compositions that may not follow a dilution effect pattern. If host species still vary in their competence and if there is still a positive correlation between relative abundance and competence BUT if assembly/disassembly does not follow a dilution effect pattern, then species richness is not a useful predictor for parasite transmission but community competence can still be predictive. If assembly/disassembly is random, then high competence communities will exist simply by chance. Alternatively, if there is not a correlation between relative abundance and host competence but there are dilution effect patterns in assembly/disassembly, then species richness is still not useful, but community competence is. In a situation where the rare host is most competent, high species richness communities may be the most competent. Also, if competence is distributed randomly with high variance, then community competence may vary unpredictably with species richness, but community competence can still be predictive of parasite transmission.
