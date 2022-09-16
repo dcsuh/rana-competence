@@ -101,7 +101,15 @@ comm_data$Month <- factor(comm_data$Month, levels = c("Feb", "Mar", "Apr", "May"
 vl <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
                                                var = var(SQMean),
                                                se = sqrt(var(SQMean)/n()),
-                                               n = n()) %>% mutate(species_code = Species)
+                                               n = n()) %>% 
+vl_log <- data %>% 
+  filter(!is.na(LogSQMean)) %>% 
+  group_by(Species) %>% 
+  summarize(log10_mean = mean(LogSQMean), 
+            log10_var = var(LogSQMean),
+            log10_se = sqrt(var(LogSQMean)/n())) %>% 
+  mutate(species_code = Species)
+vl %<>% 
 vl %<>% full_join(., names, by="species_code")
 
 

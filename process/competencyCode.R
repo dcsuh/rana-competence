@@ -14,6 +14,8 @@ library(here)
 #q <- read_csv("data/raw_data/Ranavirus_Salamander_091819.csv")
 q <- read_csv("data/rv_data_111220.csv")
 
+q %<>% mutate(log10_mean = log10(SQMean))
+
 v <- q %>% group_by(Species) %>% summarize(meanVL=mean(SQMean))
 
 q %<>% mutate(vl.4=v$meanVL[v$Species==4])
