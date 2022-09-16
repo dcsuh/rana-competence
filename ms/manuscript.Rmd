@@ -15,10 +15,12 @@ bibliography: refs.bib
 * update all data by using log-transformed raw data rather than log-transforming means of raw data
   + confusing thing is that the rank order of the raw means is different than the means of the log-transformed data
   + is this correct or did I do something wrong?
+  + this must be because I am dealing with values smaller than 1 which become negative when log-transformed which can bring down the average
+    + hmm I am still getting this result with log1p. not sure what is up
   
 ```{r}
-m <- c(4, 8 , 15, 16, 23, 42)
-tmp <- tibble(m, l = log10(x))
+m <- c(0.1, 0.5, 4, 8 , 15, 16, 23, 42)
+tmp <- tibble(m, l = log10(m))
 tmp_s <- tmp %>% summarize(mean = mean(m), log_mean = mean(l))
 tmp_s %<>% mutate(log_m = log(mean))
 ```

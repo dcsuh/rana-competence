@@ -104,9 +104,9 @@ vl <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
                                                n = n())
 vl_log <- data %>% 
   group_by(Species) %>% 
-  summarize(log10_mean = mean(log10_SQ), 
-            log10_var = var(log10_SQ),
-            log10_se = sqrt(var(log10_SQ)/n()),
+  summarize(log1p_mean = mean(log1p_SQ), 
+            log1p_var = var(log1p_SQ),
+            log1p_se = sqrt(var(log1p_SQ)/n()),
             m = n()) %>% 
   mutate(species_code = Species)
 vl %<>% left_join(.,vl_log)

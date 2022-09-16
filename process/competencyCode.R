@@ -15,7 +15,8 @@ library(here)
 q <- read_csv("data/rv_data_111220.csv")
 
 q %<>% mutate(log10_SQ = ifelse(is.infinite(log10(SQMean)), 0, log10(SQMean)),
-              ln_SQ = ifelse(is.infinite(log(SQMean)), 0, log(SQMean)))
+              ln_SQ = ifelse(is.infinite(log(SQMean)), 0, log(SQMean)),
+              log1p_SQ = log1p(SQMean))
 
 
 

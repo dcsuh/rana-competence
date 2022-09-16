@@ -24,10 +24,10 @@ supp1_raw <- vl %>% arrange(mean) %>%
 
 supp1_log10 <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
-  ggplot(.,aes(x=abb_name,y=log10_mean)) +
+  ggplot(.,aes(x=abb_name,y=log1p_mean)) +
   geom_point() + 
   xlab("Species") + ylab("log10(Viral Load)") + 
-  geom_linerange(aes(ymin=log10_mean-log10_se,ymax=log10_mean+log10_se)) +
+  geom_linerange(aes(ymin=log1p_mean-log1p_se,ymax=log1p_mean+log1p_se)) +
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
