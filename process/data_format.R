@@ -106,7 +106,8 @@ vl_log <- data %>%
   group_by(Species) %>% 
   summarize(log10_mean = mean(log10_SQ), 
             log10_var = var(log10_SQ),
-            log10_se = sqrt(var(log10_SQ)/n())) %>% 
+            log10_se = sqrt(var(log10_SQ)/n()),
+            m = n()) %>% 
   mutate(species_code = Species)
 vl %<>% left_join(.,vl_log)
 vl %<>% full_join(., names, by="species_code")
