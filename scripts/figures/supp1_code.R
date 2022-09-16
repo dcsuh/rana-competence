@@ -10,11 +10,12 @@ source(here("base","src.R"))
 
 vl <- readRDS(here("processed_data","vl.rds"))
 
-supp1 <- vl %>% arrange(log10_value) %>% 
+supp1 <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
-  ggplot(.,aes(x=abb_name,y=log10_value)) +
+  ggplot(.,aes(x=abb_name,y=mean)) +
   geom_point() + 
-  xlab("Species") + ylab("log10(Viral Load)") + 
+  xlab("Species") + ylab("Viral Load") + 
+  geom_linerange(aes(ymin=mean-se,ymax=mean+se)) +
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 

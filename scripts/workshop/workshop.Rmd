@@ -245,7 +245,7 @@ species_comp <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
 
 species_comp %<>% left_join(.,names)
 
-species_comp %>% ggplot(.,aes(x=reorder(abb_name, mean), y=mean)) + geom_point() + geom_linerange(aes(ymin=mean-se,ymax=mean+se)) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+vl %>% ggplot(.,aes(x=reorder(abb_name, mean), y=mean)) + geom_point() + geom_linerange(aes(ymin=mean-se,ymax=mean+se)) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
 

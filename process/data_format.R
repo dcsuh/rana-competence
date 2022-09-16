@@ -90,13 +90,19 @@ comm_data$Month <- factor(comm_data$Month, levels = c("Feb", "Mar", "Apr", "May"
 
 #includes average viral load data for each species
 #each row is one host species
-vl <- data %>% dplyr::select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
-vl %<>% mutate(species_code = as.double(gsub("vl.","",vl$name)))
+# vl <- data %>% dplyr::select(vl.4:vl.42) %>% distinct() %>% pivot_longer(vl.4:vl.42)
+# vl %<>% mutate(species_code = as.double(gsub("vl.","",vl$name)))
+# vl %<>% full_join(., names, by="species_code")
+# vl %<>% mutate(name = gsub("_"," ",vl$species_name))
+# vl$value %<>% na_if(.,0)
+# vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
+# vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
+
+vl <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
+                                               var = var(SQMean),
+                                               se = sqrt(var(SQMean)/n()),
+                                               n = n()) %>% mutate(species_code = Species)
 vl %<>% full_join(., names, by="species_code")
-vl %<>% mutate(name = gsub("_"," ",vl$species_name))
-vl$value %<>% na_if(.,0)
-vl %<>% mutate(., ln_value = log(value)) %>% mutate(., log10_value = log10(value))
-vl %<>% replace_na(.,list(value=0,ln_value=0,log10_value=0))
 
 
 
