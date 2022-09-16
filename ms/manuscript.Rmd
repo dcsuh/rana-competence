@@ -11,7 +11,18 @@ bibliography: refs.bib
 
 # To do
 
-*update supp1 with standard error bars
+* update supp1 with standard error bars
+* update all data by using log-transformed raw data rather than log-transforming means of raw data
+  + confusing thing is that the rank order of the raw means is different than the means of the log-transformed data
+  + is this correct or did I do something wrong?
+  
+```{r}
+m <- c(4, 8 , 15, 16, 23, 42)
+tmp <- tibble(m, l = log10(x))
+tmp_s <- tmp %>% summarize(mean = mean(m), log_mean = mean(l))
+tmp_s %<>% mutate(log_m = log(mean))
+```
+
 
 # Notes
 
