@@ -237,16 +237,36 @@ dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
 
 ## Variation in competence for each species
 
+### comparing ranked means with and without log-transformation of raw data
+
 ```{r}
-species_comp <- data %>% group_by(Species) %>% summarize(mean = mean(SQMean),
-                                                         var = var(SQMean),
-                                                         se = sqrt(var(SQMean)/n()),
-                                                         n = n()) %>% mutate(species_code = Species)
+vl <- readRDS(here("processed_data","vl.rds"))
 
-species_comp %<>% left_join(.,names)
+supp1_raw <- vl %>% arrange(mean) %>% 
+  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
+  ggplot(.,aes(x=abb_name,y=mean)) +
+  geom_point() + 
+  xlab("Species") + ylab("Viral Load") + 
+  geom_linerange(aes(ymin=mean-se,ymax=mean+se)) +
+  geom_hline(yintercept = 1) + 
+  labs(title = "Viral Loads") + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_y_continuous(breaks=seq(0,6,1))
 
-vl %>% ggplot(.,aes(x=reorder(abb_name, mean), y=mean)) + geom_point() + geom_linerange(aes(ymin=mean-se,ymax=mean+se)) + theme(axis.text.x = element_text(angle = 30, hjust = 1))
+supp1_log10 <- vl %>% arrange(mean) %>% 
+  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
+  ggplot(.,aes(x=abb_name,y=log1p_mean)) +
+  geom_point() + 
+  xlab("Species") + ylab("log1p(Viral Load)") + 
+  geom_linerange(aes(ymin=log1p_mean-log1p_se,ymax=log1p_mean+log1p_se)) +
+  geom_hline(yintercept = 1) + 
+  labs(title = "Viral Loads") + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_y_continuous(breaks=seq(0,6,1))
 
+supp1_raw
+supp1_log10
 ```
-
 
