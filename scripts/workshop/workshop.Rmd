@@ -155,6 +155,8 @@ tb_pca <- princomp(abundance_hellinger)
 biplot(tb_pca)
 ```
 
+
+
 ```{r}
 tb_pca_scores <- as.data.frame(tb_pca$scores) %>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
 
@@ -180,6 +182,23 @@ tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point(aes(color = M
 
 ```
 
+
+NMDS with bray-curtis
+```{r}
+set.seed(8878896)
+nmds <- metaMDS(abundance_mat, distance = "bray")
+
+plot(nmds)
+
+nmds_scores <- as_tibble(scores(nmds))
+nmds_scores$siteID <- community_mat$siteID
+
+nmds_scores_summ <- left_join(comm_summ, nmds_scores, by = "siteID")
+nmds_scores_summ$Month <- factor(nmds_scores_summ$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+nmds_scores_summ %<>% mutate(pc1Rank=dense_rank(NMDS1))
+
+nmds_scores_summ %>% ggplot(.,aes(x=NMDS1, y = cc)) + geom_point() + geom_smooth(method = "loess")
+```
 
 ### Let's try to explain the residuals
 
