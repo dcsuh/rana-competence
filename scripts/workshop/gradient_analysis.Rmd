@@ -1,7 +1,7 @@
 ---
 title: "gradient_analysis"
 author: "Daniel Suh"
-date: "10/30/2020"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---
 I used this document as my instructions for most of this analysis. https://sites.ualberta.ca/~lkgray/uploads/7/3/6/2/7362679/07-gradientanalysis.pdf s
@@ -153,6 +153,11 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 ```
+
+
+
+
+
 
 ```{r}
 community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
