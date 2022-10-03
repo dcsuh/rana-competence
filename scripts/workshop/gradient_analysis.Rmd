@@ -142,3 +142,100 @@ plot(env_fit_vectors)
 ```
 
 What is the difference between the scores for species from envfit and the values from the correlation between environmental ordination scores and the community matrix?
+
+```{r}
+comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
+  dplyr::select(-ABAmb, -ABSal) %>%  
+  mutate(., size = rowSums(.[5:25]), 
+    ABHigh = (AB9 + AB21 + AB26 + AB42), 
+    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
+  distinct()
+comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
+```
+
+```{r}
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat$Month <- gsub("Month", "", community_mat$Month.1)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+
+#make abundance and pres/abs matrices with rownames as siteIDs
+abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
+presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
+```
+
+
+
+Principal Component Ranking may not be reliable as a proxy for community similarity because of double-zeroes
+
+If two sites both have zeroes for a species then that does not show that a site is similar but only shows that both sites may be unsuitable for the species
+
+Bray-Curtis dissimilarity does not face this limitation
+
+But the question is how similar are sites with the similar community competence?
+
+sometimes similar and sometimes not
+
+
+
+## next step
+
+do PCA after Hellinger transformation of data. PCA has the double zero problem but Hellinger distance avoids that problem and avoids overweighting of abundance data by turning absolute species abundances into relative abundances. more info [here](https://davidzeleny.net/blog/2022/03/17/euclidean-distance-is-sensitive-to-double-zero-problem-while-hellinger-is-not-visualization/)
+
+
+```{r}
+pca <- princomp(abundance_mat)
+
+biplot(pca)
+
+abundance_hellinger <- decostand(log1p(abundance_mat), 'hellinger')
+
+tb_pca <- princomp(abundance_hellinger)
+
+biplot(tb_pca)
+```
+
+
+
+```{r}
+tb_pca_scores <- as.data.frame(tb_pca$scores) %>% dplyr::select(Comp.1, Comp.2) %>% rownames_to_column(., var = "siteID")
+
+tb_pca_scores_summ <- left_join(comm_summ, tb_pca_scores, by = "siteID")
+
+tb_pca_scores_summ$Month <- factor(tb_pca_scores_summ$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+
+tb_pca_scores_summ %<>% mutate(pc1Rank=dense_rank(Comp.1))
+
+tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point()
+
+tb_pca_scores_summ %>% ggplot(.,aes(x=Comp.1, y=cc)) + geom_point() + geom_smooth(method = "loess")
+
+tb_pca_scores_summ %>% ggplot(.,aes(x=pc1Rank, y=cc)) + geom_point(aes(color = Month, shape = factor(WetAltID), size = size))+
+  labs(x="Principal Component 1", y = "Community Competence (CC)", size = "Host\nAbundance") + 
+  scale_shape_manual(values = rep(1:20, len = 20)) +
+  scale_size_continuous(range = c(2,10)) +
+  guides(shape=F) +
+  theme_classic() +
+  theme(aspect.ratio=1/1.618, legend.box = "horizontal") +
+  scale_color_viridis_d(direction = -1) +
+  theme(text = element_text(size=18))
+
+```
+
+
+NMDS with bray-curtis
+```{r}
+set.seed(8878896)
+nmds <- metaMDS(abundance_mat, distance = "bray")
+
+plot(nmds)
+
+nmds_scores <- as_tibble(scores(nmds))
+nmds_scores$siteID <- community_mat$siteID
+
+nmds_scores_summ <- left_join(comm_summ, nmds_scores, by = "siteID")
+nmds_scores_summ$Month <- factor(nmds_scores_summ$Month, levels = c("Feb", "Mar", "Apr", "May", "Jun", "Jul"))
+nmds_scores_summ %<>% mutate(pc1Rank=dense_rank(NMDS1))
+
+nmds_scores_summ %>% ggplot(.,aes(x=NMDS1, y = cc)) + geom_point() + geom_smooth(method = "loess")
+```

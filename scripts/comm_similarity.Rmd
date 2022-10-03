@@ -1,0 +1,191 @@
+---
+title: "distances"
+author: "Daniel Suh"
+date: "2022-10-03"
+output: html_document
+---
+
+
+```{r, message = F}
+library(here)
+
+source(here("base","src.R"))
+
+library(reshape2)
+```
+
+
+```{r, message = F}
+data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
+tree <- ape::read.nexus(here("data/raw_data/asup_just_tree.txt"))
+names <- read_csv(here("data/raw_data/species_names_ids.csv"))
+```
+
+![motivating figure](https://dcsuh.github.io/rana-competence/figures/fig_2.png)
+
+
+# Questions
+
+Do communities that are similar in community composition have similar community competence values?
+
+Can communities with different community compositions have similar community competence values?
+
+How are these communities distributed across space and time?
+i.e. how much spatial and temporal autocorrelation is there between sites in terms of community composition and community competence?
+
+
+```{r}
+comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB42, Prevalence, MeanWaterTempPredC) %>% 
+  dplyr::select(-ABAmb, -ABSal) %>%  
+  mutate(., size = rowSums(.[5:25]), 
+    ABHigh = (AB9 + AB21 + AB26 + AB42), 
+    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
+  mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
+  distinct()
+comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
+```
+
+```{r}
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat$Month <- gsub("Month", "", community_mat$Month.1)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+
+#make abundance and pres/abs matrices with rownames as siteIDs
+abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
+presence_mat <- as.data.frame(ifelse(abundance_mat>0, 1, 0))
+```
+
+
+
+Use Bray-Curtis distances to analyze how similar sites are to each other
+Higher BC distance means more dissimilar
+1 means perfect mismatch
+```{r}
+log_abun_mat <- log1p(abundance_mat)
+
+bc_dist <- vegdist(log_abun_mat, method = "bray") #bray-curtis dissimilarity is default
+
+bc_dist_mat <- as.matrix(bc_dist)
+bc_dist_df <- melt(bc_dist_mat, varnames=c("row", "col"), value.name = "bc_dist")
+
+bc_dist_df %>% filter(bc_dist!=0) %>% ggplot(., aes(x=bc_dist)) + geom_histogram()
+ggplot(bc_dist_df, aes(x = col, y = row, fill = bc_dist)) + geom_tile()
+```
+
+quick check on normality of community competence data
+```{r}
+comm_summ %>% ggplot(.,aes(x=cc)) + geom_histogram()
+```
+
+
+
+Manhattan method is the absolute value of the difference between two values
+So higher distance means larger difference
+Normalized distances to have range 0 to 1
+```{r}
+cc_diff <- comm_summ %>% dplyr::select(siteID, cc) %>% mutate(log_cc = log1p(cc)) %>% dplyr::select(-cc)
+cc_dist <- dist(cc_diff, method = "manhattan")
+cc_diff_mat <- as.matrix(cc_dist, labels = T)
+colnames(cc_diff_mat) <- cc_diff[[1]]
+rownames(cc_diff_mat) <- cc_diff[[1]]
+cc_diff_df <- melt(cc_diff_mat, varnames=c("row", "col"), value.name = "cc_dist") %>% 
+  mutate(cc_norm = (cc_dist-min(.$cc_dist))/(max(.$cc_dist)-min(.$cc_dist)))
+
+cc_diff_df %>% filter(cc_norm != 0) %>% ggplot(., aes(x=cc_norm)) + geom_histogram()
+ggplot(cc_diff_df, aes(x = col, y = row, fill = cc_norm)) + geom_tile()
+```
+
+
+```{r}
+bc_cc_df <- left_join(cc_diff_df, bc_dist_df)
+
+bc_cc_df %<>% mutate(diff = cc_norm-bc_dist)
+
+```
+
+
+Each point is a pairwise interaction
+
+The null hypothesis is that community competence is achieved through specific community compositions. i.e. you cannot achieve the same community competence with different community compositions
+
+So if a pair of sites have very different community competence then they should also have very different community composition
+
+But if community competence can be achieved through a variety of different community compositions then a pair of sites with similar community competence can have a high level of dissimilarity
+
+So we are looking for low cc distance between two sites but high bc distance
+An upward trend is expected because more dissimilar sites in terms of competence probably have different composition
+```{r}
+bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=bc_dist, y=cc_norm)) + geom_point() + geom_smooth(method = "lm")
+```
+
+If diff is set as community competence similarity minus community composition similarity then a low value will mean the difference between composition similarity is large compared to competence similarity. Either competence similarity is very high (cc dist is low) and composition similarity (bc dist) is moderate or high OR composition similarity is low (i.e. BC dist is high) and competence similarity (cc dist is moderate or low)
+
+```{r}
+
+ggplot(bc_cc_df, aes(x = col, y = row, fill = diff)) + geom_tile()
+
+bc_cc_df %>% filter(diff!=0) %>% ggplot(.,aes(x=diff)) + geom_histogram()
+```
+
+
+### Let's try to explain the residuals
+
+The residuals from the cc_norm ~ bc_dist represent when the community competence is more or less similar than expected given the similarity of the community. If community composition is not explaining similarity in community competence then this must be due to the communities having a tradeoff where competence is derived from a different class of hosts (low competence vs. high competence; abundant low competence hosts can result in community competence that is similar to rare high competent host) or a substitution of hosts (proportion of low vs. high competence hosts may be similar but the identity of those hosts may be different). These situations will result in community competence that is unexplained by community composition (i.e. high or low residual).
+
+
+plot residuals on y-axis and pairwise difference in evenness (tradeoff) and different in proportion high-low competence (substitution) on x-axis
+```{r}
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+
+delta_j <- comm_data %>% select(siteID, J)
+
+delta_p <- comm_data %>% select(siteID, ABHigh, ABLow) %>% mutate(P = ABHigh/(ABHigh+ABLow)) %>% select(-c(ABHigh, ABLow))
+
+```
+
+```{r}
+j_dist <- dist(delta_j, method = "manhattan")
+j_dist_mat <- as.matrix(j_dist, labels = T)
+colnames(j_dist_mat) <- delta_j[[1]]
+rownames(j_dist_mat) <- delta_j[[1]]
+
+j_dist_df <- melt(j_dist_mat, varnames=c("row", "col"), value.name = "j_dist")
+```
+
+```{r}
+p_dist <- dist(delta_p, method = "manhattan")
+p_dist_mat <- as.matrix(p_dist, labels = T)
+colnames(p_dist_mat) <- delta_p[[1]]
+rownames(p_dist_mat) <- delta_p[[1]]
+
+p_dist_df <- melt(p_dist_mat, varnames=c("row", "col"), value.name = "p_dist")
+```
+
+
+```{r}
+dist_df <- bc_cc_df %>% left_join(.,j_dist_df)
+dist_df %<>% left_join(.,p_dist_df)
+```
+
+```{r}
+model <- lm(cc_norm ~ bc_dist, data = dist_df)
+
+cc_bc_resid <- tibble(row = dist_df[[1]], col = dist_df[[2]], resid = residuals(model))
+
+dist_df %<>% left_join(.,cc_bc_resid)
+```
+
+```{r}
+dist_df %>% ggplot(.,aes(x=j_dist, y=resid)) + geom_point()
+
+dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
+```
+
+
+```{r}
+dist_df %>% ggplot(.,aes(x=j_dist,y=p_dist,color=resid)) + geom_point() + scale_color_viridis_c()
+
+dist_df %<>% mutate(resid_sign = ifelse(resid>0,1,0))
+
+dist_df %>% ggplot(.,aes(x=j_dist,y=p_dist,color=resid_sign)) + geom_point() + scale_color_viridis_b()
+```
