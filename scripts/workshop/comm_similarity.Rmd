@@ -84,7 +84,7 @@ So higher distance means larger difference
 Normalized distances to have range 0 to 1
 ```{r}
 cc_diff <- comm_summ %>% dplyr::select(siteID, cc) %>% mutate(log_cc = log1p(cc)) %>% dplyr::select(-cc)
-cc_dist <- dist(cc_diff, method = "manhattan")
+cc_dist <- dist(cc_diff$log_cc, method = "manhattan")
 cc_diff_mat <- as.matrix(cc_dist, labels = T)
 colnames(cc_diff_mat) <- cc_diff[[1]]
 rownames(cc_diff_mat) <- cc_diff[[1]]
@@ -144,7 +144,7 @@ delta_p <- comm_data %>% select(siteID, ABHigh, ABLow) %>% mutate(P = ABHigh/(AB
 ```
 
 ```{r}
-j_dist <- dist(delta_j, method = "manhattan")
+j_dist <- dist(delta_j$J, method = "manhattan")
 j_dist_mat <- as.matrix(j_dist, labels = T)
 colnames(j_dist_mat) <- delta_j[[1]]
 rownames(j_dist_mat) <- delta_j[[1]]
@@ -153,7 +153,7 @@ j_dist_df <- melt(j_dist_mat, varnames=c("row", "col"), value.name = "j_dist")
 ```
 
 ```{r}
-p_dist <- dist(delta_p, method = "manhattan")
+p_dist <- dist(delta_p$P, method = "manhattan")
 p_dist_mat <- as.matrix(p_dist, labels = T)
 colnames(p_dist_mat) <- delta_p[[1]]
 rownames(p_dist_mat) <- delta_p[[1]]
@@ -180,6 +180,7 @@ dist_df %>% ggplot(.,aes(x=j_dist, y=resid)) + geom_point()
 
 dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
 ```
+
 
 
 ```{r}
