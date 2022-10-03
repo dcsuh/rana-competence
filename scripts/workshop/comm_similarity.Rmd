@@ -184,7 +184,7 @@ dist_df %>% ggplot(.,aes(x=p_dist, y=resid)) + geom_point()
 
 
 ```{r}
-dist_df %>% ggplot(.,aes(x=j_dist,y=p_dist,color=resid)) + geom_point() + scale_color_viridis_c()
+dist_df %>% ggplot(.,aes(x=j_dist,y=p_dist,color=resid)) + geom_point() + scale_color_viridis_b()
 
 dist_df %<>% mutate(resid_sign = as.factor(ifelse(resid>0,1,0)))
 
