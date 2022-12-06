@@ -1,0 +1,30 @@
+---
+title: "sem"
+output: html_document
+date: "2022-12-06"
+---
+
+```{r, message = F}
+library(here)
+
+library(tidyverse)
+library(magrittr)
+library(piecewiseSEM)
+
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+```
+
+
+cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean water temp
+```{r}
+cc_temp <- glm(cc ~ MeanWaterTempPredC, data = comm_data)
+size_temp <- glm(size ~ MeanWaterTempPredC, data = comm_data)
+prev_cc <- glm(Prevalence ~ cc + size, data = comm_data)
+
+sem <- psem(cc_temp, size_temp, prev_cc)
+```
+
+
+```{r}
+summary(sem)
+```
