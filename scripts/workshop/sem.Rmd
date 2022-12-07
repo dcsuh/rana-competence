@@ -10,6 +10,8 @@ library(here)
 library(tidyverse)
 library(magrittr)
 library(piecewiseSEM)
+library(nlme)
+library(lmerTest)
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```
@@ -29,3 +31,27 @@ sem <- psem(cc_temp, size_temp, prev_cc)
 dSep(sem)
 summary(sem)
 ```
+Lefcheck example
+
+```{r}
+library(devtools) #Install from CRAN if you do not already have
+install_github("jslefche/piecewiseSEM")
+library(piecewiseSEM)
+```
+
+```{r}
+shipley2009.modlist = list(
+  lme(DD~lat, random = ~1|site/tree, na.action = na.omit, 
+    data = Shipley),
+  lme(Date~DD, random = ~1|site/tree, na.action = na.omit, 
+    data = Shipley),
+  lme(Growth~Date, random = ~1|site/tree, na.action = na.omit, 
+    data = Shipley),
+  glmer(Live~Growth+(1|site)+(1|tree), 
+    family=binomial(link = "logit"), data = shipley2009) )
+```
+
+```{r}
+sem.fit(shipley2009.modlist, shipley2009)
+```
+
