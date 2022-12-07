@@ -19,12 +19,13 @@ cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean wate
 ```{r}
 cc_temp <- glm(cc ~ MeanWaterTempPredC, data = comm_data)
 size_temp <- glm(size ~ MeanWaterTempPredC, data = comm_data)
-prev_cc <- glm(Prevalence ~ cc + size, data = comm_data)
+prev_cc <- glm(Prevalence ~ cc + MeanWaterTempPredC + size, data = comm_data)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
 ```
 
 
 ```{r}
+dSep(sem)
 summary(sem)
 ```
