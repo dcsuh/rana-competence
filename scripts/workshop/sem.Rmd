@@ -34,25 +34,28 @@ summary(sem)
 Lefcheck example
 
 ```{r}
-library(devtools) #Install from CRAN if you do not already have
-install_github("jslefche/piecewiseSEM")
-library(piecewiseSEM)
 data(shipley)
 ```
 
 ```{r}
-shipley2009.modlist = list(
-  lme(DD~lat, random = ~1|site/tree, na.action = na.omit, 
-    data = Shipley),
-  lme(Date~DD, random = ~1|site/tree, na.action = na.omit, 
-    data = Shipley),
-  lme(Growth~Date, random = ~1|site/tree, na.action = na.omit, 
-    data = Shipley),
-  glmer(Live~Growth+(1|site)+(1|tree), 
-    family=binomial(link = "logit"), data = shipley2009) )
+dd_lat <-  lme(DD~lat, random = ~1|site/tree, na.action = na.omit, 
+    data = shipley)
+
+date_dd <-lme(Date~DD, random = ~1|site/tree, na.action = na.omit, 
+    data = shipley)
+
+growth_date <-  lme(Growth~Date, random = ~1|site/tree, na.action = na.omit, 
+    data = shipley)
+
+live_growth <-  glmer(Live~Growth+(1|site)+(1|tree), 
+    family=binomial(link = "logit"), data = shipley)
 ```
 
 ```{r}
-sem.fit(shipley2009.modlist, shipley2009)
+shipley_sem <- psem(dd_lat, date_dd, growth_date, live_growth)
+```
+
+```{r}
+summary(shipley_sem)
 ```
 
