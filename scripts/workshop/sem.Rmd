@@ -12,8 +12,23 @@ library(magrittr)
 library(piecewiseSEM)
 library(nlme)
 library(lmerTest)
+library(dagitty)
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
+```
+
+
+```{r}
+prev_mod <- dagitty("dag{
+  temp -> cc
+  temp -> size
+  cc -> prev
+  size -> prev
+  temp -> prev
+             }")
+
+plot(graphLayout(prev_mod))
+
 ```
 
 
@@ -28,9 +43,20 @@ sem <- psem(cc_temp, size_temp, prev_cc)
 
 
 ```{r}
-dSep(sem)
-summary(sem)
+basisSet(sem)
+dSep(sem, conditioning = T)
+fisherC(sem)
+coefs(sem, intercepts = T)
+rsquared(sem)
 ```
+
+
+```{r}
+summary(sem)
+plot(sem)
+plot(sem, return = T)
+```
+
 Lefcheck example
 
 ```{r}
