@@ -31,12 +31,32 @@ plot(graphLayout(prev_mod))
 
 ```
 
+histograms
+```{r}
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=size)) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=log10(size))) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=cc)) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=log10(cc))) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=Prevalence)) + geom_histogram()
+```
+plots
+```{r}
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(cc))) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
+```
+
+
+
 
 cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean water temp
 ```{r}
-cc_temp <- glm(cc ~ MeanWaterTempPredC, data = comm_data)
-size_temp <- glm(size ~ MeanWaterTempPredC, data = comm_data)
-prev_cc <- glm(Prevalence ~ cc + MeanWaterTempPredC + size, data = comm_data)
+cc_temp <- glm(log10(cc) ~ MeanWaterTempPredC, data = comm_data)
+size_temp <- glm(log10(size) ~ MeanWaterTempPredC, data = comm_data)
+prev_cc <- glm(Prevalence ~ log10(cc) + MeanWaterTempPredC + log10(size), data = comm_data)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
 ```
