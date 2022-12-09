@@ -12,6 +12,7 @@ library(magrittr)
 library(piecewiseSEM)
 library(nlme)
 library(lmerTest)
+library(mgcv)
 library(dagitty)
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
@@ -54,9 +55,9 @@ comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom
 
 cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean water temp
 ```{r}
-cc_temp <- glm(log10(cc) ~ MeanWaterTempPredC, data = comm_data)
-size_temp <- glm(log10(size) ~ MeanWaterTempPredC, data = comm_data)
-prev_cc <- glm(Prevalence ~ log10(cc) + MeanWaterTempPredC + log10(size), data = comm_data)
+cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), family = gaussian, data = comm_data)
+size_temp <- gam(log10(size) ~ s(MeanWaterTempPredC), family = gaussian, data = comm_data)
+prev_cc <- glm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
 ```
