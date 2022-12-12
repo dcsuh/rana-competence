@@ -18,14 +18,39 @@ library(dagitty)
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```
 
+Make lagged data
+```{r}
+prev_cc <- comm_data
+
+order <- prev_cc[order(prev_cc$WetAltID, prev_cc$Month.1),]
+
+#this removes months out of sequence
+order <- order[-c(4,14,47,90),]
+
+order %<>% add_column(lag_cc = NA, lag_size = NA, lag_temp = NA)
+
+
+#create new column that includes previous month's value for cc
+for(n in 2:nrow(order)){
+  order$lag_cc[n] <- order$cc[n-1]
+  order$lag_size[n] <- order$size[n-1]
+  order$lag_temp[n] <- order$MeanWaterTempPredC[n-1]
+}
+
+#remove the first entry for each wetland to remove the carryover from the last wetland
+clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+
+```
+
+
 
 ```{r}
 prev_mod <- dagitty("dag{
   temp -> cc
   temp -> size
+  temp -> prev
   cc -> prev
   size -> prev
-  temp -> prev
              }")
 
 plot(graphLayout(prev_mod))
@@ -50,17 +75,36 @@ comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_s
 comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
 ```
 
+Covariance-based SEM
+```{r}
+
+```
+
+
 
 How to model nonlinear effect of temperature?
 - hump-shaped relationship may be expected with temperature
 
 cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean water temp
 ```{r}
-cc_temp <- glm(log10(cc) ~ (MeanWaterTempPredC), data = comm_data)
-size_temp <- glm(log10(size) ~ (MeanWaterTempPredC) + log10(cc), data = comm_data)
-prev_cc <- glm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
+cc_temp <- lm(log10(cc) ~ (MeanWaterTempPredC), data = comm_data)
+size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
+prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
+prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
+sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+```
+
+Using lagged data
+```{r}
+lagged_cc_temp <- lm(lag_cc ~ lag_temp, data = clean)
+lagged_size_temp <- lm(log10(lag_size) ~ lag_temp + lag_cc, data = clean)
+lagged_prev_cc <- lm(Prevalence ~ lag_cc + log10(lag_size), data = clean)
+lagged_prev_temp_cc <- glm(Prevalence ~ lag_cc + log10(lag_size) + lag_temp, data = clean)
+
+sem_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_cc)
+sem_1_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_temp_cc)
 ```
 
 
@@ -72,11 +116,32 @@ coefs(sem, intercepts = T)
 rsquared(sem)
 ```
 
+```{r}
+basisSet(sem_1)
+dSep(sem_1, conditioning = T)
+fisherC(sem_1)
+coefs(sem_1, intercepts = T)
+rsquared(sem_1)
+```
+
 
 ```{r}
 summary(sem)
 plot(sem)
 plot(sem, return = T)
+```
+
+```{r}
+summary(sem_1)
+plot(sem_1)
+plot(sem_1, return = T)
+```
+
+
+```{r}
+summary(sem_lagged)
+plot(sem_lagged)
+plot(sem_lagged, return = T)
 ```
 
 Lefcheck example
