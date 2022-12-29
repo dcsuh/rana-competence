@@ -63,14 +63,16 @@ comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=size)) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=log10(size))) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=cc)) + geom_histogram()
-comm_data %>% ggplot(.,aes(x=log10(cc))) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=log(cc))) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=Prevalence)) + geom_histogram()
+comm_data %>% ggplot(.,aes(x=log10(Prevalence+1))) + geom_histogram()
+
 ```
 plots
 ```{r}
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(cc))) + geom_point() + geom_smooth(method = "lm")
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth(method = "lm")
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth()
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth()
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth()
 comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
 comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
 ```
@@ -91,6 +93,21 @@ cc_temp <- lm(log10(cc) ~ (MeanWaterTempPredC), data = comm_data)
 size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
 prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
 prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
+
+sem <- psem(cc_temp, size_temp, prev_cc)
+sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+```
+
+```{r}
+comm_data %<>% filter(MeanWaterTempPredC>0)
+
+cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), data = comm_data)
+size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
+prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
+prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
+
+
+summary(cc_temp)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
 sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
