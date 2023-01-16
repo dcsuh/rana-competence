@@ -109,8 +109,9 @@ prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, d
 
 summary(cc_temp)
 
-sem <- psem(cc_temp, size_temp, prev_cc)
-sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+#fix error
+#sem <- psem(cc_temp, size_temp, prev_cc)
+#sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
 ```
 
 Using lagged data
