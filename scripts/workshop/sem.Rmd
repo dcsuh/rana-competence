@@ -26,6 +26,7 @@ The purpose of this script was to try out SEM with the ranavirus data to answer 
 
 
 Make lagged data - I'll use this later to compare results using lagged and not lagged data
+
 ```{r}
 prev_cc <- comm_data
 
@@ -46,7 +47,12 @@ for(n in 2:nrow(order)){
 
 #remove the first entry for each wetland to remove the carryover from the last wetland
 clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
+```
 
+
+```{r}
+comm_data %<>% filter(!is.na(MeanWaterTempPredC)) #remove missing water temp data
+clean %<>% filter(!is.na(MeanWaterTempPredC)) 
 ```
 
 
@@ -97,17 +103,15 @@ comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom
 
 
 
-How to model nonlinear effect of temperature?
-- hump-shaped relationship may be expected with temperature
-
 
 
 # SEMs
 
-In this first iteration, I first propose the relationships independently and then combine them later to generate the SEM. Each relationship is modeled as a linear regression and is evaluated separately. The 'piecewiseSEM' package generates a test statistic (Fisher's C) and and AIC score through a method known as "tests of directed seperation". This method evalutes the relationships between variables that are *un*specified in the model and asks whether these relationships are truly independent or whether some causal relationship may exist. piecewiseSEM relies on a priori knowledge of the system that can be used to rationalize expected relationships in the data. The benefits of piecewiseSEM is that it allows for non-independence of the data and allows for each relationship to be evaluated independently using 
+In this first iteration, I first propose the relationships independently and then combine them later to generate the SEM. Each relationship is modeled as a linear regression and is evaluated separately. The 'piecewiseSEM' package generates a test statistic (Fisher's C) and and AIC score through a method known as "tests of directed seperation". This method evalutes the relationships between variables that are *un*specified in the model and asks whether these relationships are truly independent or whether some causal relationship may exist. piecewiseSEM relies on a priori knowledge of the system that can be used to rationalize expected relationships in the data. The benefits of piecewiseSEM is that it allows for non-independence of the data and allows for each relationship to be evaluated independently using a more flexible range of modeling options (e.g. GLM and GAM). I develop two sets of SEMs here. One assumes prevalence is only influenced directly by cc and size and the other assumes that water temp may also have a direct effect on prevalence.
 
 cc ~ mean water temp; 
 size ~ mean water temp; 
+prevalence ~ cc
 prevalence ~ cc + size + mean water temp
 
 ```{r}
@@ -120,9 +124,12 @@ sem <- psem(cc_temp, size_temp, prev_cc)
 sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
 ```
 
-```{r}
-comm_data %<>% filter(MeanWaterTempPredC>0)
+How to model nonlinear effect of temperature?
+- hump-shaped relationship may be expected with temperature
 
+I attempt to use a gam to model the relationship between water temp and cc and a glm to model the effects of cc, size, and temp on infection prevalence but I keep getting errors and can't figure out how to fix it. For some reason, I am losing all of the data during this process.
+
+```{r}
 cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), data = comm_data)
 size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
 prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
@@ -132,11 +139,14 @@ prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, d
 summary(cc_temp)
 
 #fix error
-#sem <- psem(cc_temp, size_temp, prev_cc)
-#sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+#Error in data.frame(..., check.names = FALSE) :
+#arguments imply differing number of rows: 0, 83
+# sem <- psem(cc_temp, size_temp, prev_cc)
+# sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
 ```
 
-Using lagged data
+Same relationships using lagged data
+
 ```{r}
 lagged_cc_temp <- lm(lag_cc ~ lag_temp, data = clean)
 lagged_size_temp <- lm(log10(lag_size) ~ lag_temp + lag_cc, data = clean)
@@ -147,6 +157,8 @@ sem_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_cc)
 sem_1_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_temp_cc)
 ```
 
+
+The following chunks goes through the piecewiseSEM steps individually.
 
 ```{r}
 basisSet(sem)
@@ -164,6 +176,7 @@ coefs(sem_1, intercepts = T)
 rsquared(sem_1)
 ```
 
+The following sections shows the same information as before but using summary() instead of doing it individually. I also plot all of the SEMs that were previously evaluated.
 
 ```{r}
 summary(sem)
@@ -177,6 +190,9 @@ plot(sem_1)
 plot(sem_1, return = T)
 ```
 
+In the unlagged data, there are no significant relationships between any variables and prevalence. Also, the model that does not include a direct relationship between temperature and prevalence has a slightly lower (35.971 vs. 36.545) AIC than the other. 
+
+
 
 ```{r}
 summary(sem_lagged)
@@ -189,6 +205,8 @@ summary(sem_1_lagged)
 plot(sem_1_lagged)
 plot(sem_1_lagged, return = T)
 ```
+
+In the lagged data, there is no significant direct relationship between temperature and prevalence but there is a signficant relationship between temperature and cc and cc and prevalence. This would mean that there is an indirect relationship between temperature and prevalence that is mediated by cc. Temperature has a negative effect on cc but cc has a positive effect on prevalence. 
 
 
 Lefcheck example
