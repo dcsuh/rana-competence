@@ -21,6 +21,7 @@ Read in data
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```
 
+# Intro
 
 The purpose of this script was to try out SEM with the ranavirus data to answer whether there were direct or indirect effects of temperature on infection prevalence that were possible being mediated by abundance or community competence. SEM can help us to understand relationships between multiple variables that may be causally related to each other. 
 
@@ -95,7 +96,7 @@ comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point(
   labs(title = "log(size) ~ temp")
 comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth() + 
   labs(title = "Prev ~ temp")
-comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
+comm_data %>% ggplot(.,aes(x=cc, y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "Prev ~ log(cc)")
 comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "Prev ~ log(size)")
@@ -105,9 +106,9 @@ comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom
 
 
 
-# SEMs
+# SEMs intro
 
-In this first iteration, I first propose the relationships independently and then combine them later to generate the SEM. Each relationship is modeled as a linear regression and is evaluated separately. The 'piecewiseSEM' package generates a test statistic (Fisher's C) and and AIC score through a method known as "tests of directed seperation". This method evalutes the relationships between variables that are *un*specified in the model and asks whether these relationships are truly independent or whether some causal relationship may exist. piecewiseSEM relies on a priori knowledge of the system that can be used to rationalize expected relationships in the data. The benefits of piecewiseSEM is that it allows for non-independence of the data and allows for each relationship to be evaluated independently using a more flexible range of modeling options (e.g. GLM and GAM). I develop two sets of SEMs here. One assumes prevalence is only influenced directly by cc and size and the other assumes that water temp may also have a direct effect on prevalence.
+In this first iteration, I first propose the relationships independently and then combine them later to generate the SEM. Each relationship is modeled as a linear regression and is evaluated separately. The 'piecewiseSEM' package generates a test statistic (Fisher's C) and and AIC score through a method known as "tests of directed separation". This method evalutes the relationships between variables that are *un*specified in the model and asks whether these relationships are truly independent or whether some causal relationship may exist. piecewiseSEM relies on a priori knowledge of the system that can be used to rationalize expected relationships in the data. The benefits of piecewiseSEM is that it allows for non-independence of the data and allows for each relationship to be evaluated independently using a more flexible range of modeling options (e.g. GLM and GAM). I develop two sets of SEMs here. One assumes prevalence is only influenced directly by cc and size and the other assumes that water temp may also have a direct effect on prevalence.
 
 cc ~ mean water temp; 
 size ~ mean water temp; 
@@ -118,7 +119,7 @@ prevalence ~ cc + size + mean water temp
 cc_temp <- lm(log10(cc) ~ (MeanWaterTempPredC), data = comm_data)
 size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
 prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
-prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
+prev_temp_cc <- lm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
 
 sem <- psem(cc_temp, size_temp, prev_cc)
 sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
@@ -149,7 +150,7 @@ Same relationships using lagged data
 
 ```{r}
 lagged_cc_temp <- lm(lag_cc ~ lag_temp, data = clean)
-lagged_size_temp <- lm(log10(lag_size) ~ lag_temp + lag_cc, data = clean)
+lagged_size_temp <- lm(log10(lag_size) ~ lag_temp, data = clean)
 lagged_prev_cc <- lm(Prevalence ~ lag_cc + log10(lag_size), data = clean)
 lagged_prev_temp_cc <- lm(Prevalence ~ lag_cc + log10(lag_size) + lag_temp, data = clean)
 
@@ -157,6 +158,7 @@ sem_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_cc)
 sem_1_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_temp_cc)
 ```
 
+# piecewiseSEM
 
 The following chunks goes through the piecewiseSEM steps individually.
 
@@ -175,6 +177,8 @@ fisherC(sem_1)
 coefs(sem_1, intercepts = T)
 rsquared(sem_1)
 ```
+
+# SEM results and plots
 
 The following sections shows the same information as before but using summary() instead of doing it individually. I also plot all of the SEMs that were previously evaluated.
 
@@ -208,8 +212,22 @@ plot(sem_1_lagged, return = T)
 
 In the lagged data, there is no significant direct relationship between temperature and prevalence but there is a signficant relationship between temperature and cc and cc and prevalence. This would mean that there is an indirect relationship between temperature and prevalence that is mediated by cc. Temperature has a negative effect on cc but cc has a positive effect on prevalence. 
 
+Both SEMs are unable to do the tests of directed separation. I think this may be due to there not being enough variables in the model for this test to work. 
 
-Lefcheck example
+
+# Next Steps
+
+ - Try to incorporate nonlinear regression into model for temperature relationships
+  - I want to use a GAM with a smooth term for temperature
+ - Check to see if there is a problem without having the directed separation test
+  - Still not sure why it says there are no independence claims present when it seems like there is?
+  - There seems to be a significant relationship between log10(size) ~ cc that isn't being specified but is showing up under the independence claims result
+
+
+
+
+
+# Lefcheck example
 This is example data and code that I got from Lefcheck's tutorial
 https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html#worked-example 
 
@@ -241,7 +259,7 @@ summary(shipley_sem)
 
 
 
-Covariance-based SEM
+# Covariance-based SEM
 
 Traditional SEM creates a single variance-covariance matrix between all variables and relationships between variables are estimated simultaneously from that matrix. This method assumes independence and normality of errors which are probably not things we can assume about our dataset. I also haven't yet figured out how to implement this method of SEM.
 
