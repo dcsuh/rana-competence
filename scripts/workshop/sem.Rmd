@@ -14,9 +14,16 @@ library(nlme)
 library(lmerTest)
 library(mgcv)
 library(dagitty)
+```
 
+Read in data
+```{r, message = F}
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```
+
+
+The purpose of this script was to try out SEM with the ranavirus data to answer whether there were direct or indirect effects of temperature on infection prevalence that were possible being mediated by abundance or community competence. SEM can help us to understand relationships between multiple variables that may be causally related to each other. 
+
 
 Make lagged data - I'll use this later to compare results using lagged and not lagged data
 ```{r}
@@ -43,7 +50,7 @@ clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 ```
 
 
-This is just a way to visualize the SEM
+This is just a way to visualize the SEM. I think it must have a method for customizing the orientation of things to make it look nicer but I haven't tried to figure out how to do that.
 
 ```{r}
 prev_mod <- dagitty("dag{
@@ -73,19 +80,19 @@ comm_data %>% ggplot(.,aes(x=log10(Prevalence+1))) + geom_histogram()
 ```
 
 
-And some basic plots
+And some basic plots for all the univariate relationships I am considering
 
 ```{r}
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth()
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth()
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth()
-comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
-comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm")
-```
-
-Covariance-based SEM
-```{r}
-
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth() + 
+  labs(title = "cc ~ temp")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth() + 
+  labs(title = "log(size) ~ temp")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth() + 
+  labs(title = "Prev ~ temp")
+comm_data %>% ggplot(.,aes(x=log10(cc), y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
+  labs(title = "Prev ~ log(cc)")
+comm_data %>% ggplot(.,aes(x=log10(size), y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
+  labs(title = "Prev ~ log(size)")
 ```
 
 
@@ -93,7 +100,16 @@ Covariance-based SEM
 How to model nonlinear effect of temperature?
 - hump-shaped relationship may be expected with temperature
 
-cc ~ mean water temp; size ~ mean water temp; prevalence ~ cc + size + mean water temp
+
+
+# SEMs
+
+In this first iteration, I first propose the relationships independently and then combine them later to generate the SEM. Each relationship is modeled as a linear regression and is evaluated separately. The 'piecewiseSEM' package generates a test statistic (Fisher's C) and and AIC score through a method known as "tests of directed seperation". This method evalutes the relationships between variables that are *un*specified in the model and asks whether these relationships are truly independent or whether some causal relationship may exist. piecewiseSEM relies on a priori knowledge of the system that can be used to rationalize expected relationships in the data. The benefits of piecewiseSEM is that it allows for non-independence of the data and allows for each relationship to be evaluated independently using 
+
+cc ~ mean water temp; 
+size ~ mean water temp; 
+prevalence ~ cc + size + mean water temp
+
 ```{r}
 cc_temp <- lm(log10(cc) ~ (MeanWaterTempPredC), data = comm_data)
 size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
@@ -203,5 +219,15 @@ shipley_sem <- psem(dd_lat, date_dd, growth_date, live_growth)
 
 ```{r}
 summary(shipley_sem)
+```
+
+
+
+Covariance-based SEM
+
+Traditional SEM creates a single variance-covariance matrix between all variables and relationships between variables are estimated simultaneously from that matrix. This method assumes independence and normality of errors which are probably not things we can assume about our dataset. I also haven't yet figured out how to implement this method of SEM.
+
+```{r}
+
 ```
 
