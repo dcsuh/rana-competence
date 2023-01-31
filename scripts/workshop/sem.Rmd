@@ -18,7 +18,7 @@ library(dagitty)
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```
 
-Make lagged data
+Make lagged data - I'll use this later to compare results using lagged and not lagged data
 ```{r}
 prev_cc <- comm_data
 
@@ -43,6 +43,7 @@ clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 ```
 
 
+This is just a way to visualize the SEM
 
 ```{r}
 prev_mod <- dagitty("dag{
@@ -57,7 +58,9 @@ plot(graphLayout(prev_mod))
 
 ```
 
-histograms
+
+Just some histograms to check the distributions of the data
+
 ```{r}
 comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=size)) + geom_histogram()
@@ -68,7 +71,10 @@ comm_data %>% ggplot(.,aes(x=Prevalence)) + geom_histogram()
 comm_data %>% ggplot(.,aes(x=log10(Prevalence+1))) + geom_histogram()
 
 ```
-plots
+
+
+And some basic plots
+
 ```{r}
 comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth()
 comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth()
@@ -170,6 +176,8 @@ plot(sem_1_lagged, return = T)
 
 
 Lefcheck example
+This is example data and code that I got from Lefcheck's tutorial
+https://cran.r-project.org/web/packages/piecewiseSEM/vignettes/piecewiseSEM.html#worked-example 
 
 ```{r}
 data(shipley)
