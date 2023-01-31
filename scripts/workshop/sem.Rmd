@@ -217,11 +217,11 @@ Both SEMs are unable to do the tests of directed separation. I think this may be
 
 # Next Steps
 
- - Try to incorporate nonlinear regression into model for temperature relationships
-  - I want to use a GAM with a smooth term for temperature
- - Check to see if there is a problem without having the directed separation test
-  - Still not sure why it says there are no independence claims present when it seems like there is?
-  - There seems to be a significant relationship between log10(size) ~ cc that isn't being specified but is showing up under the independence claims result
+* Try to incorporate nonlinear regression into model for temperature relationships
+  + I want to use a GAM with a smooth term for temperature
+* Check to see if there is a problem without having the directed separation test
+  + Still not sure why it says there are no independence claims present when it seems like there is?
+  + There seems to be a significant relationship between log10(size) ~ cc that isn't being specified but is showing up under the independence claims result
 
 
 
