@@ -21,6 +21,18 @@ supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>%
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
+supp1_se <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
+  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
+  ggplot(.,aes(x=abb_name,y=log10(mean))) +
+  geom_point() + 
+  xlab("Species") + ylab("Viral Load") + 
+  geom_linerange(aes(ymin=log10(mean)-log10(se),ymax=log10(mean)+log10(se))) +
+  geom_hline(yintercept = 1) + 
+  labs(title = "Viral Loads") + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_y_continuous(breaks=seq(0,6,1))
+
 supp1_raw <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
   ggplot(.,aes(x=abb_name,y=mean)) +
