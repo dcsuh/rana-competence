@@ -257,6 +257,46 @@ summary(shipley_sem)
 ```
 
 
+Example with GAMs from Lefcheck textbook: https://jslefche.github.io/sem_book/local-estimation.html#extensions-to-non-linear-models
+
+```{r}
+set.seed(100)
+n <- 100
+x1 <- rchisq(n, 7)
+mu2 <- 10*x1/(5 + x1)
+x2 <- rnorm(n, mu2, 1)
+x2[x2 <= 0] <- 0.1
+x3 <- rpois(n, lambda = (0.5*x2))
+x4 <- rpois(n, lambda = (0.5*x2))
+p.x5 <- exp(-0.5*x3 + 0.5*x4)/(1 + exp(-0.5*x3 + 0.5*x4))
+x5 <- rbinom(n, size = 1, prob = p.x5)
+dat2 <- data.frame(x1 = x1, x2 = x2, x3 = x3, x4 = x4, x5 = x5)
+```
+
+```{r}
+shipley_psem2 <- psem(
+  lm(x2 ~ x1, data = dat2),
+  lm(x3 ~ x2, data = dat2),
+  lm(x4 ~ x2, data = dat2),
+  lm(x5 ~ x3 + x4, data = dat2)
+)
+
+#LLchisq(shipley_psem2)
+```
+
+```{r}
+
+m1 <- gam(x2 ~ s(x1), data = dat2, family = gaussian)
+m2 <- glm(x3 ~ x2, data = dat2, family = poisson)
+m3 <- gam(x4 ~ x2, data = dat2, family = poisson)
+m4 <- glm(x5 ~ x3 + x4, data = dat2, family = binomial)
+
+
+shipley_psem3 <- psem(m1, m2, m3, m4)
+
+#LLchisq(shipley_psem3)
+```
+
 
 # Covariance-based SEM
 
