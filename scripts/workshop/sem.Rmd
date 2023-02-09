@@ -149,8 +149,8 @@ summary(cc_temp)
 #fix error
 #Error in data.frame(..., check.names = FALSE) :
 #arguments imply differing number of rows: 0, 83
-sem <- psem(cc_temp, size_temp, prev_cc)
-sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+sem_2 <- psem(cc_temp, size_temp, prev_cc)
+sem_3 <- psem(cc_temp, size_temp, prev_temp_cc)
 ```
 
 Same relationships using lagged data
@@ -203,6 +203,14 @@ plot(sem_1, return = T)
 
 In the unlagged data, there are no significant relationships between any variables and prevalence. Also, the model that does not include a direct relationship between temperature and prevalence has a slightly lower (35.971 vs. 36.545) AIC than the other. 
 
+```{r}
+summary(sem_2)
+```
+
+```{r}
+summary(sem_3)
+```
+
 
 
 ```{r}
@@ -220,6 +228,12 @@ plot(sem_1_lagged, return = T)
 In the lagged data, there is no significant direct relationship between temperature and prevalence but there is a signficant relationship between temperature and cc and cc and prevalence. This would mean that there is an indirect relationship between temperature and prevalence that is mediated by cc. Temperature has a negative effect on cc but cc has a positive effect on prevalence. 
 
 Both SEMs are unable to do the tests of directed separation. I think this may be due to there not being enough variables in the model for this test to work. 
+
+AIC
+```{r}
+AIC(sem, sem_1, sem_2, sem_3, sem_lagged, sem_1_lagged)
+```
+
 
 
 # Next Steps
