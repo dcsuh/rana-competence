@@ -89,11 +89,11 @@ comm_data %>% ggplot(.,aes(x=log10(Prevalence+1))) + geom_histogram()
 And some basic plots for all the univariate relationships I am considering
 
 ```{r}
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth() + 
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = cc)) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "cc ~ temp")
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth() + 
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = log10(size))) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "log(size) ~ temp")
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth() + 
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC, y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "Prev ~ temp")
 comm_data %>% ggplot(.,aes(x=cc, y = Prevalence)) + geom_point() + geom_smooth(method = "lm") + 
   labs(title = "Prev ~ log(cc)")
@@ -138,8 +138,8 @@ I fixed this error by installing the development version of piecewiseSEM
 Caveat: GAMs can't be used for determining direct and indirect effects because these are not linear coefficients but rather smoothing terms.
 
 ```{r}
-cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), data = comm_data)
-size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
+cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), data = comm_data, method = "REML")
+size_temp <- gam(log10(size) ~ s(MeanWaterTempPredC), data = comm_data, method = "REML")
 prev_cc <- lm(Prevalence ~ log10(cc) + log10(size), data = comm_data)
 prev_temp_cc <- glm(Prevalence ~ log10(cc) + log10(size) + MeanWaterTempPredC, data = comm_data)
 
@@ -164,6 +164,13 @@ lagged_prev_temp_cc <- lm(Prevalence ~ lag_cc + log10(lag_size) + lag_temp, data
 sem_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_cc)
 sem_1_lagged <- psem(lagged_cc_temp, lagged_size_temp, lagged_prev_temp_cc)
 ```
+
+# Playing around with GAM
+
+```{r}
+gam_1 <- gam(Prevalence ~ s(MeanWaterTempPredC) + s(log10(cc)) + s(log10(size)), data = (comm_data %>% filter(MeanWaterTempPredC>0)), method = "REML", family = "betar")
+```
+
 
 # piecewiseSEM
 
