@@ -239,11 +239,13 @@ AIC(sem, sem_1, sem_2, sem_3, sem_lagged, sem_1_lagged)
 # Next Steps
 
 * Try to incorporate nonlinear regression into model for temperature relationships
-  + I want to use a GAM with a smooth term for temperature
+  + I want to use a GAM with a smooth term for temperature - DONE
+  + I just had to use the development version of piecewiseSEM
 * Check to see if there is a problem without having the directed separation test
   + Still not sure why it says there are no independence claims present when it seems like there is?
   + There seems to be a significant relationship between log10(size) ~ cc that isn't being specified but is showing up under the independence claims result
-
+* Currently we are running all our models with siteXmonth-level data but should we run these models with individual-level data?
+  + i.e. the qPCR results?
 
 
 
