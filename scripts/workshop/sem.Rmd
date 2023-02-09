@@ -129,6 +129,14 @@ How to model nonlinear effect of temperature?
 
 I attempt to use a gam to model the relationship between water temp and cc and a glm to model the effects of cc, size, and temp on infection prevalence but I keep getting errors and can't figure out how to fix it. For some reason, I am losing all of the data during this process.
 
+I fixed this error by installing the development version of piecewiseSEM
+
+```{r}
+#devtools::install_github("jslefche/piecewiseSEM@devel")
+```
+
+Caveat: GAMs can't be used for determining direct and indirect effects because these are not linear coefficients but rather smoothing terms.
+
 ```{r}
 cc_temp <- gam(log10(cc) ~ s(MeanWaterTempPredC), data = comm_data)
 size_temp <- lm(log10(size) ~ (MeanWaterTempPredC), data = comm_data)
@@ -141,8 +149,8 @@ summary(cc_temp)
 #fix error
 #Error in data.frame(..., check.names = FALSE) :
 #arguments imply differing number of rows: 0, 83
-# sem <- psem(cc_temp, size_temp, prev_cc)
-# sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
+sem <- psem(cc_temp, size_temp, prev_cc)
+sem_1 <- psem(cc_temp, size_temp, prev_temp_cc)
 ```
 
 Same relationships using lagged data
@@ -259,6 +267,8 @@ summary(shipley_sem)
 
 Example with GAMs from Lefcheck textbook: https://jslefche.github.io/sem_book/local-estimation.html#extensions-to-non-linear-models
 
+
+
 ```{r}
 set.seed(100)
 n <- 100
@@ -293,7 +303,6 @@ m4 <- glm(x5 ~ x3 + x4, data = dat2, family = binomial)
 
 
 shipley_psem3 <- psem(m1, m2, m3, m4)
-
 #LLchisq(shipley_psem3)
 ```
 
