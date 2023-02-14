@@ -13,6 +13,7 @@ library(nlme)
 library(lmerTest)
 library(mgcv)
 library(dagitty)
+library(lavaan)
 ```
 
 Read in data
@@ -337,4 +338,36 @@ Traditional SEM creates a single variance-covariance matrix between all variable
 ```{r}
 
 ```
+
+
+# Latent Variable Modeling using lavaan
+
+```{r}
+potential <- comm_data %>% mutate(log_cc = log10(cc), log_size = log10(size)) %>% select(cc, log_cc, size, log_size, MeanWaterTempPredC, Prevalence) %>% drop_na() %>% filter(MeanWaterTempPredC > 0)
+cor(potential[,c(2,4,5)])
+```
+
+```{r}
+potential_formula <- "potential =~ log_cc + log_size + MeanWaterTempPredC"
+potential_model <- sem(potential_formula, potential)
+```
+
+```{r}
+summary(potential_model)
+```
+
+```{r}
+potential_formula_1 <- "
+potential =~ log_cc + log_size + MeanWaterTempPredC
+
+Prevalence ~ potential
+"
+
+potential_model_1 <- sem(potential_formula_1, potential)
+```
+
+```{r}
+summary(potential_model_1)
+```
+
 
