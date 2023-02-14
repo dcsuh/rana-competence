@@ -369,10 +369,7 @@ print(modindices(potential_model, na.remove=F))
 
 
 ```{r}
-potential_formula_1 <- "
-potential =~ log_cc + log_size + inv_temp 
-Prevalence ~ potential
-"
+potential_formula_1 <- "\n potential =~ log_cc + log_size + inv_temp \n Prevalence ~ potential"
 
 potential_model_1 <- sem(potential_formula_1, potential)
 ```
@@ -381,4 +378,26 @@ potential_model_1 <- sem(potential_formula_1, potential)
 summary(potential_model_1)
 ```
 
+Again with lagged data
+
+```{r}
+lag_potential <- clean %>% ungroup() %>% mutate(log_cc = log10(lag_cc), log_size = log10(lag_size), inv_temp = lag_temp*-1) %>% select(log_cc, log_size, inv_temp, Prevalence) %>% drop_na() %>% filter(inv_temp < 0)
+indicators <- lag_potential %>% select(log_cc, log_size, inv_temp)
+cor(indicators)
+
+#find average correlation among all variables
+
+r <- mean(c((cor(indicators)[2,1]), (cor(indicators)[3,1]), (cor(indicators)[3,2])))
+sqrt(r)
+```
+
+```{r}
+potential_formula_2 <- "\n potential =~ log_cc + log_size + inv_temp \n Prevalence ~ potential"
+
+potential_model_2 <- sem(potential_formula_1, lag_potential)
+```
+
+```{r}
+summary(potential_model_2)
+```
 
