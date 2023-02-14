@@ -30,7 +30,7 @@ Composition of hosts within a community plays a role in transmission potential o
 
 Ranavirus Summary
 ```{r, Ranavirus Summary}
-data <- read_csv("competence.csv")
+data <- read_csv("/Users/dcsuh/Documents/GitHub/rana-competence/data/raw_data/competence.csv")
 
 #Plot of RV status over time
 rv <- data %>% select(Month,WetAltID,RV.Status)
@@ -61,7 +61,9 @@ rv_species %>% ggplot(.,aes(x=actual_name,y=log_value))+geom_point() + xlab("Spe
 
 
 ```
+
 Same summary as before but with a different measure of competency. These measures are calculated using only RV positive individuals
+
 ```{r, Ranavirus Summary 2}
 data <- read_csv("competence_rv_pos.csv")
 
