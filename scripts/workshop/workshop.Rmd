@@ -60,3 +60,16 @@ supp1_raw
 supp1_log10
 ```
 
+
+```{r}
+incidence <- data %>% group_by(WetAltID, Month.1) %>% summarize(incidence = sum(RV.Status))
+
+incidence %>% ggplot(.,aes(x=Month.1, y=incidence)) + geom_col() + facet_grid(vars(WetAltID))
+```
+
+
+```{r}
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+comm_data %>% ggplot(.,aes(x=Month.1, y=Prevalence)) + geom_point() + facet_wrap(~WetAltID, nrow = 5, ncol = 4)
+```
+
