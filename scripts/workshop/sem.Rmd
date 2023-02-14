@@ -342,13 +342,20 @@ Traditional SEM creates a single variance-covariance matrix between all variable
 
 # Latent Variable Modeling using lavaan
 
+First step is to measure reliability. There should be a sufficient amount of reliability (at least >0.5 but >0.8 or >0.9 is better)
 ```{r}
-potential <- comm_data %>% mutate(log_cc = log10(cc), log_size = log10(size)) %>% select(cc, log_cc, size, log_size, MeanWaterTempPredC, Prevalence) %>% drop_na() %>% filter(MeanWaterTempPredC > 0)
-cor(potential[,c(2,4,5)])
+potential <- comm_data %>% mutate(log_cc = log10(cc), log_size = log10(size), inv_temp = MeanWaterTempPredC*-1) %>% select(cc, log_cc, size, log_size, MeanWaterTempPredC, inv_temp, Prevalence) %>% drop_na() %>% filter(MeanWaterTempPredC > 0)
+indicators <- potential %>% select(log_cc, log_size, inv_temp)
+cor(indicators)
+
+#find average correlation among all variables
+
+r <- mean(c((cor(indicators)[2,1]), (cor(indicators)[3,1]), (cor(indicators)[3,2])))
+sqrt(r)
 ```
 
 ```{r}
-potential_formula <- "potential =~ log_cc + log_size + MeanWaterTempPredC"
+potential_formula <- "potential =~ log_cc + log_size + inv_temp"
 potential_model <- sem(potential_formula, potential)
 ```
 
@@ -357,9 +364,13 @@ summary(potential_model)
 ```
 
 ```{r}
-potential_formula_1 <- "
-potential =~ log_cc + log_size + MeanWaterTempPredC
+print(modindices(potential_model, na.remove=F))
+```
 
+
+```{r}
+potential_formula_1 <- "
+potential =~ log_cc + log_size + inv_temp 
 Prevalence ~ potential
 "
 
