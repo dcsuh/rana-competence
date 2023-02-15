@@ -74,3 +74,29 @@ comm_data <- readRDS(here("processed_data","comm_data.rds"))
 comm_data %>% ungroup() %>% ggplot(.,aes(x=Month.1, y=Prevalence, group = 1)) + geom_point() + geom_line() + facet_wrap(~WetAltID, nrow = 5, ncol = 4)
 ```
 
+```{r}
+comm_data %>% ggplot(.,aes(x=size)) + geom_histogram() + labs(title = "Untransformed abundance")
+comm_data %>% ggplot(.,aes(x=log10(size))) + geom_histogram() + labs(title = "log10-transformed abundance")
+comm_data %>% ggplot(.,aes(x=cc)) + geom_histogram() + labs(title = "Untransformed cc")
+comm_data %>% ggplot(.,aes(x=log10(cc))) + geom_histogram() + labs(title = "log10-transformed cc")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram() + labs(title = "Mean Water Temp")
+```
+
+
+effect sizes
+```{r}
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+comm_data %>% mutate(mean = mean(size), sd = sd(size), var = mean(size)-size, size = size)
+comm_effect <- comm_data %>% filter(MeanWaterTempPredC>0) %>% mutate(size_sds = (mean(size)-size)/sd(size),
+                                    cc_sds = (mean(cc)-cc)/sd(cc),
+                                    temp_sds = ((mean(MeanWaterTempPredC)-MeanWaterTempPredC)/sd(MeanWaterTempPredC))*-1) #multiply by -1 to make it opposite because
+
+effect_summ <- comm_effect %>% group_by(WetAltID) %>% summarize(size_over = sum(size_sds>0),
+                                                                size_sum = sum(size_sds),
+                                                                cc_over = sum(cc_sds>0),
+                                                                cc_sum = sum(cc_sds),
+                                                                temp_over = sum(temp_sds>0),
+                                                                temp_sum = sum(temp_sds))
+```
+
+
