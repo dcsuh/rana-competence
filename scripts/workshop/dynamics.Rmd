@@ -385,13 +385,13 @@ ggplot()+
   scale_color_manual(name="",values = "red")+
   new_scale_color()+
   geom_line(output_a, mapping=aes(y=I,x=time, color=color_a))+
-  scale_color_manual(name="",values = "yellow")+
+  scale_color_manual(name="",values = "orange")+
   new_scale_color()+
   geom_line(output_h, mapping=aes(y=I,x=time, color=color_h))+
   scale_color_manual(name="",values = "purple")+
   new_scale_color()+
   geom_line(output_n, mapping=aes(y=I,x=time, color=color_n))+
-  scale_color_manual(name="",values = "gray")+
+  scale_color_manual(name="",values = "forestgreen")+
   labs(y="N",x="Time")+
   ylim(0,30)+
   ggtitle(paste("Total Infected Individuals (2 Species) Over Time Across Varying Conditions"))+
