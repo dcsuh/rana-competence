@@ -83,7 +83,9 @@ comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram() + labs(titl
 ```
 
 
-effect sizes
+Standard deviations from the mean
+This chunk attempts to characterize each wetland in terms of how exceptional they are compared to other wetlands in terms of abundance, cc, and temp
+The idea is that if certain wetlands tend to be highly abundant with high community competence and lower temperatures, then we might expect them to be a perfect environment for ranavirus to thrive. 
 ```{r}
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 comm_data %>% mutate(mean = mean(size), sd = sd(size), var = mean(size)-size, size = size)
