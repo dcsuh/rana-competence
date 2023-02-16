@@ -8,7 +8,7 @@ Each figure is created using a separate script.
 
 links to some works in progress:
 
-[workshop](rana-competence/scripts/workshop/workshop.html)
+[workshop](/scripts/workshop/workshop.html)
 
 [sem](dcsuh.github.io/rana-competence/scripts/workshop/sem.html)
 
