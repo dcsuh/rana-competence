@@ -5,3 +5,9 @@ All analyses performed by Daniel Suh and Dr. Andrew Park @ UGA Odum School of Ec
 Data used for all analyses is weighted_prev_competence_111220.csv
 
 Each figure is created using a separate script.
+
+links to some works in progress:
+
+[workshop][dcsuh.github.io/rana-competence/scripts/workshop/workshop.html]
+[sem][dcsuh.github.io/rana-competence/scripts/workshop/sem.html]
+[dynamics][dcsuh.github.io/rana-competence/scripts/workshop/dynamics.html]
