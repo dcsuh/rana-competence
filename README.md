@@ -10,6 +10,6 @@ links to some works in progress:
 
 [workshop](/scripts/workshop/workshop.html)
 
-[sem](dcsuh.github.io/rana-competence/scripts/workshop/sem.html)
+[sem](/scripts/workshop/sem.html)
 
-[dynamics](dcsuh.github.io/rana-competence/scripts/workshop/dynamics.html)
+[dynamics](/scripts/workshop/dynamics.html)
