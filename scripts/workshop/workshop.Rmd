@@ -84,7 +84,7 @@ comm_data %>% ggplot(.,aes(x=size)) + geom_histogram() + labs(title = "Untransfo
 comm_data %>% ggplot(.,aes(x=log10(size))) + geom_histogram() + labs(title = "log10-transformed abundance")
 comm_data %>% ggplot(.,aes(x=cc)) + geom_histogram() + labs(title = "Untransformed cc")
 comm_data %>% ggplot(.,aes(x=log10(cc))) + geom_histogram() + labs(title = "log10-transformed cc")
-comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram() + labs(title = "Mean Water Temp")
+comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram(binwidth=2) + labs(title = "Mean Water Temp")
 ```
 
 
