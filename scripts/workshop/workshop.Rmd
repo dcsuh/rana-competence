@@ -60,6 +60,8 @@ supp1_raw
 supp1_log10
 ```
 
+# Incidence
+
 
 ```{r}
 incidence <- data %>% group_by(WetAltID, Month.1) %>% summarize(incidence = sum(RV.Status))
@@ -69,15 +71,20 @@ incidence %>% ggplot(.,aes(x=Month.1, y=incidence, group = 1)) + geom_point() + 
 ```
 
 
+# Prevalence
+
 ```{r}
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 comm_data %>% ungroup() %>% ggplot(.,aes(x=Month.1, y=Prevalence, group = 1)) + geom_point() + geom_line() + facet_wrap(~WetAltID, nrow = 5, ncol = 4) + labs(title="Prevalence over time")
 ```
 
+# Abundance
+
 ```{r}
 comm_data %>% ungroup() %>% ggplot(.,aes(x=Month.1, y=log10(size), group = 1)) + geom_point() + geom_line() + facet_wrap(~WetAltID, nrow = 5, ncol = 4) + labs(title="log10(Abundance) over time")
 ```
 
+# Histograms
 
 ```{r}
 comm_data %>% ggplot(.,aes(x=size)) + geom_histogram() + labs(title = "Untransformed abundance")
@@ -87,6 +94,7 @@ comm_data %>% ggplot(.,aes(x=log10(cc))) + geom_histogram() + labs(title = "log1
 comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC)) + geom_histogram(binwidth=2) + labs(title = "Mean Water Temp")
 ```
 
+# Effect Sizes
 
 Standard deviations from the mean
 This chunk attempts to characterize each wetland in terms of how exceptional they are compared to other wetlands in terms of abundance, cc, and temp
