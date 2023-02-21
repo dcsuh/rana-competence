@@ -122,6 +122,9 @@ library(plotly)
 ```{r}
 plot_ly(data = effect_summ, x=effect_summ$temp_over, y=effect_summ$size_over, z=effect_summ$cc_over, 
         type="scatter3d", mode="markers", color=as.factor(effect_summ$WetAltID))
+
+plot_ly(data = effect_summ, x=effect_summ$temp_sum, y=effect_summ$size_sum, z=effect_summ$cc_sum, 
+        type="scatter3d", mode="markers", color=as.factor(effect_summ$WetAltID))
 ```
 
 
