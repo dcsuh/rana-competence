@@ -115,3 +115,13 @@ effect_summ <- comm_effect %>% group_by(WetAltID) %>% summarize(size_over = sum(
 ```
 
 
+```{r}
+library(plotly)
+```
+
+```{r}
+plot_ly(data = effect_summ, x=effect_summ$temp_over, y=effect_summ$size_over, z=effect_summ$cc_over, 
+        type="scatter3d", mode="markers", color=as.factor(effect_summ$WetAltID))
+```
+
+
