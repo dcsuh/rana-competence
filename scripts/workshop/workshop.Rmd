@@ -12,6 +12,7 @@ library(here)
 source(here("base","src.R"))
 
 library(reshape2)
+library(ggridges)
 ```
 
 
@@ -67,7 +68,23 @@ supp1_log10
 incidence <- data %>% group_by(WetAltID, Month.1) %>% summarize(incidence = sum(RV.Status))
 
 incidence %>% ggplot(.,aes(x=Month.1, y=incidence)) + geom_col() + facet_grid(vars(WetAltID))
-incidence %>% ggplot(.,aes(x=Month.1, y=incidence, group = 1)) + geom_point() + geom_line() + facet_wrap(~WetAltID, nrow = 5, ncol = 4) + labs(title="Incidence over time")
+incidence %>% ggplot(.,aes(x=Month.1, y=incidence, group = 1)) + geom_point() + geom_line() + 
+  facet_wrap(~WetAltID, nrow = 5, ncol = 4) + labs(title="Incidence over time") + theme(axis.text.x = element_text(angle = 75, vjust = 0.5, hjust=1))
+
+data %>% filter(RV.Status==1) %>% 
+  ggplot(., aes(x=Month.1,
+                y=WetAltID,
+                group=WetAltID,
+                fill=as.factor(WetAltID))) + 
+  geom_density_ridges_gradient(show.legend=F) +
+  labs(title="# of RV cases per site over time")
+
+incidence %>% ggplot(., aes(x=Month.1,
+                            y=WetAltID,
+                            group=WetAltID,
+                            fill=as.factor(WetAltID),
+                            height = incidence)) +
+  geom_density_ridges_gradient(show.legend = F, stat = "identity")
 ```
 
 
