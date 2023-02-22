@@ -147,7 +147,10 @@ plot_ly(data = effect_summ, x=effect_summ$temp_sum, y=effect_summ$size_sum, z=ef
 
 # Up to Peak
 
-Redo analysis (effect size) with only the data from months before and including the peak. Rationale is that we are most interested in the features of a wetland that make it good or bad for an epidemic to occur. After an epidemic begins and peaks, the conditions of the wetland during the decline of the epidemic may not be as important since there are less susceptibles and parasite may be dying out. We'll see
+Redo analysis (effect size) with only the data from months before and including the peak. Rationale is that we are most interested in the features of a wetland that make it good or bad for an epidemic to occur. After an epidemic begins and peaks, the conditions of the wetland during the decline of the epidemic may not be as important since there are less susceptibles and parasite may be dying out. We'll see.
+
+
+Also, rerun dynamics without demography.
 
 
 
