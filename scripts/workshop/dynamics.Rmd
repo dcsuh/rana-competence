@@ -111,6 +111,30 @@ rm0<-function(t,x,params){
     res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
     list(res)
   })}
+#no demography
+rm1<-function(t,x,params){
+  Sa <- x[1]  
+  Ia <- x[2]
+  Ra <- x[3]
+  Sb <- x[4]  
+  Ib <- x[5]
+  Rb <- x[6]
+  V <- x[7]
+  with(as.list(params),{
+    dSa <- -beta*Sa*Ia - betab*Sa*Ib - phi*Sa*V
+    dIa <- beta*Sa*Ia + betab*Sa*Ib + phi*Sa*V - alpha*Ia
+    dRa <- alpha*Ia
+    
+    dSb <- -betab*Sb*Ib - beta*Sb*Ia - phi*Sb*V
+    dIb <- betab*Sb*Ib + beta*Sb*Ia + phi*Sb*V - alpha*Ib
+    dRb <- alpha*Ib
+    
+    dV <- sigma*Ia + sigma*Ib - epsilon*V
+    res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
+    list(res)
+  })}
+
+
 maxTime <- 300.0 # time is in years - run model for this time
 times<-seq(0,maxTime,by=1) # how long we run the model for
 # notes on params
@@ -200,6 +224,7 @@ xstart_n <- c(Sa=params_n[[6]]/params_n[[1]],
           V=0)  # initial conditions
 
 output_n <- as.data.frame(lsoda(xstart_n,times,rm0,params_n)) # tells computer to solve (integrate) equations
+output_n1<- as.data.frame(lsoda(xstart_n,times,rm1,params_n)) # tells computer to solve (integrate) equations
 
 reference_eigen <- reference$eigen[param_num]
 ```
@@ -218,6 +243,20 @@ output_n %>% ggplot(.,aes(x=time))+
   labs(y="N",x="Time",col="Population")+
   ylim(0,95)+
   ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland - Neutral - ", reference_eigen))+theme(plot.title = element_text(hjust=0, size=10))
+
+output_n1 %>% ggplot(.,aes(x=time))+
+  geom_line(aes(y=Sa,col="Susceptible A"))+
+  geom_line(aes(y=Ia,col="Infected A"))+
+  geom_line(aes(y=Ra,col="Recovered A"))+
+  geom_line(aes(y=Sb,col="Susceptible B"))+
+  geom_line(aes(y=Ib,col="Infected B"))+
+  geom_line(aes(y=Rb,col="Recovered B"))+
+  geom_line(aes(y=V,col="Virus"))+
+  scale_colour_manual(values = c("red","orange","yellow","green","blue","black","violet"))+
+  theme(legend.position = c(0.85,0.5))+
+  labs(y="N",x="Time",col="Population")+
+  ylim(0,95)+
+  ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland w/o demo - Neutral - ", reference_eigen))+theme(plot.title = element_text(hjust=0, size=10))
 ```
 
 
@@ -234,6 +273,7 @@ params_c <- c(mu_a=1/60,
           epsilon=1/1.947799)  # model parameters
 
 output_c <- as.data.frame(lsoda(xstart_n,times,rm0,params_c)) # tells computer to solve (integrate) equations
+output_c1 <- as.data.frame(lsoda(xstart_n,times,rm1,params_c)) # tells computer to solve (integrate) equations
 
 community_eigen <- composition$eigen[param_num]
 ```
@@ -252,6 +292,20 @@ output_c %>% ggplot(.,aes(x=time))+
   labs(y="N",x="Time",col="Population")+
   ylim(0,95)+
   ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland - Community - ", community_eigen))+theme(plot.title = element_text(hjust=0, size=10))
+
+output_c1 %>% ggplot(.,aes(x=time))+
+  geom_line(aes(y=Sa,col="Susceptible A"))+
+  geom_line(aes(y=Ia,col="Infected A"))+
+  geom_line(aes(y=Ra,col="Recovered A"))+
+  geom_line(aes(y=Sb,col="Susceptible B"))+
+  geom_line(aes(y=Ib,col="Infected B"))+
+  geom_line(aes(y=Rb,col="Recovered B"))+
+  geom_line(aes(y=V,col="Virus"))+
+  scale_colour_manual(values = c("red","orange","yellow","green","blue","black","violet"))+
+  theme(legend.position = c(0.85,0.5))+
+  labs(y="N",x="Time",col="Population")+
+  ylim(0,95)+
+  ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland w/o demo - Community - ", community_eigen))+theme(plot.title = element_text(hjust=0, size=10))
 ```
 
 Abundance
@@ -267,6 +321,7 @@ params_a <- c(mu_a=1/52.5,
           epsilon=1/1.947799)  # model parameters
 
 output_a <- as.data.frame(lsoda(xstart_n,times,rm0,params_a)) # tells computer to solve (integrate) equations
+output_a1 <- as.data.frame(lsoda(xstart_n,times,rm1,params_a)) # tells computer to solve (integrate) equations
 
 abundance_eigen <- size$eigen[param_num]
 ```
@@ -286,6 +341,20 @@ output_a %>% ggplot(.,aes(x=time))+
   labs(y="N",x="Time",col="Population")+
   ylim(0,95)+
   ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland - Abundance - ", abundance_eigen))+theme(plot.title = element_text(hjust=0, size=10))
+
+output_a1 %>% ggplot(.,aes(x=time))+
+  geom_line(aes(y=Sa,col="Susceptible A"))+
+  geom_line(aes(y=Ia,col="Infected A"))+
+  geom_line(aes(y=Ra,col="Recovered A"))+
+  geom_line(aes(y=Sb,col="Susceptible B"))+
+  geom_line(aes(y=Ib,col="Infected B"))+
+  geom_line(aes(y=Rb,col="Recovered B"))+
+  geom_line(aes(y=V,col="Virus"))+
+  scale_colour_manual(values = c("red","orange","yellow","green","blue","black","violet"))+
+  theme(legend.position = c(0.85,0.5))+
+  labs(y="N",x="Time",col="Population")+
+  ylim(0,95)+
+  ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland w/o demo - Abundance - ", abundance_eigen))+theme(plot.title = element_text(hjust=0, size=10))
 ```
 
 Half-life
@@ -301,6 +370,8 @@ params_h <- c(mu_a=1/45,
           epsilon=1/3.895598)  # model parameters
 
 output_h <- as.data.frame(lsoda(xstart_n,times,rm0,params_h)) # tells computer to solve (integrate) equations
+output_h1 <- as.data.frame(lsoda(xstart_n,times,rm1,params_h)) # tells computer to solve (integrate) equations
+
 
 halflife_eigen <- halflife$eigen[param_num]
 ```
@@ -320,6 +391,20 @@ output_h %>% ggplot(.,aes(x=time))+
   labs(y="N",x="Time",col="Population")+
   ylim(0,95)+
   ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland - halflife - ", halflife_eigen))+theme(plot.title = element_text(hjust=0, size=10))
+
+output_h1 %>% ggplot(.,aes(x=time))+
+  geom_line(aes(y=Sa,col="Susceptible A"))+
+  geom_line(aes(y=Ia,col="Infected A"))+
+  geom_line(aes(y=Ra,col="Recovered A"))+
+  geom_line(aes(y=Sb,col="Susceptible B"))+
+  geom_line(aes(y=Ib,col="Infected B"))+
+  geom_line(aes(y=Rb,col="Recovered B"))+
+  geom_line(aes(y=V,col="Virus"))+
+  scale_colour_manual(values = c("red","orange","yellow","green","blue","black","violet"))+
+  theme(legend.position = c(0.85,0.5))+
+  labs(y="N",x="Time",col="Population")+
+  ylim(0,95)+
+  ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland w/o demo - halflife - ", halflife_eigen))+theme(plot.title = element_text(hjust=0, size=10))
 ```
 
 
@@ -336,6 +421,7 @@ params_x <- c(mu_a=1/70,
           epsilon=1/3.895598)  # model parameters
 
 output_x <- as.data.frame(lsoda(xstart_n,times,rm0,params_x)) # tells computer to solve (integrate) equations
+output_x1 <- as.data.frame(lsoda(xstart_n,times,rm1,params_x)) # tells computer to solve (integrate) equations
 
 combined_eigen <- combined$eigen[param_num]
 ```
@@ -343,6 +429,20 @@ combined_eigen <- combined$eigen[param_num]
 
 ```{r}
 output_x %>% ggplot(.,aes(x=time))+
+  geom_line(aes(y=Sa,col="Susceptible A"))+
+  geom_line(aes(y=Ia,col="Infected A"))+
+  geom_line(aes(y=Ra,col="Recovered A"))+
+  geom_line(aes(y=Sb,col="Susceptible B"))+
+  geom_line(aes(y=Ib,col="Infected B"))+
+  geom_line(aes(y=Rb,col="Recovered B"))+
+  geom_line(aes(y=V,col="Virus"))+
+  scale_colour_manual(values = c("red","orange","yellow","green","blue","black","violet"))+
+  theme(legend.position = c(0.85,0.5))+
+  labs(y="N",x="Time",col="Population")+
+  ylim(0,95)+
+  ggtitle(paste("2-Species Transmission Model for Ranavirus in an Amphibian Wetland - Combined - ", combined_eigen))+theme(plot.title = element_text(hjust=0, size=10))
+
+output_x1 %>% ggplot(.,aes(x=time))+
   geom_line(aes(y=Sa,col="Susceptible A"))+
   geom_line(aes(y=Ia,col="Infected A"))+
   geom_line(aes(y=Ra,col="Recovered A"))+
@@ -364,6 +464,12 @@ output_c %<>% mutate(I = Ia+Ib)
 output_h %<>% mutate(I = Ia+Ib)
 output_n %<>% mutate(I = Ia+Ib)
 output_x %<>% mutate(I = Ia+Ib)
+
+output_a1 %<>% mutate(I = Ia+Ib)
+output_c1 %<>% mutate(I = Ia+Ib)
+output_h1 %<>% mutate(I = Ia+Ib)
+output_n1 %<>% mutate(I = Ia+Ib)
+output_x1 %<>% mutate(I = Ia+Ib)
 ```
 
 ```{r}
@@ -398,4 +504,25 @@ ggplot()+
   theme_bw()
 ```
 
+```{r}
+ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=I,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=I,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=I,x=time, color=color_h))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=I,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,30)+
+  ggtitle(paste("Total Infected Individuals (2 Species) Over Time Across Varying Conditions w/o demo"))+
+  theme_bw()
+```
 
