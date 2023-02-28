@@ -188,4 +188,7 @@ plot_ly(data = effect_summ_2, x=effect_summ_2$temp_sum, y=effect_summ_2$size_sum
 Also, rerun dynamics without demography.
 
 
+```{r}
+
+```
 
