@@ -1,7 +1,7 @@
 ---
 title: "dynamics"
 author: "Daniel Suh"
-date: "2023-02-15"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
 output: html_document
 ---
 
