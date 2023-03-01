@@ -581,6 +581,15 @@ output_x1 %<>% mutate(I = Ia+Ib)
 output_x2 %<>% mutate(I = Ia+Ib)
 output_x3 %<>% mutate(I = Ia+Ib)
 output_x4 %<>% mutate(I = Ia+Ib)
+
+output_a1 %<>% mutate(X = I + V)
+output_c1 %<>% mutate(X = I + V)
+output_h1 %<>% mutate(X = I + V)
+output_n1 %<>% mutate(X = I + V)
+output_x1 %<>% mutate(X = I + V)
+output_x2 %<>% mutate(X = I + V)
+output_x3 %<>% mutate(X = I + V)
+output_x4 %<>% mutate(X = I + V)
 ```
 
 ```{r}
@@ -643,6 +652,50 @@ ggplot()+
 
 ```{r}
 ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=V,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=V,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=V,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=V,x=time, color=color_h))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=V,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,75)+
+  ggtitle(paste("Total Virions Over Time Across Varying Conditions w/o demo"))+
+  theme_bw()
+```
+
+```{r}
+ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=X,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=X,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=X,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=X,x=time, color=color_h))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=X,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,110)+
+  ggtitle(paste("Total Infective Classes Over Time Across Varying Conditions w/o demo"))+
+  theme_bw()
+```
+
+```{r}
+ggplot()+
   geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
   scale_color_manual(name="",values = "black")+
   new_scale_color()+
@@ -679,5 +732,26 @@ ggplot()+
   labs(y="N",x="Time")+
   ylim(0,75)+
   ggtitle(paste("Total Virions Over Time Across Varying Conditions w/o demo"))+
+  theme_bw()
+```
+```{r}
+ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=X,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_x2, mapping=aes(y=X,x=time, color=color_x2))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_x3, mapping=aes(y=X,x=time, color=color_x3))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_x4, mapping=aes(y=X,x=time, color=color_x4))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=X,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,110)+
+  ggtitle(paste("Total Infective Classes Over Time Across Varying Conditions w/o demo"))+
   theme_bw()
 ```
