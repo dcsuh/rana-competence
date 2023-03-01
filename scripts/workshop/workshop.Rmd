@@ -158,7 +158,7 @@ comm_data_1$month.n <- as.numeric(gsub("Month","",comm_data_1$Month.1))
 comm_data_1 %<>% group_by(WetAltID) %>% mutate(max_mo = ifelse(Prevalence == max(Prevalence),month.n,0)) 
 comm_data_1 %<>% group_by(WetAltID) %>% mutate(max_mo=max(max_mo))
 
-comm_data_2 <- comm_data_1 %>% group_by(WetAltID) %>% filter(!month.n>max_mo)
+comm_data_2 <- comm_data_1 %>% group_by(WetAltID) %>% filter(!month.n>max_mo) %>% ungroup()
 ```
 
 

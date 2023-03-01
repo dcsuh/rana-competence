@@ -207,8 +207,8 @@ param_num <- which(reference$eigen>1.103065 & reference$eigen<1.103192)
 
 Neutral
 ```{r}
-params_n <- c(mu_a=1/50,
-          mu_b=1/50,
+params_n <- c(mu_a=1/45,
+          mu_b=1/45,
           beta=spec_1,
           betab=spec_2,
           phi=env_rate,
