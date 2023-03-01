@@ -168,12 +168,14 @@ comm_effect_2 <- comm_data_2 %>% filter(MeanWaterTempPredC>0) %>% mutate(size_sd
                                     cc_sds = (mean(cc)-cc)/sd(cc),
                                     temp_sds = ((mean(MeanWaterTempPredC)-MeanWaterTempPredC)/sd(MeanWaterTempPredC))*-1) #multiply by -1 to make it opposite
 
-effect_summ_2 <- comm_effect_2 %>% group_by(WetAltID) %>% summarize(size_over = sum(size_sds>0),
+effect_summ_2 <- comm_effect_2 %>% group_by(WetAltID) %>% summarize(n = n(),
+                                                                size_over = sum(size_sds>0),
                                                                 size_sum = sum(size_sds),
                                                                 cc_over = sum(cc_sds>0),
                                                                 cc_sum = sum(cc_sds),
                                                                 temp_over = sum(temp_sds>0),
                                                                 temp_sum = sum(temp_sds))
+effect_summ_2
 ```
 
 
