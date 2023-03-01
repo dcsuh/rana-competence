@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r, message = F}
 library(tidyverse)
 library(magrittr)
 #install_github("thomasp85/patchwork")
