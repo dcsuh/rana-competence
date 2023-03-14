@@ -223,12 +223,19 @@ Also I need to reconsider stage with other analyses. There are about 90 adults. 
  
 Data are now ready. ph only has one of every site-month combo
 ```{r}
-ph_ab <- ph %>% pivot_longer(.,cols = c(AB2:AB42))
+ph_ab <- ph %>% select(-c(ABAmb,ABSal)) %>% pivot_longer(.,cols = c(AB2:AB42))
 ph_ab %>% ggplot(.,aes(x=Month.1, y=value, color=name, group = name)) + geom_point() + geom_line() + facet_wrap(vars(WetAltID))
 ```
 
 ```{r}
 ph_ra <- ph %>% pivot_longer(.,cols = c(RA2:RA42))
-ph_ra %>% ggplot(.,aes(x=Month.1, y=value, color=name, group=name)) + geom_point() + geom_line() + facet_wrap(vars(WetAltID), ncol=1)
+ph_ra %>% ggplot(.,aes(x=Month.1, y=value, color=name, group=name)) + geom_point() + geom_line() + facet_wrap(vars(WetAltID))
 ```
+
+```{r}
+ph_pa <- ph %>% pivot_longer(.,cols = c(PA2:PA42))
+ph_pa %>% ggplot(.,aes(x=Month.1, y=value, color=name, fill=name, group=name)) + geom_col() + facet_wrap(vars(WetAltID))
+```
+
+
 
