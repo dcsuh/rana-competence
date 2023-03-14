@@ -35,6 +35,8 @@ names <- read_csv(here("data/raw_data/species_names_ids.csv"))
 ```{r}
 vl <- readRDS(here("processed_data","vl.rds"))
 
+vl %<>% mutate(ln_of_mean = log(mean))
+
 supp1_raw <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
   ggplot(.,aes(x=abb_name,y=mean)) +
@@ -59,8 +61,20 @@ supp1_log10 <- vl %>% arrange(mean) %>%
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
+supp1_ln <- vl %>% arrange(ln_of_mean) %>% 
+  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
+  ggplot(.,aes(x=abb_name,y=ln_of_mean)) +
+  geom_point() + 
+  xlab("Species") + ylab("ln(Viral Load)") + 
+  geom_hline(yintercept = 1) + 
+  labs(title = "Viral Loads") + 
+  theme_classic() + 
+  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  scale_y_continuous(breaks=seq(0,6,1))
+
 supp1_raw
 supp1_log10
+supp1_ln
 ```
 
 # Incidence
@@ -237,5 +251,57 @@ ph_pa <- ph %>% pivot_longer(.,cols = c(PA2:PA42))
 ph_pa %>% ggplot(.,aes(x=Month.1, y=value, color=name, fill=name, group=name)) + geom_col() + facet_wrap(vars(WetAltID))
 ```
 
+
+First and last sighting of each at each wetland
+```{r}
+ph_range <- ph_pa %>% filter(value==1) %>% group_by(name, WetAltID) %>% summarize(min_mo=min(Month.1), max_mo = max(Month.1))
+ph_range %<>% mutate(first = as.numeric(gsub("Month","",min_mo)),
+                     last = as.numeric(gsub("Month","",max_mo)))
+ph_range_summ <- ph_range %>% group_by(name) %>% summarize(mean_first = mean(first),
+                                                           mean_last = mean(last))
+
+ph_range_summ %<>% mutate(Species = as.numeric(gsub("PA","",name)))
+
+ph_range_summ %<>% left_join(.,vl)
+
+ph_range_summ %>% arrange(mean) %>% mutate(name=factor(name, levels=name)) %>% filter(!is.na(species_name)) %>% 
+  ggplot(.,aes(y = name, color=ln_of_mean)) +
+  geom_linerange(aes(xmin=mean_first,xmax=mean_last,linewidth=1)) + 
+  scale_color_viridis_c()
+```
+
+Do this instead with abundance
+```{r}
+ph_ab_summ <- ph_ab %>% mutate(log1p_value = log1p(value)) %>% group_by(name,Month.1) %>% summarize(log1p_ab_mean = mean(log1p_value),
+                                                                                                    ab_mean = mean(value)) %>% ungroup()
+
+ph_ab_summ %<>% mutate(Species = as.numeric(gsub("AB","",name)))
+
+ph_ab_summ %<>% left_join(.,vl)
+
+
+ph_ab_summ %>% arrange(mean) %>% mutate(name=factor(name, levels=unique(name))) %>% filter(!is.na(species_name)) %>% 
+              ggplot(., aes(x=Month.1,
+                            y=name,
+                            group=name,
+                            fill=as.factor(mean),
+                            height = ab_mean)) +
+  geom_density_ridges_gradient(show.legend = T, stat = "identity") + labs(x = "Absolute Abundance")
+
+ph_ab_summ %>% arrange(mean) %>% mutate(name=factor(name, levels=unique(name))) %>% filter(!is.na(species_name)) %>% 
+              ggplot(., aes(x=Month.1,
+                            y=name,
+                            group=name,
+                            fill=as.factor(mean),
+                            height = log1p_ab_mean)) +
+  geom_density_ridges_gradient(show.legend = T, stat = "identity") + labs(x = "log1p(Abundance)")
+
+ph_ab_summ %>% arrange(desc(mean)) %>% mutate(name=factor(name, levels=unique(name))) %>% filter(!is.na(species_name)) %>% 
+              ggplot(., aes(x=Month.1,
+                            y=log1p_ab_mean,
+                            fill=as.factor(ln_of_mean))) +
+  geom_col() + labs(x = "log1p(Abundance)") + facet_wrap(vars(name), ncol=1) + theme(strip.background = element_blank(),
+                                                                                     strip.text.x = element_blank())
+```
 
 
