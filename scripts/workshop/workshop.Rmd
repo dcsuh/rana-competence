@@ -196,3 +196,39 @@ Also, rerun dynamics without demography.
 
 ```
 
+
+# Phenology
+
+Let's look at amphibian phenology from the data
+ - when do amphibian larvae first appear
+ - when are amphibian larvae no longer found (implies emergence)
+ - abundance (average clutch size?)
+
+I want each row to be one month in one wetland and have columns for each species abundance
+```{r}
+ph <- data %>% select(-c(X1, ID, Species, RV.Status, HostDensity, MinWaterTemp, MaxWaterTemp, MeanWaterT, CanopyCover, Stage, SQMean, LogSQMean, ArcSQMean, LogSQMean.1, Date.Collected, SVL, Zscore, Species.4:Species.42, log10_SQ, ln_SQ, log1p_SQ)) %>% filter(Stage2=="L") %>% distinct()
+```
+
+condensing this down was more difficult than expected
+some things to ask Stacey about
+ - some of this might be explained by measurements for one sampling period being taken on separate days
+ - discrepancies exist for a single site_month
+ - - 19_month4: CanopyCover
+ - - 7_month6: HostDensity
+ - lots of sites had the same MeanWaterTempPredC but different MeanWaterT
+ - - these sites also had different MinWaterTemp and MaxWaterTemp
+
+Also I need to reconsider stage with other analyses. There are about 90 adults. I am just going to filter them out for now and assume the values we have are for larvae only?
+ - need to check on this. Do data include adults as well?
+ 
+Data are now ready. ph only has one of every site-month combo
+```{r}
+ph_ab <- ph %>% pivot_longer(.,cols = c(AB2:AB42))
+ph_ab %>% ggplot(.,aes(x=Month.1, y=value, color=name, group = name)) + geom_point() + geom_line() + facet_wrap(vars(WetAltID))
+```
+
+```{r}
+ph_ra <- ph %>% pivot_longer(.,cols = c(RA2:RA42))
+ph_ra %>% ggplot(.,aes(x=Month.1, y=value, color=name, group=name)) + geom_point() + geom_line() + facet_wrap(vars(WetAltID), ncol=1)
+```
+
