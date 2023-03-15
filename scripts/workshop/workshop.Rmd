@@ -35,7 +35,7 @@ names <- read_csv(here("data/raw_data/species_names_ids.csv"))
 ```{r}
 vl <- readRDS(here("processed_data","vl.rds"))
 
-vl %<>% mutate(ln_of_mean = log(mean))
+vl %<>% mutate(ln_of_mean = log1p(mean))
 
 supp1_raw <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
@@ -264,10 +264,22 @@ ph_range_summ %<>% mutate(Species = as.numeric(gsub("PA","",name)))
 
 ph_range_summ %<>% left_join(.,vl)
 
+ph_range_summ %<>% rowwise() %>% mutate(median_mo = median(c(mean_first, mean_last)))
+
 ph_range_summ %>% arrange(mean) %>% mutate(name=factor(name, levels=name)) %>% filter(!is.na(species_name)) %>% 
-  ggplot(.,aes(y = name, color=ln_of_mean)) +
+  ggplot(.,aes(y = name, color=ln_of_mean)) + geom_point(aes(x=median_mo, size = 2)) + 
   geom_linerange(aes(xmin=mean_first,xmax=mean_last,linewidth=1)) + 
-  scale_color_viridis_c()
+  scale_color_viridis_c() + guides(size=F, linewidth=F)
+
+ph_range_summ %>% arrange(mean) %>% mutate(abb_name=factor(abb_name, levels=abb_name)) %>% filter(!is.na(species_name)) %>% 
+  ggplot(.,aes(y = abb_name, color=ln_of_mean)) + geom_point(aes(x=median_mo, size = 2)) + 
+  geom_linerange(aes(xmin=mean_first,xmax=mean_last,linewidth=1)) + 
+  scale_color_continuous() + 
+  guides(size=F, linewidth=F, color=guide_legend(title="log1p(viral load)")) + 
+  theme(axis.text.y = element_text(face = "italic", angle = 15)) + 
+  labs(x="Months", y="Species", title = "Average Range of Species Presence")
+
+
 ```
 
 Do this instead with abundance
