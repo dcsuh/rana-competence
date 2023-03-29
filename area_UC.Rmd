@@ -1,0 +1,42 @@
+---
+title: "Area Under Curve"
+author: "Daniel Suh"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r, message = F}
+library(here)
+
+source(here("base","src.R"))
+
+library(pracma)
+```
+
+
+Look at area under curve for all variables for each community (i.e. site-month)
+```{r}
+comm_data <- readRDS(here("processed_data","comm_data.rds"))
+```
+
+```{r}
+comm_data %<>% mutate(month_n = as.numeric(gsub("Month","",Month.1)),
+                      WetAltID = as.factor(WetAltID))
+areas <- comm_data %>% group_by(WetAltID) %>% summarize(abund = trapz(month_n, size),
+                                                        temp = trapz(month_n, MeanWaterTempPredC),
+                                                        cc = trapz(month_n, cc),
+                                                        prev = trapz(month_n, Prevalence))
+```
+
+```{r}
+areas %>% ggplot(.,aes(x=abund,y=prev)) + geom_point() + geom_smooth(method = "lm")
+areas %>% ggplot(.,aes(x=cc,y=prev)) + geom_point() + geom_smooth(method = "lm")
+areas %>% ggplot(.,aes(x=temp,y=prev)) + geom_point() + geom_smooth(method = "lm")
+```
+
+```{r}
+abund_lm <- lm(prev ~ log(abund), areas)
+cc_lm <- lm(prev ~ cc, areas)
+temp_lm <- lm(prev ~ temp, areas)
+```
+
