@@ -11,6 +11,7 @@ library(here)
 source(here("base","src.R"))
 
 library(pracma)
+library(ggridges)
 ```
 
 
@@ -22,14 +23,50 @@ comm_data <- readRDS(here("processed_data","comm_data.rds"))
 ```{r}
 comm_data %<>% mutate(month_n = as.numeric(gsub("Month","",Month.1)),
                       WetAltID = as.factor(WetAltID))
-areas <- comm_data %>% group_by(WetAltID) %>% summarize(abund = trapz(month_n, size),
-                                                        temp = trapz(month_n, MeanWaterTempPredC),
-                                                        cc = trapz(month_n, cc),
-                                                        prev = trapz(month_n, Prevalence))
+areas <- comm_data %>% filter(!(WetAltID %in% c(2,18,19,20))) %>% 
+  group_by(WetAltID) %>% summarize(abund = trapz(month_n, size), 
+                                   temp = trapz(month_n, MeanWaterTempPredC),
+                                   cc = trapz(month_n, cc),
+                                   prev = trapz(month_n, Prevalence))
 ```
 
 ```{r}
-areas %>% ggplot(.,aes(x=abund,y=prev)) + geom_point() + geom_smooth(method = "lm")
+comm_data %>% ggplot(., aes(x=Month.1,
+                            y=WetAltID,
+                            group=WetAltID,
+                            fill=as.factor(WetAltID),
+                            height = size)) +
+  geom_density_ridges_gradient(show.legend = F, stat = "identity") + 
+  labs(title = "Abundance over time")
+
+comm_data %>% ggplot(., aes(x=Month.1,
+                            y=WetAltID,
+                            group=WetAltID,
+                            fill=as.factor(WetAltID),
+                            height = cc)) +
+  geom_density_ridges_gradient(show.legend = F, stat = "identity") + 
+  labs(title = "CC over time")
+
+comm_data %>% ggplot(., aes(x=Month.1,
+                            y=WetAltID,
+                            group=WetAltID,
+                            fill=as.factor(WetAltID),
+                            height = MeanWaterTempPredC)) +
+  geom_density_ridges_gradient(show.legend = F, stat = "identity") + 
+  labs(title = "Temp over time")
+
+comm_data %>% ggplot(., aes(x=Month.1,
+                            y=WetAltID,
+                            group=WetAltID,
+                            fill=as.factor(WetAltID),
+                            height = Prevalence)) +
+  geom_density_ridges_gradient(show.legend = F, stat = "identity") + 
+  labs(title = "Prevalence over time")
+```
+
+
+```{r}
+areas %>% ggplot(.,aes(x=log(abund),y=prev)) + geom_point() + geom_smooth(method = "lm")
 areas %>% ggplot(.,aes(x=cc,y=prev)) + geom_point() + geom_smooth(method = "lm")
 areas %>% ggplot(.,aes(x=temp,y=prev)) + geom_point() + geom_smooth(method = "lm")
 ```
@@ -38,5 +75,8 @@ areas %>% ggplot(.,aes(x=temp,y=prev)) + geom_point() + geom_smooth(method = "lm
 abund_lm <- lm(prev ~ log(abund), areas)
 cc_lm <- lm(prev ~ cc, areas)
 temp_lm <- lm(prev ~ temp, areas)
+summary(abund_lm)
+summary(cc_lm)
+summary(temp_lm)
 ```
 
