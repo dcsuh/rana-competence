@@ -22,17 +22,18 @@ order <- order[-c(4,14,47,90),]
 
 order %<>% add_column(prev_ratio = NA)
 
+order %<>% group_by(WetAltID) %>% mutate(max_prev = max(Prevalence)) %>% ungroup()
 
 #create new column that is a ratio between this and last month's prevalence and scales from 0 to 1
 #if next month prev is higher, then range is (0,1)
 #if next month prev is lower, then range is still (0,1)
 for(n in 2:nrow(order)){
   if (order$Prevalence[n] > order$Prevalence[n-1] && order$Prevalence[n-1] > 0) {
-    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$Prevalence[n]
+    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$Prevalence[n-1]
   } else if (order$Prevalence[n-1] == 0 && order$Prevalence[n] > 0) {
     order$prev_ratio[n-1] <- order$Prevalence[n]
   } else if (order$Prevalence[n] < order$Prevalence[n-1] && order$Prevalence[n] > 0) {
-    order$prev_ratio[n-1] <- (order$Prevalence[n-1] - order$Prevalence[n]) / order$Prevalence[n-1]
+    order$prev_ratio[n-1] <- (order$Prevalence[n-1] - order$Prevalence[n]) / order$Prevalence[n]
   } else if (order$Prevalence[n] == 0 && order$Prevalence[n-1] > 0) {
     order$prev_ratio[n-1] <- 1-order$Prevalence[n-1]
   } else if (order$Prevalence[n-1] > 0 && order$Prevalence[n] == order$Prevalence[n-1]) {
@@ -42,8 +43,12 @@ for(n in 2:nrow(order)){
   }
 }
 
+
+
 #remove the first entry for each wetland to remove the carryover from the last wetland
 clean <- order %>% mutate(month_n = gsub("Month", "", Month.1)) %>% group_by(WetAltID) %>% filter(month_n != max(month_n))
+
+order %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
 
 #plot cleaned plot with lag
 cc_corr <- clean %>% ggplot(.,aes(x=cc, y=prev_ratio)) +
