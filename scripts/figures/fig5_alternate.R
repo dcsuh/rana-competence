@@ -53,6 +53,17 @@ for(n in 2:nrow(order)){
   }
 }
 
+# for(n in 2:nrow(order)){
+#   if (order$Prevalence[n] > order$Prevalence[n-1]) {
+#     order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / 1
+#   } else if (order$Prevalence[n] < order$Prevalence[n-1]) {
+#     order$prev_ratio[n-1] <- 1 - ((order$Prevalence[n-1] - order$Prevalence[n]) / 1)
+#   } else {
+#     order$prev_ratio[n-1] <- 0
+#   }
+# }
+
+
 
 #remove the first entry for each wetland to remove the carryover from the last wetland
 clean <- order %>% mutate(month_n = gsub("Month", "", Month.1)) %>% group_by(WetAltID) %>% filter(month_n != max(month_n))
