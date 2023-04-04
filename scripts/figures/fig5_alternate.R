@@ -58,6 +58,8 @@ for(n in 2:nrow(order)){
 clean <- order %>% mutate(month_n = gsub("Month", "", Month.1)) %>% group_by(WetAltID) %>% filter(month_n != max(month_n))
 
 order %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
+clean %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
+
 
 #plot cleaned plot with lag
 cc_corr <- clean %>% ggplot(.,aes(x=cc, y=prev_ratio)) +
