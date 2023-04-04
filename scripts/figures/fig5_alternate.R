@@ -119,6 +119,7 @@ figure_5 <- cc_corr| size_corr| temp_corr
 figure_5
 #ggsave("fig_5.png",plot=figure_5,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
+m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 
 
 #test with 0's filtered out
