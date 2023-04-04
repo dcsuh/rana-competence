@@ -27,22 +27,31 @@ order %<>% group_by(WetAltID) %>% mutate(max_prev = max(Prevalence)) %>% ungroup
 #create new column that is a ratio between this and last month's prevalence and scales from 0 to 1
 #if next month prev is higher, then range is (0,1)
 #if next month prev is lower, then range is still (0,1)
+# for(n in 2:nrow(order)){
+#   if (order$Prevalence[n] > order$Prevalence[n-1] && order$Prevalence[n-1] > 0) {
+#     order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$Prevalence[n-1]
+#   } else if (order$Prevalence[n-1] == 0 && order$Prevalence[n] > 0) {
+#     order$prev_ratio[n-1] <- order$Prevalence[n]
+#   } else if (order$Prevalence[n] < order$Prevalence[n-1] && order$Prevalence[n] > 0) {
+#     order$prev_ratio[n-1] <- (order$Prevalence[n-1] - order$Prevalence[n]) / order$Prevalence[n]
+#   } else if (order$Prevalence[n] == 0 && order$Prevalence[n-1] > 0) {
+#     order$prev_ratio[n-1] <- 1-order$Prevalence[n-1]
+#   } else if (order$Prevalence[n-1] > 0 && order$Prevalence[n] == order$Prevalence[n-1]) {
+#     order$prev_ratio[n-1] <- 1
+#   } else {
+#     order$prev_ratio[n-1] <- 0
+#   }
+# }
+
 for(n in 2:nrow(order)){
-  if (order$Prevalence[n] > order$Prevalence[n-1] && order$Prevalence[n-1] > 0) {
-    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$Prevalence[n-1]
-  } else if (order$Prevalence[n-1] == 0 && order$Prevalence[n] > 0) {
-    order$prev_ratio[n-1] <- order$Prevalence[n]
-  } else if (order$Prevalence[n] < order$Prevalence[n-1] && order$Prevalence[n] > 0) {
-    order$prev_ratio[n-1] <- (order$Prevalence[n-1] - order$Prevalence[n]) / order$Prevalence[n]
-  } else if (order$Prevalence[n] == 0 && order$Prevalence[n-1] > 0) {
-    order$prev_ratio[n-1] <- 1-order$Prevalence[n-1]
-  } else if (order$Prevalence[n-1] > 0 && order$Prevalence[n] == order$Prevalence[n-1]) {
-    order$prev_ratio[n-1] <- 1
+  if (order$Prevalence[n] > order$Prevalence[n-1]) {
+    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$max_prev[n-1]
+  } else if (order$Prevalence[n] < order$Prevalence[n-1]) {
+    order$prev_ratio[n-1] <- 1 - ((order$Prevalence[n-1] - order$Prevalence[n]) / order$max_prev[n-1])
   } else {
     order$prev_ratio[n-1] <- 0
   }
 }
-
 
 
 #remove the first entry for each wetland to remove the carryover from the last wetland
