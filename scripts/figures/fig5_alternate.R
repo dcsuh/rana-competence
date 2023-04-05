@@ -10,8 +10,8 @@ source(here("base","src.R"))
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
-axis_title_size = 18
-axis_text_size = 15
+axis_title_size = 10
+axis_text_size = 10
 
 prev_cc <- comm_data
 
@@ -117,7 +117,7 @@ p.adjust(pvals,method="holm")
 #plot everything together with patchwork
 figure_5 <- cc_corr| size_corr| temp_corr
 figure_5
-#ggsave("fig_5.png",plot=figure_5,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+ggsave("fig_5_alternate.png",plot=figure_5,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 
