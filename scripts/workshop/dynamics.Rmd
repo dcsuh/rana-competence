@@ -629,7 +629,7 @@ ggplot()+
 ```
 
 ```{r}
-ggplot()+
+both <- ggplot()+
   geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
   scale_color_manual(name="",values = "black")+
   new_scale_color()+
@@ -646,7 +646,7 @@ ggplot()+
   scale_color_manual(name="",values = "forestgreen")+
   labs(y="N",x="Time")+
   ylim(0,40)+
-  ggtitle(paste("Total Infected Individuals (2 Species) Over Time Across Varying Conditions w/o demo"))+
+  ggtitle(paste("Both"))+
   theme_bw()
 ```
 
@@ -712,7 +712,8 @@ ggplot()+
   scale_color_manual(name="",values = "forestgreen")+
   labs(y="N",x="Time")+
   ylim(0,40)+
-  ggtitle(paste("Total Infected Individuals (2 Species) Over Time Across Varying Conditions w/o demo"))+
+  xlim(0,250)+
+  ggtitle(paste(""))+
   theme_bw()
 ```
 
@@ -755,3 +756,57 @@ ggplot()+
   ggtitle(paste("Total Infective Classes Over Time Across Varying Conditions w/o demo"))+
   theme_bw()
 ```
+
+
+```{r}
+spec_A <- ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=Ia,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=Ia,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=Ia,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=Ia,x=time, color=color_h))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=Ia,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,40)+
+  ggtitle(paste("Species A"))+
+  theme_bw()+
+  theme(legend.position = "none")
+
+```
+
+```{r}
+spec_B <- ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=Ib,x=time, color=color_x))+
+  scale_color_manual(name="",values = "black")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=Ib,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=Ib,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=Ib,x=time, color=color_h))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=Ib,x=time, color=color_n))+
+  scale_color_manual(name="",values = "forestgreen")+
+  labs(y="N",x="Time")+
+  ylim(0,40)+
+  ggtitle(paste("Species B"))+
+  theme_bw()+
+  theme(legend.position = "none")
+```
+
+
+```{r}
+dynamics <- spec_A + spec_B + both
+```
+
