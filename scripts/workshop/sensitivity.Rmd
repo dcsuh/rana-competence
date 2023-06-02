@@ -13,6 +13,7 @@ library(patchwork)
 library(ggnewscale)
 library(here)
 library(deSolve)
+library(lhs)
 ```
 
 ```{r model}
@@ -97,29 +98,29 @@ output<-as.data.frame(lsoda(xstart,times,rm0,params)) # tells computer to solve 
 ```{r lhs}
 h <- 1000               #choose number of points
 set.seed(8878896)
-lhs<-maximinLHS(h,6)   #simulate
+lhs<-maximinLHS(h,9)   #simulate
 ```
 
 
 ```{r}
-mu_a_min <- 1/50
-mu_a_max <- 1/50
-mu_b_min <- 1/50
-mu_b_max <- 1/50
-beta_min <- 0.001
-beta_max <- 0.001
-betab_min <- 0.0001
-betab_max <- 0.0001
-phi_min <- 0.001
-phi_max <- 0.001
-lambda_min <- 5/3
-lambda_max <- 5/3
-alpha_min <- 1/10
-alpha_max <- 1/10
-sigma_min <- 1/2
-sigma_max <- 1/2
-epsilon_min <- 1/2
-epsilon_max <- 1/2
+mu_a_min <- 1/50*0.8
+mu_a_max <- 1/50*1.2
+mu_b_min <- 1/50*0.8
+mu_b_max <- 1/50*1.2
+beta_min <- 0.001*0.8
+beta_max <- 0.001*1.2
+betab_min <- 0.0001*0.8
+betab_max <- 0.0001*1.2
+phi_min <- 0.001*0.8
+phi_max <- 0.001*1.2
+lambda_min <- 5/3*0.8
+lambda_max <- 5/3*1.2
+alpha_min <- 1/10*0.8
+alpha_max <- 1/10*1.2
+sigma_min <- 1/2*0.8
+sigma_max <- 1/2*1.2
+epsilon_min <- 1/2*0.8
+epsilon_max <- 1/2*1.2
 
 
 params.set <- cbind(
@@ -131,14 +132,30 @@ params.set <- cbind(
   lambda <- lhs[,6]*(lambda_max - lambda_min) + lambda_min,
   alpha <- lhs[,7]*(alpha_max - alpha_min) + alpha_min,
   sigma <- lhs[,8]*(sigma_max - sigma_min) + sigma_min,
-  epsilon <- lhs[,9]*(epsilon_max - epsilon_min) + epsilon_min,
+  epsilon <- lhs[,9]*(epsilon_max - epsilon_min) + epsilon_min
 )
 
 ```
 
 
 ```{r}
+levels <- 11
 
+h2 <- 250
+
+j <- 1
+
+data <- data.frame(matrix(rep(NA,levels*h2*14),nrow=levels*h2))
+for(i in 1:h2){
+    
+    data[j,1:9] <- as.list(c(params.set[i,]))
+    params <- params.set[i,]
+    out <- as.data.frame(lsoda(xstart, times, rm0, params))
+    data[j,10] <- tail(out$Ia, 1)
+    data[k,11] <- tail(out$Ib, 1)s
+    j <- j+1
+    
+}
 ```
 
 
