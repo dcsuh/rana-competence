@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: html_document
 ---
 
-```{r, message = F}
+```{r library, message = F}
 library(tidyverse)
 library(magrittr)
 #install_github("thomasp85/patchwork")
@@ -14,4 +14,133 @@ library(ggnewscale)
 library(here)
 library(deSolve)
 ```
+
+```{r model}
+rm0<-function(t,x,params){
+  Sa <- x[1]  
+  Ia <- x[2]
+  Ra <- x[3]
+  Sb <- x[4]  
+  Ib <- x[5]
+  Rb <- x[6]
+  V <- x[7]
+  with(as.list(params),{
+    dSa <- -beta*Sa*Ia - betab*Sa*Ib - phi*Sa*V + lambda - mu_a*Sa
+    dIa <- beta*Sa*Ia + betab*Sa*Ib + phi*Sa*V - alpha*Ia - mu_a*Ia
+    dRa <- alpha*Ia - mu_a*Ra
+    
+    dSb <- -betab*Sb*Ib - beta*Sb*Ia - phi*Sb*V + lambda - mu_b*Sb
+    dIb <- betab*Sb*Ib + beta*Sb*Ia + phi*Sb*V - alpha*Ib - mu_b*Ib
+    dRb <- alpha*Ib - mu_b*Rb
+    
+    dV <- sigma*Ia + sigma*Ib - epsilon*V
+    res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
+    list(res)
+  })}
+#no demography
+rm1<-function(t,x,params){
+  Sa <- x[1]  
+  Ia <- x[2]
+  Ra <- x[3]
+  Sb <- x[4]  
+  Ib <- x[5]
+  Rb <- x[6]
+  V <- x[7]
+  with(as.list(params),{
+    dSa <- -beta*Sa*Ia - betab*Sa*Ib - phi*Sa*V
+    dIa <- beta*Sa*Ia + betab*Sa*Ib + phi*Sa*V - alpha*Ia
+    dRa <- alpha*Ia
+    
+    dSb <- -betab*Sb*Ib - beta*Sb*Ia - phi*Sb*V
+    dIb <- betab*Sb*Ib + beta*Sb*Ia + phi*Sb*V - alpha*Ib
+    dRb <- alpha*Ib
+    
+    dV <- sigma*Ia + sigma*Ib - epsilon*V
+    res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
+    list(res)
+  })}
+
+
+maxTime <- 300.0 # time is in years - run model for this time
+times<-seq(0,maxTime,by=1) # how long we run the model for
+# notes on params
+# mu =     <- density-independent mortality rate
+# beta =       <- contact transmission rate by infected A
+# betab =       <- contact transmission rate by infected B
+# phi =      <- environmental transmission rate
+# lambda =       <- density-dependent growth rate
+# alpha =     <- recovery rate
+# sigma =    <- shedding rate
+# epsilon =       <- viral degradation rate
+params<-c(mu_a=1/50,
+          mu_b=1/50,
+          beta=0.001,
+          betab=0.0001,
+          phi=0.001,
+          lambda=5/3,
+          alpha=1/10,
+          sigma=1/2,
+          epsilon=1/2)  # model parameters
+
+xstart<-c(Sa=116,
+          Ia=1,
+          Ra=0,
+          Sb=83,
+          Ib=1,
+          Rb=0,
+          V=0)  # initial conditions
+
+output<-as.data.frame(lsoda(xstart,times,rm0,params)) # tells computer to solve (integrate) equations
+```
+
+
+```{r lhs}
+h <- 1000               #choose number of points
+set.seed(8878896)
+lhs<-maximinLHS(h,6)   #simulate
+```
+
+
+```{r}
+mu_a_min <- 1/50
+mu_a_max <- 1/50
+mu_b_min <- 1/50
+mu_b_max <- 1/50
+beta_min <- 0.001
+beta_max <- 0.001
+betab_min <- 0.0001
+betab_max <- 0.0001
+phi_min <- 0.001
+phi_max <- 0.001
+lambda_min <- 5/3
+lambda_max <- 5/3
+alpha_min <- 1/10
+alpha_max <- 1/10
+sigma_min <- 1/2
+sigma_max <- 1/2
+epsilon_min <- 1/2
+epsilon_max <- 1/2
+
+
+params.set <- cbind(
+  mu_a <- lhs[,1]*(mu_a_max - mu_a_min) + mu_a_min,
+  mu_b <- lhs[,2]*(mu_b_max - mu_b_min) + mu_b_min,
+  beta <- lhs[,3]*(beta_max - beta_min) + beta_min,
+  betab <- lhs[,4]*(betab_max - betab_min) + betab_min,
+  phi <- lhs[,5]*(phi_max - phi_min) + phi_min,
+  lambda <- lhs[,6]*(lambda_max - lambda_min) + lambda_min,
+  alpha <- lhs[,7]*(alpha_max - alpha_min) + alpha_min,
+  sigma <- lhs[,8]*(sigma_max - sigma_min) + sigma_min,
+  epsilon <- lhs[,9]*(epsilon_max - epsilon_min) + epsilon_min,
+)
+
+```
+
+
+```{r}
+
+```
+
+
+
 
