@@ -152,7 +152,7 @@ for(i in 1:h2){
     params <- params.set[i,]
     out <- as.data.frame(lsoda(xstart, times, rm0, params))
     data[j,10] <- tail(out$Ia, 1)
-    data[k,11] <- tail(out$Ib, 1)s
+    data[k,11] <- tail(out$Ib, 1)
     j <- j+1
     
 }
