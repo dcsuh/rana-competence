@@ -295,6 +295,28 @@ community_eigen <- composition$eigen[param_num]
 ```
 
 ```{r}
+params_c1 <- c(mu_a=1/45,
+          mu_b=1/45,
+          beta=spec_1,
+          betab=spec_2,
+          phi=env_rate,
+          lambda=5/3,
+          alpha=1/10,
+          sigma=1/2,
+          epsilon=1/1.947799)  # model parameters
+
+xstart_c1 <- c(Sa=100,
+          Ia=1,
+          Ra=0,
+          Sb=50,
+          Ib=1,
+          Rb=0,
+          V=0)  # initial conditions
+
+output_c2 <- as.data.frame(lsoda(xstart_c1,times,rm1,params_c1)) # tells computer to solve (integrate) equations
+```
+
+```{r}
 output_c %>% ggplot(.,aes(x=time))+
   geom_line(aes(y=Sa,col="Susceptible A"))+
   geom_line(aes(y=Ia,col="Infected A"))+
@@ -575,6 +597,7 @@ output_x %<>% mutate(I = Ia+Ib)
 
 output_a1 %<>% mutate(I = Ia+Ib)
 output_c1 %<>% mutate(I = Ia+Ib)
+output_c2 %<>% mutate(I = Ia+Ib)
 output_h1 %<>% mutate(I = Ia+Ib)
 output_n1 %<>% mutate(I = Ia+Ib)
 output_x1 %<>% mutate(I = Ia+Ib)
@@ -584,6 +607,7 @@ output_x4 %<>% mutate(I = Ia+Ib)
 
 output_a1 %<>% mutate(X = I + V)
 output_c1 %<>% mutate(X = I + V)
+output_c2 %<>% mutate(X = I + V)
 output_h1 %<>% mutate(X = I + V)
 output_n1 %<>% mutate(X = I + V)
 output_x1 %<>% mutate(X = I + V)
