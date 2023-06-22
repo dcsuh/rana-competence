@@ -3,12 +3,10 @@
 
 #Figure 1 in rv_cc manuscript
 
-library(tidyverse)
-library(magrittr)
-#install_github("thomasp85/patchwork")
-library(patchwork)
-library(ggnewscale)
+
 library(here)
+
+source(here("base", "src.R"))
 
 #define function contour(): inputs are parameters and output is values for grid search for R0
 contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, mort2, degr) {
@@ -83,7 +81,7 @@ p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
   theme_classic()+
   scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
   labs(x = "Environmental", y = "Contact") +
-  xlim(2,8) +
+  xlim(2,7) +
   ylim(2,10) + 
   labs(title = "Reference")
 
@@ -97,7 +95,7 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
-  xlim(2,8) +
+  xlim(2,7) +
   ylim(2,10) + 
   labs(title = "A") + 
   theme(axis.title = element_text(size=axis_text_size),
@@ -114,7 +112,7 @@ p3 <- size %>% filter(tot != 150) %>%
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
-  xlim(2,8) +
+  xlim(2,7) +
   ylim(2,10) + 
   labs(title = "B") + 
   theme(plot.title = element_text(size=plot_label_size))
@@ -127,8 +125,8 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x="Relative Environmental", y = "                                                               Relative Contact Transmission Rate", title = "C") +
-  xlim(2,8) +
+  labs(x="Relative Environmental  ", y = "                                                                             Relative Contact Transmission Rate", title = "C") +
+  xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
   theme(axis.title = element_text(size=axis_text_size),
@@ -144,8 +142,8 @@ p5 <- combined %>%
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x = "Transmission Rate", y = "", title = "D") +
-  xlim(2,8) +
+  labs(x = "                           Transmission Rate", y = "", title = "D") +
+  xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
   theme(axis.title = element_text(size=axis_text_size),
@@ -156,3 +154,4 @@ p5 <- combined %>%
 figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
 ggsave("fig_1.png",plot=figure_1+ proj_theme,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+

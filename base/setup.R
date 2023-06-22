@@ -21,7 +21,7 @@ lapply(pckg_names,
 
 
 # setting the plot theme for the project
-theme_set(theme_bw(base_size = 13)) #theme set will set plot theme without having to specify within ggplot
+proj_theme <- theme_set(theme_bw(base_size = 13)) #theme set will set plot theme without having to specify within ggplot
 
 
 ## Intended target dims
