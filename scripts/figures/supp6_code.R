@@ -15,6 +15,7 @@ source(here("base","src.R"))
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 pruned_tree <- readRDS(here("processed_data","pruned_tree.rds"))
+names <- read_csv(here("data", "raw_data", "species_names_ids.csv"))
 
 
 plot(pruned_tree)
@@ -25,7 +26,7 @@ rownames(pd) <- gsub("_"," ",rownames(pd))
 y <- comm_data
 y %<>% pivot_longer(starts_with("AB"),names_to="species",values_to="abund")
 names2 <- names
-names2 %<>% mutate(species=paste("AB",species_code,sep=""))
+names2 %<>% dplyr::mutate(species=paste("AB",species_code,sep=""))
 names2 %<>% mutate(Species=str_replace_all(species_name,"_"," "))
 names2 %<>% select(species,Species)
 names2 %<>% mutate(Species=if_else(Species=="Anaxyrus terrestris","Bufo terrestris",Species))
