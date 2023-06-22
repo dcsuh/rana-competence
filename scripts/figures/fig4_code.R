@@ -21,7 +21,7 @@ vl %<>% filter(tnrs_name!="Dryophytes avivoca") # as doesn't appear sampled in a
 pruned_tree$tip.label <- gsub("_"," ",pruned_tree$tip.label)
 
 
-vl %<>% select(species_name,value,ln_value,log10_value) %>% mutate(.,label = species_name) %>% select(-species_name)
+vl %<>% select(species_name,mean,log1p_mean) %>% mutate(.,label = species_name) %>% select(-species_name)
 vl$label <- gsub("_", " ", vl$label)
 vl$label <- gsub("Anaxyrus terrestris","Bufo terrestris",vl$label)
 vl$label <- gsub("Lithobates","Rana",vl$label)
@@ -73,7 +73,7 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
 #   scale_size_continuous(name="log10(Viral load)")+
 #   coord_flip()+guides(color=F)+xlim(0,300)
 newTree <- vl_tree +
-  geom_tippoint(aes(color=labelAlt,size=log10_value))+
+  geom_tippoint(aes(color=labelAlt,size=log10(mean)))+
   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
   geom_tiplab(size=2.2,hjust=,offset=7,angle=0)+#fontface="italic",
   scale_size_continuous(name="log10(Viral load)")+
