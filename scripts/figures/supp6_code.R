@@ -107,5 +107,9 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pdAbund,y=relAbund))+
   geom_point()+geom_smooth(method="loess",span=1.4)
 
 
+y %>% mutate(bin = cut_width(mpdAbund, width = 50)) %>% ggplot(.,aes(x=bin, y=relAbund)) + geom_boxplot() + labs(x = "Distance to Closest Neighbor", y = "Relative Abundance")
+
+
+
 
 #ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))
