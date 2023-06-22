@@ -308,7 +308,7 @@ color_n <- paste("Reference\nR0=", reference_eigen)
 
 both <- ggplot()+
   geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
-  scale_color_manual(name="",values = "black")+
+  scale_color_manual(name="",values = "purple")+
   new_scale_color()+
   geom_line(data=output_c1, mapping=aes(y=I,x=time, color=color_c))+
   scale_color_manual(name="",values = "red")+
@@ -317,10 +317,10 @@ both <- ggplot()+
   scale_color_manual(name="",values = "orange")+
   new_scale_color()+
   geom_line(output_h1, mapping=aes(y=I,x=time, color=color_h))+
-  scale_color_manual(name="",values = "purple")+
+  scale_color_manual(name="",values = "forestgreen")+
   new_scale_color()+
   geom_line(output_n1, mapping=aes(y=I,x=time, color=color_n))+
-  scale_color_manual(name="",values = "forestgreen")+
+  scale_color_manual(name="",values = "gray")+
   labs(y="N",x="Time")+
   ylim(0,40)+
   ggtitle(paste("Both"))+
@@ -329,7 +329,7 @@ both <- ggplot()+
 
 spec_A <- ggplot()+
   geom_line(data=output_x1,mapping = aes(y=Ia,x=time, color=color_x))+
-  scale_color_manual(name="",values = "black")+
+  scale_color_manual(name="",values = "purple")+
   new_scale_color()+
   geom_line(data=output_c1, mapping=aes(y=Ia,x=time, color=color_c))+
   scale_color_manual(name="",values = "red")+
@@ -338,10 +338,10 @@ spec_A <- ggplot()+
   scale_color_manual(name="",values = "orange")+
   new_scale_color()+
   geom_line(output_h1, mapping=aes(y=Ia,x=time, color=color_h))+
-  scale_color_manual(name="",values = "purple")+
+  scale_color_manual(name="",values = "forestgreen")+
   new_scale_color()+
   geom_line(output_n1, mapping=aes(y=Ia,x=time, color=color_n))+
-  scale_color_manual(name="",values = "forestgreen")+
+  scale_color_manual(name="",values = "gray")+
   labs(y="",x="Time")+
   ylim(0,40)+
   ggtitle(paste("Species A"))+
@@ -350,7 +350,7 @@ spec_A <- ggplot()+
 
 spec_B <- ggplot()+
   geom_line(data=output_x1,mapping = aes(y=Ib,x=time, color=color_x))+
-  scale_color_manual(name="",values = "black")+
+  scale_color_manual(name="",values = "purple")+
   new_scale_color()+
   geom_line(data=output_c1, mapping=aes(y=Ib,x=time, color=color_c))+
   scale_color_manual(name="",values = "red")+
@@ -359,10 +359,10 @@ spec_B <- ggplot()+
   scale_color_manual(name="",values = "orange")+
   new_scale_color()+
   geom_line(output_h1, mapping=aes(y=Ib,x=time, color=color_h))+
-  scale_color_manual(name="",values = "purple")+
+  scale_color_manual(name="",values = "forestgreen")+
   new_scale_color()+
   geom_line(output_n1, mapping=aes(y=Ib,x=time, color=color_n))+
-  scale_color_manual(name="",values = "forestgreen")+
+  scale_color_manual(name="",values = "gray")+
   labs(y="",x="Time")+
   ylim(0,40)+
   ggtitle(paste("Species B"))+
@@ -371,5 +371,5 @@ spec_B <- ggplot()+
 
 dynamics <- both + spec_A + spec_B
 
-#ggsave("fig_1a.png",plot=dynamics,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+ggsave("fig_1a.png",plot=dynamics,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
