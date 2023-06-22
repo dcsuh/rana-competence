@@ -692,8 +692,7 @@ ggplot()+
   scale_color_manual(name="",values = "forestgreen")+
   labs(y="N",x="Time")+
   ylim(0,75)+
-  ggtitle(paste("Total Virions Over Time Across Varying Conditions w/o demo"))+
-  theme_bw()
+  ggtitle(paste("Total Virions Over Time Across Varying Conditions w/o demo"))
 ```
 
 ```{r}

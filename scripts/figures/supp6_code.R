@@ -58,7 +58,7 @@ y %<>% filter(abund>0) #shouldn't we filter out any species that were absent? (D
 for (k in 1:dim(y)[1]){ #loop through each row
   #get mean pd and min pd for each row
   tmp <- y %>% filter(siteID==y$siteID[k]) #filter for single site-month
-  pd.row <- which(rownames(pd)==y$Species[k]) #select rows from pd matching site-month
+  pd.row <- which(rownames(pd) %in% y$Species[k]) #select rows from pd matching site-month
   #select species that are not the species from that row
   otherSpp <- tmp %>% filter(Species!=y$Species[k]) %>% select(Species) %>% pull() 
   pd.cols <- which(rownames(pd) %in% otherSpp) #select pd for not focal species
@@ -107,7 +107,7 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=min.pdAbund,y=relAbund))+
   geom_point()+geom_smooth(method="loess",span=1.4)
 
 
-y %>% mutate(bin = cut_width(mpdAbund, width = 50)) %>% ggplot(.,aes(x=bin, y=relAbund)) + geom_boxplot() + labs(x = "Distance to Closest Neighbor", y = "Relative Abundance")
+y %>% filter(!is.infinite(min.pd)) %>% mutate(bin = cut_width(min.pd, width = 50)) %>% ggplot(.,aes(x=bin, y=relAbund)) + geom_boxplot() + labs(x = "Distance to Closest Neighbor", y = "Relative Abundance")
 
 
 

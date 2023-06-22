@@ -155,3 +155,11 @@ figure_1 <- (p2 | p3)/(p4 | p5)
 figure_1
 ggsave("fig_1.png",plot=figure_1+ proj_theme,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
+
+
+
+
+
+
+
+
