@@ -370,3 +370,6 @@ spec_B <- ggplot()+
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
 dynamics <- both + spec_A + spec_B
+
+#ggsave("fig_1a.png",plot=dynamics,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+
