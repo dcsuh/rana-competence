@@ -321,7 +321,7 @@ both <- ggplot()+
   new_scale_color()+
   geom_line(output_n1, mapping=aes(y=I,x=time, color=color_n))+
   scale_color_manual(name="",values = "gray")+
-  labs(y="N",x="Time")+
+  labs(y="Number of Infected Individuals",x="")+
   ylim(0,40)+
   ggtitle(paste("Both"))+
   theme_bw() + 
@@ -363,7 +363,7 @@ spec_B <- ggplot()+
   new_scale_color()+
   geom_line(output_n1, mapping=aes(y=Ib,x=time, color=color_n))+
   scale_color_manual(name="",values = "gray")+
-  labs(y="",x="Time")+
+  labs(y="",x="")+
   ylim(0,40)+
   ggtitle(paste("Species B"))+
   theme_bw()+
