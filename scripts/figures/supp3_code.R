@@ -35,3 +35,6 @@ ggsave("supp3a.png",plot=supp3a,device="png",path=here("figures"))
 ggsave("supp3b.png",plot=supp3b,device="png",path=here("figures"))
 ggsave("supp3c.png",plot=supp3c,device="png",path=here("figures"))
 ggsave("supp3d.png",plot=supp3d,device="png",path=here("figures"))
+
+supp3 <- supp3b + supp3c / supp3d
+ggsave("supp3.png",plot=supp3,device="png",path=here("figures"))
