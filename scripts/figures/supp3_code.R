@@ -23,10 +23,15 @@ m1 <- cor.test(log10(comm_data$size), comm_data$cc, method = "spearman")
 supp3c <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=cc)) + geom_point() + geom_smooth(method="lm")
 m2 <- cor.test(comm_data$MeanWaterTempPredC, comm_data$cc, method = "spearman")
 
-pvals <- c(m1$p.value,m2$p.value)
+supp3d <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=log10(size))) + geom_point() + geom_smooth(method="lm")
+m3 <- cor.test(comm_data$MeanWaterTempPredC, log10(comm_data$size), method = "spearman")
+
+
+pvals <- c(m1$p.value,m2$p.value, m3$p.value)
 pvals
 p.adjust(pvals,method="holm")
   
 ggsave("supp3a.png",plot=supp3a,device="png",path=here("figures"))
 ggsave("supp3b.png",plot=supp3b,device="png",path=here("figures"))
 ggsave("supp3c.png",plot=supp3c,device="png",path=here("figures"))
+ggsave("supp3d.png",plot=supp3d,device="png",path=here("figures"))
