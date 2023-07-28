@@ -299,12 +299,12 @@ output_n1 %<>% mutate(X = I + V)
 output_x1 %<>% mutate(X = I + V)
 
 
-color_x <- paste("Combined\nR0=", combined_eigen)
+color_x <- paste("Combined\nR0=", abbreviate(combined_eigen))
 
-color_c <- paste("Composition\nR0=", community_eigen)
-color_a <- paste("Abundance\nR0=", abundance_eigen)
-color_h <- paste("Halflife\nR0=", halflife_eigen)
-color_n <- paste("Reference\nR0=", reference_eigen)
+color_c <- paste("Composition\nR0=", abbreviate(community_eigen))
+color_a <- paste("Abundance\nR0=", abbreviate(abundance_eigen))
+color_h <- paste("Halflife\nR0=", abbreviate(halflife_eigen))
+color_n <- paste("Reference\nR0=", abbreviate(reference_eigen))
 
 both <- ggplot()+
   geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
