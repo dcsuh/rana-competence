@@ -152,8 +152,8 @@ xstart<-c(Sa=116,
 output<-as.data.frame(lsoda(xstart,times,rm0,params)) # tells computer to solve (integrate) equations
 
 
-spec_1 <- 0.0001
-spec_2 <- 0.00055
+spec_2 <- 0.0001
+spec_1 <- 0.00055
 env_rate <- 0.00065
 param_num <- which(reference$eigen>1.103065 & reference$eigen<1.103192)
 
