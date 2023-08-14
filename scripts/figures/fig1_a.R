@@ -49,7 +49,7 @@ contour <- function(trans_1_min, trans_1_max, trans_3_min, trans_3_max, mort1, m
   
   data$span1 <- 1/data$mort1 #lifespan for species 1
   data$span2 <- 1/data$mort2 #lifespan for species 2
-  data$half <- log(1/2)/-data$degr #viral half-life
+  data$half <- log(2)/data$degr #viral half-life
   data$epid <- data$eigen > 1 #invasion potential (i.e. R0 > 1)
   data$prop1 <- data$trans1/data$trans2 #proportion of transmission of species 2 over species 1
   data$prop3 <- data$trans3/data$trans2 #proportion of environmental transmission over species 1
