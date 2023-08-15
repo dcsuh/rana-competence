@@ -322,7 +322,7 @@ both <- ggplot()+
   geom_line(output_n1, mapping=aes(y=I,x=time, color=color_n))+
   scale_color_manual(name="",values = "gray")+
   labs(y="Number of Infected Individuals",x="")+
-  ylim(0,40)+
+  ylim(0,45)+
   ggtitle(paste("Both"))+
   theme_bw() + 
   theme(legend.position = "none")
@@ -343,7 +343,7 @@ spec_A <- ggplot()+
   geom_line(output_n1, mapping=aes(y=Ia,x=time, color=color_n))+
   scale_color_manual(name="",values = "gray")+
   labs(y="",x="Time")+
-  ylim(0,40)+
+  ylim(0,45)+
   ggtitle(paste("High competence"))+
   theme_bw()+
   theme(legend.position = "none", axis.text.y = element_blank(), axis.ticks.y = element_blank())
@@ -364,7 +364,7 @@ spec_B <- ggplot()+
   geom_line(output_n1, mapping=aes(y=Ib,x=time, color=color_n))+
   scale_color_manual(name="",values = "gray")+
   labs(y="",x="")+
-  ylim(0,40)+
+  ylim(0,45)+
   ggtitle(paste("Low competence"))+
   theme_bw()+
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
