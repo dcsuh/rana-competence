@@ -97,7 +97,7 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   labs(x = "", y = "") +
   xlim(2,7) +
   ylim(2,10) + 
-  labs(title = "A") + 
+  labs(title = "Composition") + 
   theme(axis.title = element_text(size=axis_text_size),
         plot.title = element_text(size=plot_label_size))
 #p2
@@ -114,7 +114,7 @@ p3 <- size %>% filter(tot != 150) %>%
   labs(x = "", y = "") +
   xlim(2,7) +
   ylim(2,10) + 
-  labs(title = "B") + 
+  labs(title = "Abundance") + 
   theme(plot.title = element_text(size=plot_label_size))
 #p3
 
@@ -125,7 +125,7 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x="Relative Environmental  ", y = "                                                                             Relative Contact Transmission Rate", title = "C") +
+  labs(x="Relative Environmental  ", y = "                                                                             Relative Contact Transmission Rate", title = "Half-life") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
@@ -142,7 +142,7 @@ p5 <- combined %>%
   geom_contour(data = reference, 
                aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x = "                           Transmission Rate", y = "", title = "D") +
+  labs(x = "                           Transmission Rate", y = "", title = "All") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +

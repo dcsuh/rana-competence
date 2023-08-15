@@ -64,7 +64,10 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity", width = 0.8)+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
   theme_minimal()+
-  theme(axis.title.x=element_blank(),axis.text.x=element_blank(),axis.ticks.x=element_blank())+
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.text = element_text(face = "italic"))+
   ylab("Relative\nAbundance")
 # newTree <- tree %>% ggtree(.,color="gray")+
 #   geom_tippoint(aes(color=labelAlt,size=log10_value))+
@@ -75,7 +78,7 @@ RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
 newTree <- vl_tree +
   geom_tippoint(aes(color=labelAlt,size=log10(mean)))+
   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
-  geom_tiplab(size=2.2,hjust=,offset=7,angle=0)+#fontface="italic",
+  geom_tiplab(size=2.2,hjust=,offset=7,angle=0, fontface="italic") + 
   scale_size_continuous(name="log10(Viral load)")+
   guides(color=F)+xlim(0,350)
 
