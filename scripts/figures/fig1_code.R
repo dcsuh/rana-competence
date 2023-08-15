@@ -73,11 +73,14 @@ halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
 
-axis_text_size = 8
-plot_label_size = 20
+axis_text_size = 13
+plot_label_size = 15
+line_width = 1
 
 p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
   theme_classic()+
   scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
   labs(x = "Environmental", y = "Contact") +
@@ -87,12 +90,16 @@ p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
 
 
 p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
   theme_classic()+
   scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
   new_scale_color()+
   geom_contour(data = reference, 
-               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
   xlim(2,7) +
@@ -104,12 +111,16 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
 
 p3 <- size %>% filter(tot != 150) %>% 
   ggplot(.,aes(x=prop3,y=prop1))+
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
   theme_classic()+
   scale_colour_manual(na.value = NA, values = c(NA, "orange")) + 
   new_scale_color()+
   geom_contour(data = reference, 
-               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x = "", y = "") +
   xlim(2,7) +
@@ -119,30 +130,40 @@ p3 <- size %>% filter(tot != 150) %>%
 #p3
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE)+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
   scale_colour_manual(na.value = NA, values = c(NA, "forestgreen")) + 
   new_scale_color()+
   geom_contour(data = reference, 
-               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F)+
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x="Relative Environmental  ", y = "                                                                             Relative Contact Transmission Rate", title = "Half-life") +
+  labs(x="                                       Relative Environmental", 
+       y = "                                                 Relative Contact Transmission Rate", title = "Half-life") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
   theme(axis.title = element_text(size=axis_text_size),
         plot.title = element_text(size=plot_label_size),
-        axis.title.x=element_text(hjust=1.05))
+        axis.title.x = element_text(hjust=))
+
 p4
 
 p5 <- combined %>%
   ggplot(.,aes(x=prop3,y=prop1)) +
-  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = FALSE) +
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width) +
   scale_colour_manual(na.value = NA, values = c(NA, "purple")) + 
   new_scale_color()+
   geom_contour(data = reference, 
-               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), show.legend = F) +
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width) +
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x = "                           Transmission Rate", y = "", title = "All") +
+  labs(x = "            Transmission Rate", y = "", title = "All") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
