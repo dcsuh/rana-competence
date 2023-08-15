@@ -344,7 +344,7 @@ spec_A <- ggplot()+
   scale_color_manual(name="",values = "gray")+
   labs(y="",x="Time")+
   ylim(0,40)+
-  ggtitle(paste("Species A"))+
+  ggtitle(paste("High competence"))+
   theme_bw()+
   theme(legend.position = "none", axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
@@ -365,7 +365,7 @@ spec_B <- ggplot()+
   scale_color_manual(name="",values = "gray")+
   labs(y="",x="")+
   ylim(0,40)+
-  ggtitle(paste("Species B"))+
+  ggtitle(paste("Low competence"))+
   theme_bw()+
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
