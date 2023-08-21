@@ -45,9 +45,9 @@ order %<>% group_by(WetAltID) %>% mutate(max_prev = max(Prevalence)) %>% ungroup
 
 for(n in 2:nrow(order)){
   if (order$Prevalence[n] > order$Prevalence[n-1]) {
-    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / (order$max_prev[n-1]-order$Prevalence[n-1])
+    order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / (order$max_prev[n-1])
   } else if (order$Prevalence[n] < order$Prevalence[n-1]) {
-    order$prev_ratio[n-1] <- 1 - ((order$Prevalence[n-1] - order$Prevalence[n]) / order$max_prev[n-1]-order$Prevalence[n])
+    order$prev_ratio[n-1] <- 1 - ((order$Prevalence[n-1] - order$Prevalence[n]) / order$max_prev[n-1])
   } else {
     order$prev_ratio[n-1] <- 0
   }

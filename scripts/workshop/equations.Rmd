@@ -1,0 +1,18 @@
+---
+title: "equations"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+
+**if** $prev_{n+1} > prev_n$ **then**
+
+|           $prevalence \space ratio = (prev_{n+1} - prev_n)/(prev_{max})$
+<br>
+**if** $prev_{n+1} < prev_n$ **then**
+
+|           $prevalence \space ratio = 1-((prev_n - prev_{n+1})/(prev_{max}))$
+<br>
+**if** $prev_{n+1} = prev_n$ **then** 
+
+|           $prevalence \space ratio = 0$

@@ -93,8 +93,10 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpd,y=relAbund))+
 #above line gives us the relative abundance of each species and the mean pd for their site-month
 #hosts in the same site-month should be stacked vertically
 supp6 <- y %>% filter(!is.na(mpd)) %>% ggplot(.,aes(x=min.pd,y=relAbund))+
-  geom_point()+geom_smooth(method="loess",span=1.4)+
-  theme_classic()+labs(x="Distance to Closest Neighbor", y = "Relative Abundance")
+  geom_smooth(method="loess",span=1.4)+
+  theme_classic()+
+  labs(x="Distance to Closest Neighbor", y = "Relative Abundance")+
+  theme(text = element_text(size = 18))
 supp6
 #supp6 gives us the relative abundance for each species and the pd for their closest phylogenetic neighbor in their site-month
 #so each vertical stack should be an instance where two species co-occurred
@@ -112,4 +114,4 @@ y %>% filter(!is.infinite(min.pd)) %>% mutate(bin = cut_width(min.pd, width = 50
 
 
 
-#ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))
+ggsave("supp6.png",plot=supp6,device="png",path=here("figures"))
