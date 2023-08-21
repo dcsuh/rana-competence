@@ -163,7 +163,7 @@ p5 <- combined %>%
                show.legend = F,
                linewidth=line_width) +
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x = "            Transmission Rate", y = "", title = "All") +
+  labs(x = "            Transmission Rate", y = "", title = "Combined") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
