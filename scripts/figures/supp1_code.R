@@ -18,7 +18,7 @@ supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>%
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1,face = "italic")) +
   scale_y_continuous(breaks=seq(0,6,1))
 
 supp1_se <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
