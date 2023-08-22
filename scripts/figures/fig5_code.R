@@ -37,7 +37,7 @@ clean <- order %>% group_by(WetAltID) %>% filter(duplicated(WetAltID) | n()==1)
 cc_corr <- clean %>% ggplot(.,aes(x=lag_cc, y=Prevalence)) +
   geom_point() +
   theme_classic() + geom_smooth(method = "lm") +
-  labs(title = "", x = "Community Competence (CC)", y = "Prevalence (t+1)") +
+  labs(title = "", x = "Community Competence", y = "Prevalence (t+1)") +
   ylim(0,0.65) +
   theme(axis.title = element_text(size=axis_title_size),
         axis.text = element_text(size=axis_text_size))

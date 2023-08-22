@@ -17,13 +17,25 @@ supp3a <- comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_poin
 
 comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
 
-supp3b <- comm_data %>% ggplot(.,aes(x=log10(size),y=cc)) + geom_point() + geom_smooth(method="lm")
+supp3b <- comm_data %>% ggplot(.,aes(x=log10(size),y=cc)) + 
+  geom_point() + 
+  geom_smooth(method="lm") + 
+  xlab("log10(Host Abundance)") + 
+  ylab("Community Competence")
 m1 <- cor.test(log10(comm_data$size), comm_data$cc, method = "spearman")
 
-supp3c <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=cc)) + geom_point() + geom_smooth(method="lm")
+supp3c <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=cc)) + 
+  geom_point() + 
+  geom_smooth(method="lm") + 
+  xlab("Mean Water Temperature") + 
+  ylab("Community\nCompetence")
 m2 <- cor.test(comm_data$MeanWaterTempPredC, comm_data$cc, method = "spearman")
 
-supp3d <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=log10(size))) + geom_point() + geom_smooth(method="lm")
+supp3d <- comm_data %>% ggplot(.,aes(x=MeanWaterTempPredC,y=log10(size))) + 
+  geom_point() + 
+  geom_smooth(method="lm") + 
+  xlab("Mean Water Temperature") + 
+  ylab("log10(Host Abundance)")
 m3 <- cor.test(comm_data$MeanWaterTempPredC, log10(comm_data$size), method = "spearman")
 
 

@@ -18,7 +18,8 @@ supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>%
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1,face = "italic")) +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1,face = "italic", size = 12),
+        title = element_text(size = 18)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
 supp1_se <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
@@ -57,4 +58,4 @@ supp1_log10 <- vl %>% arrange(mean) %>%
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
-#ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))
+ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))

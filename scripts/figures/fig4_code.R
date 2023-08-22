@@ -4,6 +4,7 @@
 
 
 library(here)
+library("ggtree")
 
 source(here("base","src.R"))
 
@@ -59,7 +60,7 @@ cc_plot <- comm_data %>% dplyr::select(siteID, cc) %>% distinct() %>%
   ggplot(., aes(y=cc, x=siteID)) +
   geom_bar(color="gray",fill="gray",position = position_dodge(), stat = "identity", width = 0.8) + 
   theme_minimal() +
-  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Community\ncompetence (CC)") + xlab("Communities")
+  theme(axis.text.x=element_blank(),axis.ticks.x=element_blank()) + ylab("Community\ncompetence") + xlab("Communities")
 RA_plot<- z %>% ggplot(.,aes(x=siteID,y=abund,fill=Species))+
   geom_bar(position="fill",stat="identity", width = 0.8)+
   scale_fill_manual(values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
