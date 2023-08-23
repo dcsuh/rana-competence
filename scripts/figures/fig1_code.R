@@ -480,7 +480,7 @@ spec_B <- ggplot()+
 
 figure_1 <- p2 / p3 / p4 / p5 | both
 figure_1
-ggsave("fig_1.png",plot=figure_1+ proj_theme,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+ggsave("fig_1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 
 
