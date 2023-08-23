@@ -82,7 +82,7 @@ cont_prop <- spec_1/spec_2
 param_num <- which(reference$eigen>1.103065 & reference$eigen<1.103192)
 
 axis_text_size = 13
-plot_label_size = 10
+plot_label_size = 12
 line_width = 1
 
 p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
@@ -114,7 +114,7 @@ p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
   xlim(2,7) +
   ylim(2,10) + 
   labs(title = "Composition") + 
-  theme(axis.title = element_text(size=axis_text_size),
+  theme(axis.title = element_blank(),
         plot.title = element_text(size=plot_label_size))
 #p2
 
@@ -136,7 +136,8 @@ p3 <- size %>% filter(tot != 150) %>%
   xlim(2,7) +
   ylim(2,10) + 
   labs(title = "Abundance") + 
-  theme(plot.title = element_text(size=plot_label_size))
+  theme(plot.title = element_text(size=plot_label_size),
+        axis.title = element_blank())
 #p3
 
 p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
@@ -156,9 +157,9 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
-  theme(axis.title = element_text(size=axis_text_size),
-        plot.title = element_text(size=plot_label_size),
-        axis.title.x = element_text(hjust=))
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size))
 #p4
 
 p5 <- combined %>%
