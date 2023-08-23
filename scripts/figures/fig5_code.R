@@ -10,8 +10,8 @@ source(here("base","src.R"))
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
-axis_title_size = 18
-axis_text_size = 15
+axis_title_size = 16
+axis_text_size = 12
 
 prev_cc <- comm_data
 
