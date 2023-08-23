@@ -371,5 +371,7 @@ spec_B <- ggplot()+
 
 dynamics <- both + spec_A + spec_B
 
+
+
 ggsave("fig_1a.png",plot=dynamics,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
