@@ -13,7 +13,10 @@ comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 comm_data$Month <- factor(comm_data$Month,levels=c("Feb","Mar","Apr","May","Jun","Jul"))
 
-supp3a <- comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + ylab("Community Competence")
+supp3a <- comm_data %>% ggplot(.,aes(x=Month,y=cc)) + 
+  geom_boxplot() + 
+  stat_summary(fun = mean, geom = "point", size = 4, color = "red") + 
+  ylab("Community Competence")
 
 comm_data %>% ggplot(.,aes(x=Month,y=cc)) + geom_boxplot() + geom_point() + geom_line(aes(group=WetAltID))
 
