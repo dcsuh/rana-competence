@@ -16,3 +16,19 @@ date: "`r Sys.Date()`"
 **if** $prev_{n+1} = prev_n$ **then** 
 
 |           $prevalence \space ratio = 0$
+
+<br>
+<br>
+<br>
+
+**if** $prev_{n+1} > prev_n$ **then**
+
+|           $prevalence \space ratio = (prev_{n+1} - prev_n)/(prev_{max} - prev_n)$
+<br>
+**if** $prev_{n+1} < prev_n$ **then**
+
+|           $prevalence \space ratio = 1-((prev_n - prev_{n+1})/(prev_n))$
+<br>
+**if** $prev_{n+1} = prev_n$ **then** 
+
+|           $prevalence \space ratio = 0$
