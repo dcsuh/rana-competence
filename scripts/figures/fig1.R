@@ -1,7 +1,7 @@
 #Daniel Suh and Andrew Park
 #6/3/20
 
-#Figure 2 in rv_cc manuscript
+#Figure 1 in rv_cc manuscript
 
 library(here)
 
@@ -10,7 +10,7 @@ source(here("base","src.R"))
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 
-figure_2 <- comm_data %>% ggplot(.,aes(x=pc1Rank,y=cc))+
+figure_1 <- comm_data %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   geom_point(aes(color = Month, shape = factor(WetAltID), size = size))+
   labs(x="Principal Component 1 Rank", y = "Community Competence", size = "Host\nAbundance") + 
   scale_shape_manual(values = rep(1:20, len = 20)) +
@@ -32,6 +32,6 @@ comm_data %>% ggplot(., aes(x=pc1Rank, y=cc)) +
   theme_classic() +
   theme(text = element_text(size=18))
   
-figure_2
+figure_1
   
-ggsave("fig_2.png",plot=figure_2,device="png",height = 20, width = 1.618*20, units = "cm",path=here("figures"))
+ggsave("fig1.png",plot=figure_2,device="png",height = 20, width = 1.618*20, units = "cm",path=here("figures"))

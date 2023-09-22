@@ -1,7 +1,7 @@
 #Daniel Suh and Andrew Park
 #6/3/20
 
-#Figure 5 in rv_cc manuscript
+#Figure 2 in rv_cc manuscript
 
 library(here)
 
@@ -115,9 +115,9 @@ pvals
 p.adjust(pvals,method="holm")
 
 #plot everything together with patchwork
-figure_5 <- cc_corr| size_corr| temp_corr
-figure_5
-ggsave("fig_5_alternate.png",plot=figure_5,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+figure_2 <- cc_corr| size_corr| temp_corr
+figure_2
+ggsave("fig2.png",plot=figure_2,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 
