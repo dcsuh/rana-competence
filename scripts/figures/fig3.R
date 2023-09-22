@@ -1,7 +1,7 @@
 #Daniel Suh and Andrew Park
 #6/3/20
 
-#Figure 1 in rv_cc manuscript
+#Figure 3 in rv_cc manuscript
 
 
 library(here)
@@ -479,9 +479,9 @@ spec_B <- ggplot()+
 
 
 
-figure_1 <- p2 / p3 / p4 / p5 | both
-figure_1
-ggsave("fig_1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+figure_3 <- p2 / p3 / p4 / p5 | both
+figure_3
+ggsave("fig3.png",plot=figure_3,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 
 
