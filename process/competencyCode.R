@@ -40,16 +40,16 @@ q %<>% mutate(vl.39=v$meanVL[v$Species==39])
 q %<>% mutate(vl.41=v$meanVL[v$Species==41])
 q %<>% mutate(vl.42=v$meanVL[v$Species==42])
 
-q %<>% mutate(cc=RA4*vl.4+
+q %<>% mutate(cc=
                 RA9*vl.9+
                 RA20*vl.20+
                 RA21*vl.21+
                 RA24*vl.24+
                 RA26*vl.26+
-                RA27*vl.27+
+                
                 RA28*vl.28+
                 RA29*vl.29+
-                RA31*vl.31+
+                
                 RA34*vl.34+
                 RA35*vl.35+
                 RA38*vl.38+
