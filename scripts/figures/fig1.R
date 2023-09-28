@@ -34,4 +34,4 @@ comm_data %>% ggplot(., aes(x=pc1Rank, y=cc)) +
   
 figure_1
   
-ggsave("fig1.png",plot=figure_2,device="png",height = 20, width = 1.618*20, units = "cm",path=here("figures"))
+ggsave("fig1.png",plot=figure_1,device="png",height = 20, width = 1.618*20, units = "cm",path=here("figures"))

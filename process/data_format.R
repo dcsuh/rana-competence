@@ -13,7 +13,7 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
   dplyr::select(-ABAmb, -ABSal) %>%  
   mutate(., size = rowSums(.[5:25]), 
     ABHigh = (AB9 + AB21 + AB26 + AB42), 
-    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
+    ABLow = (AB4 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
   mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
