@@ -21,9 +21,10 @@ comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # makes community matrix where each cell is the abundance of one species at one unique wetland-month combination
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB9, AB20:AB42) 
+community_mat %<>% select(!c(AB27, AB31))
 community_mat$Month <- gsub("Month", "", community_mat$Month.1)
-community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB9:AB42)
 
 #make abundance and pres/abs matrices with rownames as siteIDs
 abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
