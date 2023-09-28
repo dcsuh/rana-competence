@@ -42,8 +42,8 @@ q <- full_join(tmp, abundance, by = "siteID") %>%
   filter(Species.x != 32)
 q %<>%
   add_column(., ind_inf = q$prev) %>%
-  mutate(., total = AB26 + AB42 + AB21 + AB9+ AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + 
-           AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)
+  mutate(., total = AB26 + AB42 + AB21 + AB9+  
+           AB20 + AB24 + AB28 + AB29 + AB34 + AB35 + AB38 + AB39 + AB41)
 
 #this loops through each species at each sitexmonth
 for (i in 1:nrow(q)) {
