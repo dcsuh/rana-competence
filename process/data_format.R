@@ -133,7 +133,7 @@ env_mat <- env %>% column_to_rownames(., var = "siteID")
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rv_sampled <- data %>% select(Species) %>% distinct() #species codes for those sampled for rv
-rv_sampled %<>% filter(Species!=32) #remove species 32 because there is no abundance data
+rv_sampled %<>% filter(!(Species %in% c(4, 32, 27, 31))) #remove species 32 because there is no abundance data
 keep <- c(rv_sampled$Species)
 
 resolved <- tnrs_match_names(names$tnrs_name)
