@@ -17,7 +17,7 @@ figure_1 <- comm_data %>% ggplot(.,aes(x=pc1Rank,y=cc))+
   scale_size_continuous(range = c(2,10)) +
   guides(shape=F) +
   theme_classic() +
-  theme(aspect.ratio=1/1.618, legend.position = c(0.85,0.4), legend.box = "horizontal") +
+  theme(aspect.ratio=1/1.618, legend.position = c(0.85,0.85), legend.box = "horizontal") +
   scale_color_viridis_d(direction = -1) +
   theme(text = element_text(size=18))
 
