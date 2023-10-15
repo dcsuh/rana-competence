@@ -13,7 +13,7 @@ comm_summ <- data %>% dplyr::select(WetAltID, Month.1, Month, cc, Month, AB2:AB4
   dplyr::select(-ABAmb, -ABSal) %>%  
   mutate(., size = rowSums(.[5:25]), 
     ABHigh = (AB9 + AB21 + AB26 + AB42), 
-    ABLow = (AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB20 + AB24 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
+    ABLow = (AB20 + AB24 + AB28 + AB29 + AB34 + AB35 + AB38 + AB39 + AB41)) %>% #get totals for community size
   mutate(., siteID = paste(WetAltID, Month.1, sep = "_")) %>%
   distinct()
 comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
@@ -21,9 +21,10 @@ comm_summ$siteID <- gsub("Month", "", comm_summ$siteID)
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 # makes community matrix where each cell is the abundance of one species at one unique wetland-month combination
-community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB2:AB8, AB9, AB20:AB42) 
+community_mat <- data %>% dplyr::select(WetAltID, Month.1, AB9, AB20:AB42) 
+community_mat %<>% select(!c(AB27, AB31))
 community_mat$Month <- gsub("Month", "", community_mat$Month.1)
-community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB2:AB42)
+community_mat %<>% mutate(., siteID = paste(WetAltID, Month, sep = "_")) %>% distinct() %>% arrange(.,WetAltID) %>% dplyr::select(siteID, AB9:AB42)
 
 #make abundance and pres/abs matrices with rownames as siteIDs
 abundance_mat <- community_mat %>% column_to_rownames(., var = "siteID")
@@ -133,7 +134,7 @@ env_mat <- env %>% column_to_rownames(., var = "siteID")
 
 ## -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 rv_sampled <- data %>% select(Species) %>% distinct() #species codes for those sampled for rv
-rv_sampled %<>% filter(Species!=32) #remove species 32 because there is no abundance data
+rv_sampled %<>% filter(!(Species %in% c(4, 32, 27, 31))) #remove species 32 because there is no abundance data
 keep <- c(rv_sampled$Species)
 
 resolved <- tnrs_match_names(names$tnrs_name)

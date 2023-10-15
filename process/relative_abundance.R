@@ -14,23 +14,22 @@ library(here)
 data <- read_csv(here("data/raw_data/Ranavirus_Salamander_091819.csv"))
 data %<>% drop_na(ID)
 data %<>% select(X1:AB42) #remove original RA values
-data %<>% mutate(., total = AB2 + AB3 + AB4 + AB5 + AB6 + AB8 + AB9 + AB20 + AB21 + AB24 + 
-                   AB26 + AB27 + AB28 + AB29 + AB31 + AB34 + AB35 + AB38 + AB39 + AB41 + AB42) #sum is everything except for ABAmb and ABSal
-data %<>% mutate(., RA2 = AB2/total,
-                   RA3 = AB3/total,
-                   RA4 = AB4/total,
-                   RA5 = AB5/total,
-                   RA6 = AB6/total,
-                   RA8 = AB8/total,
+data %<>% mutate(., total = AB9 + AB20 + AB21 + 
+                   AB24 +  AB26 + AB28 + 
+                   AB29 + AB34 + AB35 + 
+                   AB38 + AB39 + AB41 + AB42) #sum is everything except for ABAmb and ABSal
+#also remove 4, 27, 31 because low sampling for ranavirus
+data %<>% mutate(.,
+#                 RA4 = AB4/total,
                    RA9 = AB9/total,
                    RA20 = AB20/total,
                    RA21 = AB21/total,
                    RA24 = AB24/total,
                    RA26 = AB26/total,
-                   RA27 = AB27/total,
+#                   RA27 = AB27/total,
                    RA28 = AB28/total,
                    RA29 = AB29/total,
-                   RA31 = AB31/total,
+ #                  RA31 = AB31/total,
                    RA34 = AB34/total,
                    RA35 = AB35/total,
                    RA38 = AB38/total,
