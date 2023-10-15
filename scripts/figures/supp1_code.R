@@ -10,6 +10,8 @@ source(here("base","src.R"))
 
 vl <- readRDS(here("processed_data","vl.rds"))
 
+vl %<>% filter(m>3)
+
 supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
   ggplot(.,aes(x=abb_name,y=log10(mean))) +
