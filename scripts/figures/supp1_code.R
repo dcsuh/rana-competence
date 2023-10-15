@@ -13,14 +13,14 @@ vl <- readRDS(here("processed_data","vl.rds"))
 vl %<>% filter(m>3)
 
 supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
-  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
-  ggplot(.,aes(x=abb_name,y=log10(mean))) +
+  mutate(tnrs_name = factor(tnrs_name, levels = tnrs_name)) %>% 
+  ggplot(.,aes(x=tnrs_name,y=log10(mean))) +
   geom_point(aes(size=1)) + 
   xlab("Species") + ylab("Viral Load") + 
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1,face = "italic", size = 12),
+  theme(axis.text.x = element_text(angle = 60, hjust = 1,face = "italic", size = 12),
         title = element_text(size = 18),
         legend.position = "none") +
   scale_y_continuous(breaks=seq(0,6,1))
