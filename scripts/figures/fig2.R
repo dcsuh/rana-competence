@@ -478,9 +478,9 @@ spec_B <- ggplot()+
 
 
 
-figure_3 <- p2 / p3 / p4 / p5 | both
-figure_3
-ggsave("fig3.png",plot=figure_3,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+figure_2 <- p2 / p3 / p4 / p5 | both
+figure_2
+ggsave("fig2.png",plot=figure_2,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 
 
