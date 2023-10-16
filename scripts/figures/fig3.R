@@ -18,6 +18,7 @@ vl %<>% filter(tnrs_name!="Dryophytes avivoca") # as doesn't appear sampled in a
 #H. avivoca (ID=32) has no abundance measured but has one recording for viral load
 #viral load for H. avivoca is actually the highest but should not be included because there is no abundance data
 
+vl %<>% filter(m>3)
 
 pruned_tree$tip.label <- gsub("_"," ",pruned_tree$tip.label)
 
