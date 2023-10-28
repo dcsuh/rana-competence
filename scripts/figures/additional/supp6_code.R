@@ -95,7 +95,7 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpd,y=relAbund))+
 supp6 <- y %>% filter(!is.na(mpd)) %>% ggplot(.,aes(x=min.pd,y=relAbund))+
   geom_smooth(method="loess",span=1.4)+
   theme_classic()+
-  labs(x="Distance to Closest Neighbor", y = "Relative Abundance")+
+  labs(x="Phylogenetic Distance to Closest Neighbor", y = "Relative Abundance")+
   theme(text = element_text(size = 18))
 supp6
 #supp6 gives us the relative abundance for each species and the pd for their closest phylogenetic neighbor in their site-month
