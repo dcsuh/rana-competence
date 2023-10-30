@@ -52,4 +52,4 @@ ggsave("supp2.png",plot=supp3a,width=outwidth[1],scale=golden,units=unit,device=
 # ggsave("supp3d.png",plot=supp3d,width=outwidth[1],scale=golden,units=unit,device="png",path=here("figures"))
 
 supp3 <- supp3b + supp3c / supp3d
-ggsave("supp3.png",plot=supp3,width=outwidth[1],scale=golden,units=unit,device="png",path=here("figures"))
+#ggsave("supp3.png",plot=supp3,width=outwidth[1],scale=golden,units=unit,device="png",path=here("figures"))

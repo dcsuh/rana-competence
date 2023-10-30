@@ -1,3 +1,7 @@
+#Daniel Suh
+
+#run this script after weighted_prev.R
+
 library(here)
 
 source(here("base","src.R"))
@@ -166,13 +170,13 @@ if(dir.exists(here("processed_data")) == FALSE) {
 }
 
 
-saveRDS(comm_data, file = here("processed_data","comm_data.rds"))
-saveRDS(vl, file = here("processed_data","vl.rds"))
-saveRDS(pruned_tree, file = here("processed_data","tree.rds"))
-saveRDS(community_mat, file = here("processed_data", "comm_mat.rds"))
-saveRDS(abundance_mat, file = here("processed_data", "abund_mat.rds"))
-saveRDS(env_mat, file = here("processed_data", "env_mat.rds"))
-saveRDS(pruned_tree, file = here("processed_data", "pruned_tree.rds"))
+# saveRDS(comm_data, file = here("processed_data","comm_data.rds"))
+# saveRDS(vl, file = here("processed_data","vl.rds"))
+# saveRDS(pruned_tree, file = here("processed_data","tree.rds"))
+# saveRDS(community_mat, file = here("processed_data", "comm_mat.rds"))
+# saveRDS(abundance_mat, file = here("processed_data", "abund_mat.rds"))
+# saveRDS(env_mat, file = here("processed_data", "env_mat.rds"))
+# saveRDS(pruned_tree, file = here("processed_data", "pruned_tree.rds"))
 
 
 

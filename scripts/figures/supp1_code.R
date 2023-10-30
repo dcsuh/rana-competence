@@ -1,5 +1,4 @@
-## Script originator: Daniel Suh
-## Date created: Feb. 19, 2021
+## Daniel Suh
 
 #This script creates supplementary figure 1: visual of the estimated viral load for each species
 
@@ -61,4 +60,4 @@ supp1_log10 <- vl %>% arrange(mean) %>%
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
-ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))
+#ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))

@@ -57,6 +57,5 @@ q %<>% mutate(cc=
                 RA41*vl.41+
                 RA42*vl.42)
 
-#write_csv(q,path="competence.csv")
-write_csv(q,"data/competence_111220.csv")
+#write_csv(q,"data/competence_111220.csv")
 

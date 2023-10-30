@@ -71,5 +71,4 @@ export %<>% select(-Prevalence)
 export %<>% rename(Prevalence = prevalence)
 
 
-#write_csv(export,path="weighted_prev_competence.csv")
-write_csv(export,"data/weighted_prev_competence_111220.csv")
+#write_csv(export,"data/weighted_prev_competence_111220.csv")

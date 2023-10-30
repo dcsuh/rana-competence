@@ -1,9 +1,8 @@
 ##Calculating Relative Abundance of amphibian species at each site
 ##Script Originator: Daniel Suh
-##Date: 11/12/20
 
 
-#Process this script first
+#Process this script before competencyCode.R
 
 
 #load packages
@@ -37,4 +36,4 @@ data %<>% mutate(.,
                    RA41 = AB41/total,
                    RA42 = AB42/total)
 
-write_csv(data, "data/rv_data_111220.csv")
+#write_csv(data, "data/rv_data_111220.csv")

@@ -116,7 +116,7 @@ p.adjust(pvals,method="holm")
 #plot everything together with patchwork
 figure_1 <- cc_corr| size_corr| temp_corr
 figure_1
-ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+#ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 

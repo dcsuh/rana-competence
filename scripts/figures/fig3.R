@@ -88,5 +88,5 @@ newTree <- vl_tree +
 figure_3 <- cc_plot/RA_plot/newTree
 figure_3
 
-ggsave("fig3.png",plot=figure_3,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+#ggsave("fig3.png",plot=figure_3,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
