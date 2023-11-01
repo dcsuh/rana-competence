@@ -32,7 +32,7 @@ Parameters
 
 $$
 \begin{align*}
- & \beta_a = transmission\ rate\ for\ highly\ competent\\ \\ 
+ & \beta_a = transmission\ rate\ for\ highly\ competent\\ \\
  & \beta_b = transmission\ rate\ for\ less\ competent\\ \\ 
  & \phi = environmental\ transmission\ rate\\ \\ 
  & \lambda = birth\ rate\\ \\ 
@@ -40,6 +40,11 @@ $$
  & \alpha = recovery\ rate\\ \\
  & \sigma = shedding\ rate\\ \\
  & \epsilon = viral\ degradation\ rate\\ \\
+ \\ \\
+ & S = \text{Susceptible individuals}\\ \\
+ & I = \text{Infectious individuals}\\ \\
+ & R = \text{Recovered individuals}\\ \\
+ & V = \text{free-living infectious virions}\\ \\
 \end{align*}
 $$
 
