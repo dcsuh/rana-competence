@@ -1,6 +1,6 @@
 #Daniel Suh and Andrew Park
 
-#Figure 1 in rv_cc manuscript
+#Supplementary figure 2
 
 library(here)
 
