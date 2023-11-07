@@ -36,7 +36,8 @@ $$
  & \beta_b = transmission\ rate\ for\ less\ competent\\ \\ 
  & \phi = environmental\ transmission\ rate\\ \\ 
  & \lambda = birth\ rate\\ \\ 
- & \mu = death\ rate\\ \\
+ & \mu_a = death\ rate\\ \\
+ & \mu_b = death\ rate\\ \\
  & \alpha = recovery\ rate\\ \\
  & \sigma = shedding\ rate\\ \\
  & \epsilon = viral\ degradation\ rate\\ \\

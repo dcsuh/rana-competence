@@ -94,7 +94,7 @@ size_corr <- clean %>% ggplot(.,aes(x=log10(size), y=prev_ratio)) +
         axis.text = element_text(size=axis_text_size)) +
   ylim(0,0.65)
 
-m2 <- cor.test(clean$size,clean$prev_ratio,method="spearman")
+m2 <- cor.test(log10(clean$size),clean$prev_ratio,method="spearman")
 
 
 temp_corr <- clean %>% ggplot(.,aes(x=MeanWaterTempPredC, y=prev_ratio)) +
@@ -110,6 +110,8 @@ m3 <- cor.test(clean$MeanWaterTempPredC,clean$prev_ratio,method="spearman")
 
 #multiple comparisons test
 pvals <- c(m1$p.value,m2$p.value,m3$p.value)
+rho <- c(m1$estimate, m2$estimate, m3$estimate)
+rho
 pvals
 p.adjust(pvals,method="holm")
 

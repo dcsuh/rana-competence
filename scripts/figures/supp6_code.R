@@ -1,6 +1,6 @@
 #Script Originator: Daniel Suh
 
-#This script creates the inset for figure 3
+#This script creates the inset for figure 4
 #Objective: A plot that models the cophenetic distance of a community and relative abundances of species
 #This provides a look at patterns related to species abundance and phylogenetic relatedness
 #We hypothesize that the species in our data are most abundant when they are moderately related to their neighbor
