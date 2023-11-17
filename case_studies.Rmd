@@ -1,0 +1,71 @@
+---
+title: "case_studies"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+Let's take a look at other viruses from GMPD and Verena databases that fit the pattern we are interested in — infects multiple host species and has both contact and environmental transmission.
+
+```{r}
+library(here)
+library(tidyverse)
+library(magrittr)
+library(rvest)
+```
+
+
+```{r}
+gmpd <- read_csv(here("data/GMPD/GMPD_main.csv"))
+gmpd_traits <- read_csv(here("data/GMPD/GMPD_parasite_traits.csv"))
+clover <- read_csv(here("data/clover/CLOVER_1.0_Viruses_AssociationsFlatFile.csv"))
+```
+
+```{r}
+gmpd_num_hosts <- gmpd %>% filter(ParType=="Virus") %>% dplyr::select(HostCorrectedName, ParasiteCorrectedName) %>% distinct() %>% group_by(ParasiteCorrectedName) %>% summarize(num_hosts = n())
+gmpd_generalists <- gmpd_num_hosts %>% filter(num_hosts>1)
+
+gmpd_close_nonclose <- gmpd_traits %>% filter(close+nonclose==2)
+
+gmpd_select <- inner_join(gmpd_close_nonclose, gmpd_generalists, by = "ParasiteCorrectedName")
+```
+
+
+clover doesn't include data on transmission mode so will need to get those data from somewhere else if we want to use that
+
+for now, we can take a look at the parasites that are positive from GMPD
+
+Stealing this google scholar scraper from another project
+```{r}
+names <- tibble(species = gmpd_select$ParasiteCorrectedName)
+
+names$results <- NA
+
+#names$species <- tolower(names$species) 
+names$species <- str_replace_all(string = names$species, pattern = " ", replacement = "+")
+
+
+for (i in 1:nrow(names)){
+  tmp <- pull(names[i,1])
+  
+  link <- str_replace(string="https://scholar.google.com/scholar?hl=en&as_sdt=0%2C11&q=REPLACEME&btnG=", pattern="REPLACEME", replacement=tmp)
+  
+  page <- read_html(link)
+  
+  summaries_css <- page %>% html_elements(css = ".gs_ab_mdw")
+  
+  text <- capture.output(print(summaries_css[2]))
+  
+  line <- stringr::str_extract(text, "About.+results")
+  
+  line_a <- str_replace(line, ",", "")
+  
+  line_b <- line_a[2]
+  
+  number <- as.numeric(str_extract(line_b, "[:digit:]+"))
+
+  names$results[i] <- number
+}
+
+```
+
+
