@@ -34,7 +34,7 @@ clover doesn't include data on transmission mode so will need to get those data 
 
 for now, we can take a look at the parasites that are positive from GMPD
 
-Stealing this google scholar scraper from another project
+Stealing this google scholar scraper from another project (doesn't always work)
 ```{r}
 names <- tibble(species = gmpd_select$ParasiteCorrectedName)
 
