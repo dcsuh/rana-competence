@@ -66,6 +66,7 @@ for (i in 1:nrow(names)){
   names$results[i] <- number
 }
 
+write_csv(names, here("data/scholar_results.csv"))
 ```
 
 
