@@ -152,7 +152,8 @@ p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
   geom_point(aes(x=env_prop,y=cont_prop))+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
   labs(x="", 
-       y = "                                      Relative Contact Transmission Rate", title = "Half-life") +
+       y = expression(paste("                               Relative Contact\n                            Transmission Rate ", "(",
+                            frac(Beta[B], Beta[A]),")")), title = "Half-life") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
@@ -174,7 +175,7 @@ p5 <- combined %>%
                linewidth=line_width) +
   geom_point(aes(x=env_prop,y=cont_prop))+
   scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
-  labs(x = "            Relative Environmental\n               Transmission Rate", y = "", title = "Combined") +
+  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[A]), ")")), y = "", title = "Combined") +
   xlim(2,7) +
   ylim(2,10) +
   theme_classic() +
@@ -480,7 +481,7 @@ spec_B <- ggplot()+
 
 figure_1 <- p2 / p3 / p4 / p5 | both
 figure_1
-#ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 
 

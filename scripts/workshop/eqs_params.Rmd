@@ -26,6 +26,32 @@ $$
 \end{aligned}
 $$
 
+```{r}
+# mat[1] = (data$trans1[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
+# mat[2] = (data$trans1[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
+# mat[3] = (data$shed1[n]/data$degr[n])
+# mat[4] = (data$trans2[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
+# mat[5] = (data$trans2[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
+# mat[6] = (data$shed2[n]/data$degr[n])
+# mat[7] = (data$trans3[n]*data$dfe1[n])/(data$reco1[n]+data$mort1[n])
+# mat[8] = (data$trans3[n]*data$dfe2[n])/(data$reco2[n]+data$mort2[n])
+# mat[9] = 0
+```
+
+
+
+$$
+\begin{bmatrix}
+\frac{\beta_a\frac{\lambda_a}{\mu_a}}{\alpha_a+\mu_a} & \frac{\beta_a\frac{\lambda_b}{\mu_b}}{\alpha_b+\mu_b} & \frac{\sigma_a}{\epsilon}\\
+\frac{\beta_b\frac{\lambda_a}{\mu_a}}{\alpha_a+\mu_a} & \frac{\beta_b\frac{\lambda_b}{\mu_b}}{\alpha_b+\mu_b} & \frac{\sigma_b}{\epsilon}\\
+\frac{\phi\frac{\lambda_a}{\mu_a}}{\alpha_a+\mu_a} & \frac{\phi\frac{\lambda_b}{\mu_b}}{\alpha_b+\mu_b} & 0\\
+\end{bmatrix}
+$$
+
+
+
+
+
 
 Parameters
 
@@ -59,33 +85,33 @@ kable(param_table)
 ```
 
 ```{r}
-library(metacom)
-
-source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
-
-community_mat %<>% column_to_rownames(., var = "siteID")
-
-Imagine(t(community_mat), 
-        fill = FALSE, 
-        order = TRUE, 
-        xlab = "", 
-        ylab = "",
-        xline = 5,
-        yline = 4,
-        sitenames = ,
-        speciesnames = ,
-        binary=T)
-
-ordered_matrix <- OrderMatrix(community_mat)
-rownames(ordered_matrix)
-
-results <- Metacommunity(community_mat, binary = T)
-coherence <- results$Coherence
-turnover <- results$Turnover
-boundary <- results$Boundary
-kable(coherence, caption = "Coherence")
-kable(turnover, caption = "Turnover")
-kable(boundary, caption = "Block Replacement")
+# library(metacom)
+# 
+# source(knitr::purl(here("scripts/data_format.Rmd"), quiet=TRUE))
+# 
+# community_mat %<>% column_to_rownames(., var = "siteID")
+# 
+# Imagine(t(community_mat), 
+#         fill = FALSE, 
+#         order = TRUE, 
+#         xlab = "", 
+#         ylab = "",
+#         xline = 5,
+#         yline = 4,
+#         sitenames = ,
+#         speciesnames = ,
+#         binary=T)
+# 
+# ordered_matrix <- OrderMatrix(community_mat)
+# rownames(ordered_matrix)
+# 
+# results <- Metacommunity(community_mat, binary = T)
+# coherence <- results$Coherence
+# turnover <- results$Turnover
+# boundary <- results$Boundary
+# kable(coherence, caption = "Coherence")
+# kable(turnover, caption = "Turnover")
+# kable(boundary, caption = "Block Replacement")
 
 ```
 

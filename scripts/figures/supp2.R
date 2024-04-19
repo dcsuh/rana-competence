@@ -7,6 +7,13 @@ library(here)
 source(here("base","src.R"))
 
 
+#Notes
+
+# 1. need to figure out how to deal with months where prevalence is decreasing before the peak. There don't seem to be any where the prevalence is increasing after the peak
+
+# 2. Also not sure how to deal with months with just very little data
+
+
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
 axis_title_size = 15
@@ -23,34 +30,8 @@ order %<>% add_column(prev_ratio = NA)
 
 order %<>% group_by(WetAltID) %>% mutate(max_prev = max(Prevalence)) %>% ungroup()
 
-#create new column that is a ratio between this and last month's prevalence and scales from 0 to 1
-#if next month prev is higher, then range is (0,1)
-#if next month prev is lower, then range is still (0,1)
-# for(n in 2:nrow(order)){
-#   if (order$Prevalence[n] > order$Prevalence[n-1] && order$Prevalence[n-1] > 0) {
-#     order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / order$Prevalence[n-1]
-#   } else if (order$Prevalence[n-1] == 0 && order$Prevalence[n] > 0) {
-#     order$prev_ratio[n-1] <- order$Prevalence[n]
-#   } else if (order$Prevalence[n] < order$Prevalence[n-1] && order$Prevalence[n] > 0) {
-#     order$prev_ratio[n-1] <- (order$Prevalence[n-1] - order$Prevalence[n]) / order$Prevalence[n]
-#   } else if (order$Prevalence[n] == 0 && order$Prevalence[n-1] > 0) {
-#     order$prev_ratio[n-1] <- 1-order$Prevalence[n-1]
-#   } else if (order$Prevalence[n-1] > 0 && order$Prevalence[n] == order$Prevalence[n-1]) {
-#     order$prev_ratio[n-1] <- 1
-#   } else {
-#     order$prev_ratio[n-1] <- 0
-#   }
-# }
+#order %<>% filter(!WetAltID %in% c(8,11,20))
 
-# for(n in 2:nrow(order)){
-#   if (order$Prevalence[n] > order$Prevalence[n-1]) {
-#     order$prev_ratio[n-1] <- (order$Prevalence[n] - order$Prevalence[n-1]) / (order$max_prev[n-1])
-#   } else if (order$Prevalence[n] < order$Prevalence[n-1]) {
-#     order$prev_ratio[n-1] <- 1 - ((order$Prevalence[n-1] - order$Prevalence[n]) / order$max_prev[n-1])
-#   } else {
-#     order$prev_ratio[n-1] <- 0
-#   }
-# }
 
 for(n in 2:nrow(order)){
   if (order$Prevalence[n] > order$Prevalence[n-1]) {
@@ -69,6 +50,8 @@ clean <- order %>% mutate(month_n = gsub("Month", "", Month.1)) %>% group_by(Wet
 
 order %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
 clean %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
+
+clean %>% ggplot(.,aes(x=Prevalence, y=prev_ratio, color = Month.1)) + geom_point() + facet_wrap(vars(WetAltID))
 
 
 #plot cleaned plot with lag
