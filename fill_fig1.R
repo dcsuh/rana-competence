@@ -70,23 +70,6 @@ combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 
 dat <- reference %>% dplyr::select(prop3, prop1, eigen) %>% mutate(reference = eigen) %>% dplyr::select(-eigen)
 
-dat1 <- composition %>% dplyr::select(prop3, prop1, eigen) %>% mutate(composition = eigen) %>% dplyr::select(-eigen)
-
-dat2 <- size %>% dplyr::select(prop3, prop1, eigen) %>% mutate(size = eigen) %>% dplyr::select(-eigen)
-
-dat3 <- halflife %>% dplyr::select(prop3, prop1, eigen) %>% mutate(halflife = eigen) %>% dplyr::select(-eigen)
-
-dat4 <- combined %>% dplyr::select(prop3, prop1, eigen) %>% mutate(combined = eigen) %>% dplyr::select(-eigen)
-
-dat %<>% left_join(., dat1)
-dat %<>% left_join(., dat2)
-dat %<>% left_join(., dat3)
-dat %<>% left_join(., dat4)
-
-dat_comp <- dat %>% mutate(invade = case_when(reference > 1 & composition > 1 ~ "yes",
-                                              reference < 1 & composition > 1 ~ "maybe",
-                                              reference < 1 & composition < 1 ~ "no"))
-
 get_invade <- function(df1, df2){
   df2 %<>% dplyr::select(prop3, prop1, eigen) %>% mutate(manip = eigen) %>% dplyr::select(-eigen)
   df1 %<>% left_join(., df2)
