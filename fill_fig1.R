@@ -70,6 +70,21 @@ combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 
 dat <- reference %>% dplyr::select(prop3, prop1, eigen) %>% mutate(reference = eigen) %>% dplyr::select(-eigen)
 
+
+#these are values to be used for the simulation dynamics
+spec_2 <- 0.0001
+spec_1 <- 0.00055
+env_rate <- 0.00065
+env_prop <- env_rate/spec_2
+cont_prop <- spec_1/spec_2
+param_num <- which(reference$eigen>1.103065 & reference$eigen<1.103192)
+
+axis_text_size = 13
+plot_label_size = 12
+line_width = 1
+
+
+
 get_invade <- function(df1, df2){
   df2 %<>% dplyr::select(prop3, prop1, eigen) %>% mutate(manip = eigen) %>% dplyr::select(-eigen)
   df1 %<>% left_join(., df2)
@@ -84,6 +99,7 @@ get_invade <- function(df1, df2){
 get_plot <- function(df){
   df %>% ggplot(., aes(x=prop3, y=prop1, fill = invade)) + 
     geom_tile(show.legend = F) + 
+    geom_point(aes(x=env_prop,y=cont_prop))+
     scale_fill_manual(values = c("orange", "red", "forestgreen")) + 
     xlim(2, 7) + 
     ylim(2, 7) + 
@@ -95,9 +111,334 @@ dat_size <- get_invade(dat, size)
 dat_half <- get_invade(dat, halflife)
 dat_all <- get_invade(dat, combined)
 
-p1 <- get_plot(dat_comp) + labs(title = "composition", x = "", y = "")
-p2 <- get_plot(dat_size) + labs(title = "abundance", x = "", y = "")
-p3 <- get_plot(dat_half) + labs(title = "half-life", x = "", y = "")
-p4 <- get_plot(dat_all) + labs(title = "combined", x = "", y = "")
+p1 <- get_plot(dat_comp) + 
+  labs(title = "Composition", x = "", y = "") + 
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank(),
+        legend.position="none")
 
-p1 / p2 / p3 / p4
+p2 <- get_plot(dat_size) + 
+  labs(title = "Abundance", x = "", y = "") + 
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank(),
+        legend.position="none")
+
+p3 <- get_plot(dat_half) + 
+  labs(title = "Half-life", x = "", y = "") + 
+  theme(axis.title.x=element_blank(), 
+        axis.text.x=element_blank(), 
+        axis.ticks.x=element_blank(),
+        legend.position="none")
+
+p4 <- get_plot(dat_all) +  
+  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[A]), ")")), 
+       y = expression(paste("                                                                    Relative Contact Transmission Rate", "(", frac(Beta[B], Beta[A]), ")")), 
+       title = "Combined") + 
+  theme(legend.position="none")
+
+
+fig_1 <- p1 / p2 / p3 / p4
+fig_1
+
+
+
+rm0<-function(t,x,params){
+  Sa <- x[1]  
+  Ia <- x[2]
+  Ra <- x[3]
+  Sb <- x[4]  
+  Ib <- x[5]
+  Rb <- x[6]
+  V <- x[7]
+  with(as.list(params),{
+    dSa <- -beta*Sa*Ia - betab*Sa*Ib - phi*Sa*V + lambda - mu_a*Sa
+    dIa <- beta*Sa*Ia + betab*Sa*Ib + phi*Sa*V - alpha*Ia - mu_a*Ia
+    dRa <- alpha*Ia - mu_a*Ra
+    
+    dSb <- -betab*Sb*Ib - beta*Sb*Ia - phi*Sb*V + lambda - mu_b*Sb
+    dIb <- betab*Sb*Ib + beta*Sb*Ia + phi*Sb*V - alpha*Ib - mu_b*Ib
+    dRb <- alpha*Ib - mu_b*Rb
+    
+    dV <- sigma*Ia + sigma*Ib - epsilon*V
+    res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
+    list(res)
+  })}
+#no demography
+rm1<-function(t,x,params){
+  Sa <- x[1]  
+  Ia <- x[2]
+  Ra <- x[3]
+  Sb <- x[4]  
+  Ib <- x[5]
+  Rb <- x[6]
+  V <- x[7]
+  with(as.list(params),{
+    dSa <- -beta*Sa*Ia - betab*Sa*Ib - phi*Sa*V
+    dIa <- beta*Sa*Ia + betab*Sa*Ib + phi*Sa*V - alpha*Ia
+    dRa <- alpha*Ia
+    
+    dSb <- -betab*Sb*Ib - beta*Sb*Ia - phi*Sb*V
+    dIb <- betab*Sb*Ib + beta*Sb*Ia + phi*Sb*V - alpha*Ib
+    dRb <- alpha*Ib
+    
+    dV <- sigma*Ia + sigma*Ib - epsilon*V
+    res<-c(dSa,dIa,dRa,dSb,dIb,dRb,dV)
+    list(res)
+  })}
+
+
+maxTime <- 300.0 # time is in years - run model for this time
+times<-seq(0,maxTime,by=1) # how long we run the model for
+# notes on params
+# mu =     <- density-independent mortality rate
+# beta =       <- contact transmission rate by infected A
+# betab =       <- contact transmission rate by infected B
+# phi =      <- environmental transmission rate
+# lambda =       <- density-dependent growth rate
+# alpha =     <- recovery rate
+# sigma =    <- shedding rate
+# epsilon =       <- viral degradation rate
+params<-c(mu_a=1/50,
+          mu_b=1/50,
+          beta=0.001,
+          betab=0.0001,
+          phi=0.001,
+          lambda=5/3,
+          alpha=1/10,
+          sigma=1/2,
+          epsilon=1/2)  # model parameters
+
+xstart<-c(Sa=116,
+          Ia=1,
+          Ra=0,
+          Sb=83,
+          Ib=1,
+          Rb=0,
+          V=0)  # initial conditions
+
+output<-as.data.frame(lsoda(xstart,times,rm0,params)) # tells computer to solve (integrate) equations
+
+
+
+
+
+params_n <- c(mu_a=1/45,
+              mu_b=1/45,
+              beta=spec_1,
+              betab=spec_2,
+              phi=env_rate,
+              lambda=5/3,
+              alpha=1/10,
+              sigma=1/2,
+              epsilon=1/1.947799)  # model parameters
+
+xstart_n <- c(Sa=params_n[[6]]/params_n[[1]],
+              Ia=1,
+              Ra=0,
+              Sb=params_n[[6]]/params_n[[2]],
+              Ib=1,
+              Rb=0,
+              V=0)  # initial conditions
+
+output_n <- as.data.frame(lsoda(xstart_n,times,rm0,params_n)) # tells computer to solve (integrate) equations
+output_n1<- as.data.frame(lsoda(xstart_n,times,rm1,params_n)) # tells computer to solve (integrate) equations
+
+reference_eigen <- reference$eigen[param_num]
+
+
+params_c <- c(mu_a=1/60,
+              mu_b=1/30,
+              beta=spec_1,
+              betab=spec_2,
+              phi=env_rate,
+              lambda=5/3,
+              alpha=1/10,
+              sigma=1/2,
+              epsilon=1/1.947799)  # model parameters
+
+xstart_c <- c(Sa=params_c[[6]]/params_c[[1]],
+              Ia=1,
+              Ra=0,
+              Sb=params_c[[6]]/params_c[[2]],
+              Ib=1,
+              Rb=0,
+              V=0)  # initial conditions
+
+output_c <- as.data.frame(lsoda(xstart_c,times,rm0,params_c)) # tells computer to solve (integrate) equations
+output_c1 <- as.data.frame(lsoda(xstart_c,times,rm1,params_c)) # tells computer to solve (integrate) equations
+
+community_eigen <- composition$eigen[param_num]
+
+
+
+params_a <- c(mu_a=1/52.5,
+              mu_b=1/52.5,
+              beta=spec_1,
+              betab=spec_2,
+              phi=env_rate,
+              lambda=5/3,
+              alpha=1/10,
+              sigma=1/2,
+              epsilon=1/1.947799)  # model parameters
+
+xstart_a <- c(Sa=params_a[[6]]/params_a[[1]],
+              Ia=1,
+              Ra=0,
+              Sb=params_a[[6]]/params_a[[2]],
+              Ib=1,
+              Rb=0,
+              V=0)  # initial conditions
+
+output_a <- as.data.frame(lsoda(xstart_a,times,rm0,params_a)) # tells computer to solve (integrate) equations
+output_a1 <- as.data.frame(lsoda(xstart_a,times,rm1,params_a)) # tells computer to solve (integrate) equations
+
+abundance_eigen <- size$eigen[param_num]
+
+
+
+params_h <- c(mu_a=1/45,
+              mu_b=1/45,
+              beta=spec_1,
+              betab=spec_2,
+              phi=env_rate,
+              lambda=5/3,
+              alpha=1/10,
+              sigma=1/2,
+              epsilon=1/3.895598)  # model parameters
+
+xstart_h <- c(Sa=params_h[[6]]/params_h[[1]],
+              Ia=1,
+              Ra=0,
+              Sb=params_h[[6]]/params_h[[2]],
+              Ib=1,
+              Rb=0,
+              V=0)  # initial conditions
+
+output_h <- as.data.frame(lsoda(xstart_h,times,rm0,params_h)) # tells computer to solve (integrate) equations
+output_h1 <- as.data.frame(lsoda(xstart_h,times,rm1,params_h)) # tells computer to solve (integrate) equations
+
+
+halflife_eigen <- halflife$eigen[param_num]
+
+
+
+params_x <- c(mu_a=1/70,
+              mu_b=1/35,
+              beta=spec_1,
+              betab=spec_2,
+              phi=env_rate,
+              lambda=5/3,
+              alpha=1/10,
+              sigma=1/2,
+              epsilon=1/3.895598)  # model parameters
+
+
+
+xstart_x <- c(Sa=params_x[[6]]/params_x[[1]],
+              Ia=1,
+              Ra=0,
+              Sb=params_x[[6]]/params_x[[2]],
+              Ib=1,
+              Rb=0,
+              V=0)  # initial conditions
+
+
+
+output_x1 <- as.data.frame(lsoda(xstart_x,times,rm1,params_x)) # tells computer to solve (integrate) equations
+
+
+
+combined_eigen <- combined$eigen[param_num]
+
+output_a1 %<>% mutate(I = Ia+Ib)
+output_c1 %<>% mutate(I = Ia+Ib)
+output_h1 %<>% mutate(I = Ia+Ib)
+output_n1 %<>% mutate(I = Ia+Ib)
+output_x1 %<>% mutate(I = Ia+Ib)
+
+output_a1 %<>% mutate(X = I + V)
+output_c1 %<>% mutate(X = I + V)
+output_h1 %<>% mutate(X = I + V)
+output_n1 %<>% mutate(X = I + V)
+output_x1 %<>% mutate(X = I + V)
+
+
+color_x <- paste("Combined\nR0=", abbreviate(combined_eigen))
+
+color_c <- paste("Composition\nR0=", abbreviate(community_eigen))
+color_a <- paste("Abundance\nR0=", abbreviate(abundance_eigen))
+color_h <- paste("Halflife\nR0=", abbreviate(halflife_eigen))
+color_n <- paste("Reference\nR0=", abbreviate(reference_eigen))
+
+both <- ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=I,x=time, color=color_x))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=I,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=I,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=I,x=time, color=color_h))+
+  scale_color_manual(name="",values = "forestgreen")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=I,x=time, color=color_n))+
+  scale_color_manual(name="",values = "gray")+
+  labs(y="Number of Infected Individuals",x="Time")+
+  ylim(0,45)+
+  xlim(0,200)+ 
+  theme_bw(base_size = 13)
+
+spec_A <- ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=Ia,x=time, color=color_x))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=Ia,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=Ia,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=Ia,x=time, color=color_h))+
+  scale_color_manual(name="",values = "forestgreen")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=Ia,x=time, color=color_n))+
+  scale_color_manual(name="",values = "gray")+
+  labs(y="",x="Time")+
+  ylim(0,45)+
+  ggtitle(paste("High competence"))+
+  theme_bw()+
+  theme(legend.position = "none", axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+spec_B <- ggplot()+
+  geom_line(data=output_x1,mapping = aes(y=Ib,x=time, color=color_x))+
+  scale_color_manual(name="",values = "purple")+
+  new_scale_color()+
+  geom_line(data=output_c1, mapping=aes(y=Ib,x=time, color=color_c))+
+  scale_color_manual(name="",values = "red")+
+  new_scale_color()+
+  geom_line(output_a1, mapping=aes(y=Ib,x=time, color=color_a))+
+  scale_color_manual(name="",values = "orange")+
+  new_scale_color()+
+  geom_line(output_h1, mapping=aes(y=Ib,x=time, color=color_h))+
+  scale_color_manual(name="",values = "forestgreen")+
+  new_scale_color()+
+  geom_line(output_n1, mapping=aes(y=Ib,x=time, color=color_n))+
+  scale_color_manual(name="",values = "gray")+
+  labs(y="",x="")+
+  ylim(0,45)+
+  ggtitle(paste("Low competence"))+
+  theme_bw()+
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+
+
+
+figure_1 <- fig_1 | both
+figure_1
+ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here(""))
+
+
+

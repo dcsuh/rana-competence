@@ -46,7 +46,10 @@ for(n in 2:nrow(order)){
 
 
 #remove the first entry for each wetland to remove the carryover from the last wetland
-clean <- order %>% mutate(month_n = gsub("Month", "", Month.1)) %>% group_by(WetAltID) %>% filter(month_n != max(month_n))
+clean <- order %>% 
+  mutate(month_n = gsub("Month", "", Month.1)) %>% 
+  group_by(WetAltID) %>% 
+  filter(month_n != max(month_n))
 
 order %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
 clean %>% ggplot(.,aes(x=Month.1, y=Prevalence, size = prev_ratio)) + geom_point() + facet_wrap(vars(WetAltID))
@@ -104,6 +107,57 @@ supp_2
 ggsave("supp2.png",plot=supp_2,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
 
 m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
+
+
+
+
+
+
+clean_alt <- clean %>% filter(WetAltID %in% c(3, 8, 10, 11, 14, 15, 16, 17, 20))
+
+m1 <- cor.test(clean_alt$cc,clean_alt$prev_ratio,method="spearman")
+
+m2 <- cor.test(log10(clean_alt$size),clean_alt$prev_ratio,method="spearman")
+
+m3 <- cor.test(clean_alt$MeanWaterTempPredC,clean_alt$prev_ratio,method="spearman")
+
+#multiple comparisons test
+pvals <- c(m1$p.value,m2$p.value,m3$p.value)
+rho <- c(m1$estimate, m2$estimate, m3$estimate)
+rho
+pvals
+p.adjust(pvals,method="holm")
+
+
+
+
+supp_prev <- clean %>% 
+  ggplot(.,aes(x=Month, y=Prevalence, size = prev_ratio)) + 
+  geom_point() + 
+  facet_wrap(vars(WetAltID)) +
+  labs(size = "Prevalence\nRatio") + 
+  theme(text = element_text(size=10))
+
+supp_prev
+
+ggsave("supp_prev.png",
+       plot=supp_prev,
+       width = outwidth[1], 
+       height = outwidth[1]/golden,
+       device="png",
+       path=here(""))
+
+
+clean_alt %>% 
+  ggplot(.,aes(x=Month, y=Prevalence, size = prev_ratio)) + 
+  geom_point() + 
+  facet_wrap(vars(WetAltID))
+
+
+
+
+
+
 
 
 #test with 0's filtered out
