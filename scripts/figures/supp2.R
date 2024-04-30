@@ -113,7 +113,7 @@ m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 
 
 
-clean_alt <- clean %>% filter(WetAltID %in% c(3, 8, 10, 11, 14, 15, 16, 17, 20))
+clean_alt <- clean %>% filter(WetAltID %in% c(3, 8, 10, 11, 14, 15, 16, 17))
 
 m1 <- cor.test(clean_alt$cc,clean_alt$prev_ratio,method="spearman")
 
