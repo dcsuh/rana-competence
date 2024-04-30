@@ -93,7 +93,7 @@ y %>% filter(relAbund>0) %>% ggplot(.,aes(x=mpd,y=relAbund))+
 #above line gives us the relative abundance of each species and the mean pd for their site-month
 #hosts in the same site-month should be stacked vertically
 fig2_inset <- y %>% filter(!is.na(mpd)) %>% ggplot(.,aes(x=min.pd,y=relAbund))+
-  geom_smooth(method="loess",span=1.4)+
+  geom_smooth(method="loess",span=1.4, color="forestgreen")+
   theme_classic()+
   labs(x="Phylogenetic Distance to Closest Neighbor", y = "Relative Abundance")+
   theme(text = element_text(size = 18))
