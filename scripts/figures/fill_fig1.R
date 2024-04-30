@@ -99,7 +99,7 @@ get_invade <- function(df1, df2){
 get_plot <- function(df){
   df %>% ggplot(., aes(x=prop3, y=prop1, fill = invade)) + 
     geom_tile(show.legend = F) + 
-    geom_point(aes(x=env_prop,y=cont_prop))+
+    geom_point(aes(x=env_prop,y=cont_prop), color="blue")+
     scale_fill_manual(values = c("orange", "red", "forestgreen")) + 
     xlim(2, 7) + 
     ylim(2, 7) + 
@@ -116,27 +116,31 @@ p1 <- get_plot(dat_comp) +
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
-        legend.position="none")
+        legend.position="none") +
+  scale_fill_manual(values = c("red", "black", "grey"))
 
 p2 <- get_plot(dat_size) + 
   labs(title = "Abundance", x = "", y = "") + 
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
-        legend.position="none")
+        legend.position="none") +
+  scale_fill_manual(values = c("orange", "black", "grey"))
 
 p3 <- get_plot(dat_half) + 
   labs(title = "Half-life", x = "", y = "") + 
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
-        legend.position="none")
+        legend.position="none") +
+  scale_fill_manual(values = c("forestgreen", "black", "grey"))
 
 p4 <- get_plot(dat_all) +  
-  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[A]), ")")), 
-       y = expression(paste("                                                                    Relative Contact Transmission Rate", "(", frac(Beta[B], Beta[A]), ")")), 
+  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[b]), ")")), 
+       y = expression(paste("                                                                    Relative Contact Transmission Rate", "(", frac(Beta[a], Beta[b]), ")")), 
        title = "Combined") + 
-  theme(legend.position="none")
+  theme(legend.position="none") +
+  scale_fill_manual(values = c("purple", "black", "grey"))
 
 
 fig_1 <- p1 / p2 / p3 / p4
