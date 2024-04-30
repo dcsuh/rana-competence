@@ -70,5 +70,5 @@ export <- full_join(dat, y, by = "siteID")
 export %<>% select(-Prevalence)
 export %<>% rename(Prevalence = prevalence)
 
-
+#write_csv(y,"data/prevalence_sample_sizes.csv")
 #write_csv(export,"data/weighted_prev_competence_111220.csv")

@@ -33,8 +33,7 @@ supp1_se <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>%
   geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_y_continuous(breaks=seq(0,6,1))
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 supp1_raw <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
@@ -42,11 +41,9 @@ supp1_raw <- vl %>% arrange(mean) %>%
   geom_point() + 
   xlab("Species") + ylab("Viral Load") + 
   geom_linerange(aes(ymin=mean-se,ymax=mean+se)) +
-  geom_hline(yintercept = 1) + 
   labs(title = "Viral Loads") + 
   theme_classic() + 
-  theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
-  scale_y_continuous(breaks=seq(0,6,1))
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 supp1_log10 <- vl %>% arrange(mean) %>% 
   mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
@@ -60,4 +57,4 @@ supp1_log10 <- vl %>% arrange(mean) %>%
   theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
   scale_y_continuous(breaks=seq(0,6,1))
 
-#ggsave("supp1.png",plot=supp1,device="png",path=here("figures"))
+#ggsave("supp1.png",plot=supp1_se,device="png",path=here("figures"))
