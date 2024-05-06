@@ -82,7 +82,8 @@ newTree <- vl_tree +
   scale_color_manual(name="Species",values = c("#238443", "#78C679", "#C2E699", "#FFFFB2", "gray"))+
   geom_tiplab(size=2.2,hjust=,offset=7,angle=0, fontface="italic") + 
   scale_size_continuous(name="log10(Viral load)")+
-  guides(color=F)+xlim(0,350)
+  guides(color=F)+xlim(0,350) + 
+  geom_treescale(x = 0, y = 10, width = 50)
 
 
 figure_2 <- cc_plot/RA_plot/newTree
