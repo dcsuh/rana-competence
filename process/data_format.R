@@ -7,7 +7,7 @@ library(here)
 source(here("base","src.R"))
 
 data <- read_csv(here("data/weighted_prev_competence_111220.csv"))
-tree <- ape::read.nexus(here("data/raw_data/asup_just_tree.txt"))
+tree <- ape::read.nexus(here("data/raw_data/rspb20131622supp2.txt"))
 names <- read_csv(here("data/raw_data/species_names_ids.csv"))
 
 
