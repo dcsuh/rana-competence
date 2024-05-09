@@ -7,12 +7,6 @@ library(here)
 source(here("base","src.R"))
 
 
-#Notes
-
-# 1. need to figure out how to deal with months where prevalence is decreasing before the peak. There don't seem to be any where the prevalence is increasing after the peak
-
-# 2. Also not sure how to deal with months with just very little data
-
 
 comm_data <- readRDS(here("processed_data","comm_data.rds"))
 
@@ -113,7 +107,7 @@ m4 <- lm(prev_ratio ~ MeanWaterTempPredC + size + cc, data = clean)
 
 
 
-clean_alt <- clean %>% filter(WetAltID %in% c(3, 8, 10, 11, 14, 15, 16, 17))
+clean_alt <- clean %>% filter(WetAltID %in% c(3, 8, 10, 11, 14, 15, 16, 17, 20))
 
 m1 <- cor.test(clean_alt$cc,clean_alt$prev_ratio,method="spearman")
 
