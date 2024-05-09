@@ -1,3 +1,7 @@
+#Daniel Suh and Andrew Park
+
+#Figure 2 in rv_cc manuscript
+
 
 library(here)
 
@@ -68,9 +72,6 @@ halflife <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.000
 
 combined <- contour(trans_1_min = 0.0001,trans_1_max = 0.001,trans_3_min = 0.0001,trans_3_max = 0.001,mort1 = c(1/70),mort2 = c(1/35),degr = 1/3.895598)
 
-dat <- reference %>% dplyr::select(prop3, prop1, eigen) %>% mutate(reference = eigen) %>% dplyr::select(-eigen)
-
-
 #these are values to be used for the simulation dynamics
 spec_2 <- 0.0001
 spec_1 <- 0.00055
@@ -83,68 +84,106 @@ axis_text_size = 13
 plot_label_size = 12
 line_width = 1
 
+p1 <- reference %>% ggplot(.,aes(x=prop3,y=prop1))+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
+  theme_classic()+
+  scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
+  labs(x = "Environmental", y = "Contact") +
+  xlim(2,7) +
+  ylim(2,10) + 
+  labs(title = "Reference")
 
 
-get_invade <- function(df1, df2){
-  df2 %<>% dplyr::select(prop3, prop1, eigen) %>% mutate(manip = eigen) %>% dplyr::select(-eigen)
-  df1 %<>% left_join(., df2)
-  
-  output <- df1 %>% mutate(invade = case_when(reference > 1 & manip > 1 ~ "yes",
-                                              reference < 1 & manip > 1 ~ "maybe",
-                                              reference < 1 & manip < 1 ~ "no"))
-  
-  return(output)
-}
+p2 <- composition %>% ggplot(.,aes(x=prop3,y=prop1))+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
+  theme_classic()+
+  scale_colour_manual(na.value = NA, values = c(NA, "red")) + 
+  new_scale_color()+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
+  geom_point(aes(x=env_prop,y=cont_prop))+
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
+  labs(x = "", y = "") +
+  xlim(2,7) +
+  ylim(2,10) + 
+  labs(title = "Composition") + 
+  theme(axis.title = element_blank(),
+        plot.title = element_text(size=plot_label_size))
+#p2
 
-get_plot <- function(df){
-  df %>% ggplot(., aes(x=prop3, y=prop1, fill = invade)) + 
-    geom_tile(show.legend = F) + 
-    geom_point(aes(x=env_prop,y=cont_prop), color="blue")+
-    scale_fill_manual(values = c("orange", "red", "forestgreen")) + 
-    xlim(2, 7) + 
-    ylim(2, 7) + 
-    theme_classic()
-}
+p3 <- size %>% filter(tot != 150) %>% 
+  ggplot(.,aes(x=prop3,y=prop1))+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
+  theme_classic()+
+  scale_colour_manual(na.value = NA, values = c(NA, "orange")) + 
+  new_scale_color()+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
+  geom_point(aes(x=env_prop,y=cont_prop))+
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
+  labs(x = "", y = "") +
+  xlim(2,7) +
+  ylim(2,10) + 
+  labs(title = "Abundance") + 
+  theme(plot.title = element_text(size=plot_label_size),
+        axis.title = element_blank())
+#p3
 
-dat_comp <- get_invade(dat, composition)
-dat_size <- get_invade(dat, size)
-dat_half <- get_invade(dat, halflife)
-dat_all <- get_invade(dat, combined)
+p4 <- halflife %>% ggplot(.,aes(x=prop3,y=prop1))+
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width)+
+  scale_colour_manual(na.value = NA, values = c(NA, "forestgreen")) + 
+  new_scale_color()+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width)+
+  geom_point(aes(x=env_prop,y=cont_prop))+
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
+  labs(x="", 
+       y = expression(paste("                               Relative Contact\n                            Transmission Rate ", "(",
+                            frac(Beta[B], Beta[A]),")")), title = "Half-life") +
+  xlim(2,7) +
+  ylim(2,10) +
+  theme_classic() +
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size))
+#p4
 
-p1 <- get_plot(dat_comp) + 
-  labs(title = "Composition", x = "", y = "") + 
-  theme(axis.title.x=element_blank(), 
-        axis.text.x=element_blank(), 
-        axis.ticks.x=element_blank(),
-        legend.position="none") +
-  scale_fill_manual(values = c("red", "black", "grey"))
+p5 <- combined %>%
+  ggplot(.,aes(x=prop3,y=prop1)) +
+  geom_contour(aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = FALSE,
+               linewidth=line_width) +
+  scale_colour_manual(na.value = NA, values = c(NA, "purple")) + 
+  new_scale_color()+
+  geom_contour(data = reference, 
+               aes(x=prop3,y=prop1,z=eigen,colour = factor(..level.. == 1,levels = c(F,T)),group=mort1), 
+               show.legend = F,
+               linewidth=line_width) +
+  geom_point(aes(x=env_prop,y=cont_prop))+
+  scale_colour_manual(na.value = NA, values = c(NA, "gray")) +
+  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[A]), ")")), y = "", title = "Combined") +
+  xlim(2,7) +
+  ylim(2,10) +
+  theme_classic() +
+  theme(axis.title = element_text(size=axis_text_size),
+        plot.title = element_text(size=plot_label_size),
+        axis.title.x=element_text(hjust=-0.625))
+#p5
 
-p2 <- get_plot(dat_size) + 
-  labs(title = "Abundance", x = "", y = "") + 
-  theme(axis.title.x=element_blank(), 
-        axis.text.x=element_blank(), 
-        axis.ticks.x=element_blank(),
-        legend.position="none") +
-  scale_fill_manual(values = c("orange", "black", "grey"))
-
-p3 <- get_plot(dat_half) + 
-  labs(title = "Half-life", x = "", y = "") + 
-  theme(axis.title.x=element_blank(), 
-        axis.text.x=element_blank(), 
-        axis.ticks.x=element_blank(),
-        legend.position="none") +
-  scale_fill_manual(values = c("forestgreen", "black", "grey"))
-
-p4 <- get_plot(dat_all) +  
-  labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[b]), ")")), 
-       y = expression(paste("                                                                    Relative Contact Transmission Rate", "(", frac(Beta[a], Beta[b]), ")")), 
-       title = "Combined") + 
-  theme(legend.position="none") +
-  scale_fill_manual(values = c("purple", "black", "grey"))
-
-
-fig_1 <- p1 / p2 / p3 / p4
-fig_1
 
 
 
@@ -440,9 +479,15 @@ spec_B <- ggplot()+
 
 
 
-figure_1 <- fig_1 | both
+figure_1 <- p2 / p3 / p4 / p5 | both
 figure_1
-ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here(""))
+ggsave("fig1.png",plot=figure_1,width = outwidth[1], height = outwidth[1]/golden,device="png",path=here("figures"))
+
+
+
+
+
+
 
 
 
