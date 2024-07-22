@@ -112,7 +112,7 @@ dat_half <- get_invade(dat, halflife)
 dat_all <- get_invade(dat, combined)
 
 p1 <- get_plot(dat_comp) + 
-  labs(title = "Composition", x = "", y = "") + 
+  labs(title = "Composition (biotic)", x = "", y = "") + 
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
@@ -120,7 +120,7 @@ p1 <- get_plot(dat_comp) +
   scale_fill_manual(values = c("red", "black", "grey"))
 
 p2 <- get_plot(dat_size) + 
-  labs(title = "Abundance", x = "", y = "") + 
+  labs(title = "Abundance (biotic)", x = "", y = "") + 
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
@@ -128,7 +128,7 @@ p2 <- get_plot(dat_size) +
   scale_fill_manual(values = c("orange", "black", "grey"))
 
 p3 <- get_plot(dat_half) + 
-  labs(title = "Half-life", x = "", y = "") + 
+  labs(title = "Half-life (abiotic)", x = "", y = "") + 
   theme(axis.title.x=element_blank(), 
         axis.text.x=element_blank(), 
         axis.ticks.x=element_blank(),
@@ -138,7 +138,7 @@ p3 <- get_plot(dat_half) +
 p4 <- get_plot(dat_all) +  
   labs(x = expression(paste("         Relative Environmental\n            Transmission Rate", "(", frac(Phi, Beta[b]), ")")), 
        y = expression(paste("                                                                    Relative Contact Transmission Rate", "(", frac(Beta[a], Beta[b]), ")")), 
-       title = "Combined") + 
+       title = "Combined (both)") + 
   theme(legend.position="none") +
   scale_fill_manual(values = c("purple", "black", "grey"))
 
