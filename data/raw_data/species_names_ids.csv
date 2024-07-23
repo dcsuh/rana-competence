@@ -1,22 +1,22 @@
-﻿species_name,species_code,order,abb_name,tnrs_name
-Anaxyrus_terrestris,21,Anura,A. terrestris,Anaxyrus terrestris
-Acris_gryllus,24,Anura,A. gryllus,Acris gryllus
-Hyla_avivoca,32,Anura,H. avivoca,Dryophytes avivoca
-Hyla_chrysoscelis,31,Anura,H. chrysoscelis,Dryophytes chrysoscelis
-Hyla_cinerea,27,Anura,H. cinerea,Dryophytes cinereus
-Hyla_femoralis,29,Anura,H. femoralis,Dryophytes femoralis
-Hyla_gratiosa,28,Anura,H. gratiosa,Dryophytes gratiosus
-Pseudacris_crucifer,26,Anura,P. crucifer,Pseudacris crucifer
-Pseudacris_nigrita,34,Anura,P. nigrita,Pseudacris nigrita
-Pseudacris_ornata,35,Anura,P. ornata,Pseudacris ornata
-Gastrophryne_carolinensis,38,Anura,G. carolinensis,Gastrophryne carolinensis
-Lithobates_catesbeianus,39,Anura,L. catesbeianus,Rana catesbeiana
-Lithobates_clamitans,41,Anura,L. clamitans,Rana clamitans
-Lithobates_sphenocephalus,42,Anura,L. sphenocephalus,Rana sphenocephala
-Notophthalmus_viridescens,9,Urodela,N. viridescens,Notophthalmus viridescens
-Scaphiopus_holbrookii,20,Anura,S. holbrookii,Scaphiopus holbrookii
-Siren_intermedia,4,Urodela,S. intermedia,Siren intermedia
-Amphiuma_means,2,Urodela,A. means,Amphiuma means
-Siren_lacertina,3,Urodela,S. lacertina,Siren lacertina
-Ambystoma_talpoideum,5,Urodela,A. talpoideum,Ambystoma talpoideum
-Ambystoma_opacum,6,Urodela,A. opacum,Ambystoma opacum
+﻿species_name,species_code,order,abb_name,tnrs_name,alt_abb_name
+Anaxyrus_terrestris,21,Anura,A. terrestris,Anaxyrus terrestris,B. terrestris
+Acris_gryllus,24,Anura,A. gryllus,Acris gryllus,A. gryllus
+Hyla_avivoca,32,Anura,H. avivoca,Dryophytes avivoca,H. avivoca
+Hyla_chrysoscelis,31,Anura,H. chrysoscelis,Dryophytes chrysoscelis,H. chrysoscelis
+Hyla_cinerea,27,Anura,H. cinerea,Dryophytes cinereus,H. cinerea
+Hyla_femoralis,29,Anura,H. femoralis,Dryophytes femoralis,H. femoralis
+Hyla_gratiosa,28,Anura,H. gratiosa,Dryophytes gratiosus,H. gratiosa
+Pseudacris_crucifer,26,Anura,P. crucifer,Pseudacris crucifer,P. crucifer
+Pseudacris_nigrita,34,Anura,P. nigrita,Pseudacris nigrita,P. nigrita
+Pseudacris_ornata,35,Anura,P. ornata,Pseudacris ornata,P. ornata
+Gastrophryne_carolinensis,38,Anura,G. carolinensis,Gastrophryne carolinensis,G. carolinensis
+Lithobates_catesbeianus,39,Anura,L. catesbeianus,Rana catesbeiana,R. catesbeianus
+Lithobates_clamitans,41,Anura,L. clamitans,Rana clamitans,R. clamitans
+Lithobates_sphenocephalus,42,Anura,L. sphenocephalus,Rana sphenocephala,R. sphenocephalus
+Notophthalmus_viridescens,9,Urodela,N. viridescens,Notophthalmus viridescens,N. viridescens
+Scaphiopus_holbrookii,20,Anura,S. holbrookii,Scaphiopus holbrookii,S. holbrookii
+Siren_intermedia,4,Urodela,S. intermedia,Siren intermedia,S. intermedia
+Amphiuma_means,2,Urodela,A. means,Amphiuma means,A. means
+Siren_lacertina,3,Urodela,S. lacertina,Siren lacertina,S. lacertina
+Ambystoma_talpoideum,5,Urodela,A. talpoideum,Ambystoma talpoideum,A. talpoideum
+Ambystoma_opacum,6,Urodela,A. opacum,Ambystoma opacum,A. opacum

@@ -8,8 +8,13 @@ source(here("base","src.R"))
 
 
 vl <- readRDS(here("processed_data","vl.rds"))
+names <- read_csv(here("data/raw_data/species_names_ids.csv"))
+
+vl %<>% inner_join(., names)
 
 vl %<>% filter(m>3)
+
+
 
 supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
   mutate(tnrs_name = factor(tnrs_name, levels = tnrs_name)) %>% 
@@ -25,8 +30,8 @@ supp1 <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>%
   scale_y_continuous(breaks=seq(0,6,1))
 
 supp1_se <- vl %>% filter(!is.na(mean)) %>% arrange(mean) %>% 
-  mutate(abb_name = factor(abb_name, levels = abb_name)) %>% 
-  ggplot(.,aes(x=abb_name,y=log10(mean))) +
+  mutate(alt_abb_name = factor(alt_abb_name, levels = alt_abb_name)) %>% 
+  ggplot(.,aes(x=alt_abb_name,y=log10(mean))) +
   geom_point(size = 2) + 
   xlab("Species") + ylab("log(Viral Load)") + 
   geom_linerange(aes(ymin=log10(mean)-log10(se),ymax=log10(mean)+log10(se))) +

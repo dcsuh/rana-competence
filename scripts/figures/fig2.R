@@ -14,7 +14,7 @@ pruned_tree <- readRDS(here("processed_data","tree.rds"))
 
 
 #format data for phylo tree
-vl %<>% filter(tnrs_name!="Dryophytes avivoca") # as doesn't appear sampled in any communities? (AP)
+vl %<>% filter(tnrs_name!="Dryophytes avivoca") 
 #H. avivoca (ID=32) has no abundance measured but has one recording for viral load
 #viral load for H. avivoca is actually the highest but should not be included because there is no abundance data
 
